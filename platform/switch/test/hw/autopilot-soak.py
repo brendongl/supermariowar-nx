@@ -7,10 +7,11 @@
 
 prepare  installs the NSP and creates the autotest file (run it with no game open)
 launch   opens the newest HOME menu tile, which is the freshly installed game
-poll     saves a screenshot and the log tail to OUTDIR, records whether the game is
-         still making progress, and after two stalled polls collects crash reports
-         and relaunches. Run it every few minutes from a timer.
+poll     saves a screenshot to OUTDIR, records whether the screen is still changing
+         and copies any new Atmosphère crash reports. Run it every few minutes from a
+         timer, then read smw.log after closing the game.
 """
+import hashlib
 import json
 import os
 import sys
@@ -98,34 +99,60 @@ def collect_crash(out, stamp):
             pass
 
 
+def report_names():
+    names = []
+    for folder in ("/atmosphere/crash_reports/", "/atmosphere/fatal_errors/"):
+        try:
+            listing = json.loads(request("GET", files(folder)))
+            names += [folder + e["name"] for e in listing.get("entries", [])]
+        except Exception:
+            pass
+    return sorted(names)
+
+
 def poll(out):
+    """The game holds smw.log open for writing, and Horizon won't let another process
+    read it meanwhile, so progress is judged from screenshots and new crash reports."""
     os.makedirs(out, exist_ok=True)
     state_path = os.path.join(out, "state.json")
-    state = json.load(open(state_path)) if os.path.exists(state_path) else {"beat": "", "stalls": 0, "relaunches": 0}
+    state = json.load(open(state_path)) if os.path.exists(state_path) else {}
+    state.setdefault("shot", "")
+    state.setdefault("stalls", 0)
+    state.setdefault("unreachable", 0)
+    state.setdefault("polls", 0)
     stamp = time.strftime("%Y%m%d-%H%M%S")
     try:
         info = status()
-    except Exception as e:  # console asleep, rebooting or off the network
-        print(f"{stamp} unreachable: {e}")
+    except Exception as e:  # asleep, rebooting, or stuck on Atmosphère's fatal screen
+        state["unreachable"] += 1
+        print(f"{stamp} unreachable ({state['unreachable']} in a row): {e}")
+        json.dump(state, open(state_path, "w"))
         return
-    try:
-        open(os.path.join(out, f"{stamp}.jpg"), "wb").write(request("GET", "/screenshot", timeout=30))
-    except Exception as e:
-        print(f"{stamp} screenshot failed: {e}")
-    tail = log_tail()
-    open(os.path.join(out, "latest-log-tail.txt"), "w").write(tail)
-    beat = last_heartbeat(tail)
-    matches = sum(1 for line in tail.splitlines() if line.startswith("[match] #"))
-    progressing = bool(beat) and beat != state["beat"]
-    state["stalls"] = 0 if progressing else state["stalls"] + 1
-    state["beat"] = beat
-    print(f"{stamp} battery={info.get('batteryPercent')} progressing={progressing} {beat!r} matches_in_tail={matches}")
-    if state["stalls"] >= 2:
-        print(f"{stamp} stalled twice: collecting logs and relaunching")
+    state["unreachable"] = 0
+    state["polls"] += 1
+    reports = report_names()
+    if "reports" not in state:
+        state["reports"] = reports
+    new_reports = [r for r in reports if r not in state["reports"]]
+    shot = b""
+    for _ in range(3):
+        try:
+            shot = request("GET", "/screenshot", timeout=40)
+            break
+        except Exception:
+            time.sleep(3)
+    digest = hashlib.sha256(shot).hexdigest() if shot else ""
+    if shot:
+        open(os.path.join(out, f"{stamp}.jpg"), "wb").write(shot)
+    changed = bool(digest) and digest != state["shot"]
+    state["stalls"] = 0 if changed else state["stalls"] + 1
+    state["shot"] = digest or state["shot"]
+    print(f"{stamp} uptime={info.get('uptimeSeconds')} battery={info.get('batteryPercent')} "
+          f"charging={info.get('charging')} screen_changed={changed} new_reports={new_reports}")
+    if new_reports:
+        state["reports"] = reports
+        state.setdefault("crashes", []).extend(new_reports)
         collect_crash(out, stamp)
-        launch()
-        state["stalls"] = 0
-        state["relaunches"] += 1
     json.dump(state, open(state_path, "w"))
 
 

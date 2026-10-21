@@ -13,8 +13,10 @@ This repository follows the upstream game. The Switch-specific code lives in `pl
 
 You need a Switch running custom firmware (Atmosphère).
 
-- **NSP** (recommended): install `SuperMarioWar-NX-*.nsp` with an installer such as DBI, Tinfoil or Awoo. Installing NSPs requires signature patches that match your firmware. The title ID is `017397C52C004000`.
-- **NRO**: copy `smw.nro` to `sdmc:/switch/supermariowar/` and start it from the Homebrew Menu.
+- **NRO + forwarder NSP** (recommended): copy `smw.nro` to `sdmc:/switch/supermariowar/smw.nro`, then install `SuperMarioWar-NX-*-forwarder.nsp` with an installer such as DBI, Tinfoil or Awoo for a HOME menu icon. The title ID is `017397C52C004000`. Installing NSPs requires signature patches that match your firmware.
+- **NRO only**: copy `smw.nro` to `sdmc:/switch/supermariowar/` and start it from the Homebrew Menu (use title override, not the Album, for full memory).
+
+A standalone NSP (`platform/switch/nsp/build-nsp.sh`) also builds, but it currently crashes Atmosphère's fatal module on launch on real hardware, so don't install it until that is fixed.
 
 ## Controls
 
@@ -50,10 +52,11 @@ docker run --rm -u "$(id -u):$(id -g)" -e HOME=/tmp -v "$PWD":/src -w /src \
 
 This builds the SDL 3 stack for the Switch once (`platform/switch/build-deps.sh`, see below) and then produces `build-switch/src/smw/smw.nro`.
 
-To package an NSP you also need [hacBrewPack](https://github.com/rlaphoenix/hacBrewPack) (or the older hacPack) and the keys dumped from your own console:
+To package the forwarder NSP you also need [hacPack](https://github.com/DarkMatterCore/hacPack), the forwarder assets from [NTON](https://github.com/rlaphoenix/nton) and the keys dumped from your own console:
 
 ```sh
-HACPACK=/path/to/hacpack PROD_KEYS=~/.switch/prod.keys platform/switch/nsp/build-nsp.sh
+HACPACK=/path/to/hacpack NTON_ASSETS=/path/to/nton/nton/assets PROD_KEYS=~/.switch/prod.keys \
+    platform/switch/nsp/build-forwarder.sh
 ```
 
 ### SDL 3 on the Switch
