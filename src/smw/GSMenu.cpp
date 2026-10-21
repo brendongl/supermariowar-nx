@@ -75,6 +75,9 @@ extern bool g_fRecordTest;
 #endif
 
 extern void SetGameModeSettingsFromMenu();
+
+// Short name of the map the current match runs on, for logs
+std::string g_matchMapName;
 extern void LoadMapObjects(bool fPreview);
 extern void UpdateScoreBoard();
 extern short LookupTeamID(short id);
@@ -1379,7 +1382,6 @@ void MenuState::update()
                 } else if (game_values.matchtype == MatchType::QuickGame) {
                     //Load a random map for the quick game
                     std::string szMapName = maplist->randomFilename();
-                    printf("[match] map=%s\n", szMapName.c_str());
                     g_map->loadMap(szMapName, read_type_full);
                     sShortMapName = stripPathAndExtension(szMapName);
 
@@ -1397,6 +1399,8 @@ void MenuState::update()
                     sShortMapName = maplist->currentShortmapname();
                 }
 
+                g_matchMapName = sShortMapName;
+                printf("[match] map=%s\n", g_matchMapName.c_str());
                 LoadCurrentMapBackground();
 
                 //Allows all players to start the game

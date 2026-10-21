@@ -13,7 +13,8 @@ extern CGameValues game_values;
 extern CResourceManager* rm;
 
 namespace {
-constexpr short iKingOfTheHillZoneLimits[4][4] = {{0, 0, 1, 2}, {0, 1, 2, 4}, {0, 2, 4, 7}, {0, 2, 5, 12}};
+// Solid tiles allowed in the zone per placement attempt range, for sizes 2x2 to 7x7 (the menu's range)
+constexpr short iKingOfTheHillZoneLimits[6][4] = {{0, 0, 1, 2}, {0, 1, 2, 4}, {0, 2, 4, 7}, {0, 2, 5, 12}, {0, 3, 7, 18}, {0, 3, 9, 24}};
 } // namespace
 
 //------------------------------------------------------------------------------
@@ -26,6 +27,8 @@ OMO_KingOfTheHillZone::OMO_KingOfTheHillZone(gfxSprite* nspr)
 
     if (size < 2)
         game_values.gamemodesettings.kingofthehill.areasize = size = 2;
+    else if (size > 7)
+        game_values.gamemodesettings.kingofthehill.areasize = size = 7;
 
     iw = TILESIZE * size;
     collisionWidth = iw;

@@ -1928,6 +1928,8 @@ void debugAutoKillEveryone()
     }
 }
 
+extern std::string g_matchMapName;
+
 // A player overlapping solid tiles points to a collision bug. Debug builds freeze the
 // game for inspection; release auto-test builds log it and keep going.
 bool autotestPlayerStuck(const CPlayer& player)
@@ -1944,7 +1946,7 @@ bool autotestPlayerStuck(const CPlayer& player)
     if (id >= 0 && id < 4 && now - last_report[id] > 10000) {
         last_report[id] = now;
         printf("[autotest][warning] player %d inside a solid tile at (%d, %d) on %s\n",
-            id, player.centerX(), player.centerY(), maplist->currentFilename().c_str());
+            id, player.centerX(), player.centerY(), g_matchMapName.c_str());
     }
     return false;
 #endif
