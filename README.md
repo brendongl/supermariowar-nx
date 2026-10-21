@@ -70,6 +70,10 @@ Upstream moved to SDL 3, and devkitPro currently ships only SDL 2 packages for t
 
 The same tree also builds on Linux with AddressSanitizer and UndefinedBehaviorSanitizer for fast headless soaks. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Roadmap
+
+Planned features (player accounts and stats via QR code, tournaments, online play in the browser, widescreen stages) are in [ROADMAP.md](ROADMAP.md).
+
 ## Reporting problems
 
 Please [open an issue](../../issues/new/choose) and attach `sdmc:/switch/supermariowar/smw.log` (and `smw.prev.log` if the game crashed and you relaunched it). Say whether you used the NSP or the NRO, your firmware and Atmosphère versions, docked or handheld, and which controllers were connected.
