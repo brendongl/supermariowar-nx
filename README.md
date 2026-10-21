@@ -5,6 +5,7 @@ A native Nintendo Switch port of [Super Mario War](https://github.com/mmatyas/su
 - Up to **4 players** on one console: Joy-Con pairs, single sideways Joy-Cons, Pro Controllers or handheld mode, in any mix
 - All 22 game modes, tournaments, tours, world maps and the bundled maps, skins, music and sound packs
 - 60 fps, rendered at the console's output resolution (720p handheld, 1080p docked) with the 640x480 game scaled pixel-sharp and letterboxed
+- Extra character: **Dice Guy**, the mascot of [Sip n Play](https://sipnplay.cafe), a board game cafe in Saigon
 - Settings, screenshots and map caches are saved on the SD card in `sdmc:/switch/supermariowar/`
 
 This repository follows the upstream game. The Switch-specific code lives in `platform/switch/`, `cmake/PlatformSwitch.cmake` and `src/smw/platform/switch/`, and the fixes that also apply to other platforms are kept small so they can go upstream.
@@ -78,3 +79,7 @@ Please [open an issue](../../issues/new/choose) and attach `sdmc:/switch/superma
 Super Mario War is by the 72dpiarmy community and contributors, and the current upstream is maintained by Mátyás Mustoha ([mmatyas/supermariowar](https://github.com/mmatyas/supermariowar)). See [CREDITS](CREDITS) and the [upstream README](docs/README-upstream.md). The Switch port uses [devkitPro](https://devkitpro.org)'s toolchain and libnx, [sdl3-nx](https://github.com/nx-mod/sdl3-nx), and SDL by Sam Lantinga and the SDL contributors.
 
 The Switch port is provided under the same terms as the upstream game. This is a non-commercial fan project and is not affiliated with Nintendo.
+
+---
+
+<sub>This Switch port was vibe-coded by the owner of [Sip n Play](https://sipnplay.cafe), a board game and video game cafe in Ho Chi Minh City (Saigon), Vietnam. If you're ever in town, come visit and say hi to Dice Guy!</sub>

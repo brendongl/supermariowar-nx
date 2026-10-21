@@ -11,6 +11,7 @@ Thanks for helping. Bug reports with a log attached are just as valuable as code
 | `cmake/PlatformSwitch.cmake` | Switch build settings |
 | `platform/switch/build-deps.sh` | Builds SDL 3, SDL3_image, SDL3_mixer and toml11 for the Switch |
 | `platform/switch/patches/` | Patches applied to SDL |
+| `platform/switch/data/` | Extra game data copied over `data/` in the Switch build (the Dice Guy skin) |
 | `platform/switch/build.sh` | Builds `smw.nro` |
 | `platform/switch/nsp/` | NSP packaging (NPDM, NACP, hacBrewPack) |
 | `platform/switch/test/` | Emulator smoke run and the Linux sanitizer soak |
