@@ -34,3 +34,8 @@ jobs:
     if: *should-run
     name: Android
     uses: ./.github/workflows/build_android.yml
+
+  build-switch:
+    if: *should-run
+    name: Switch
+    uses: ./.github/workflows/build_switch.yml

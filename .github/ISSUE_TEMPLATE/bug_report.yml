@@ -1,0 +1,52 @@
+name: Bug report
+description: Something doesn't work, looks wrong or crashes on the Switch.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead. Step-by-step instructions, a photo or a video help a lot.
+    validations:
+      required: true
+  - type: dropdown
+    id: build
+    attributes:
+      label: How did you run it?
+      options:
+        - NSP (installed, HOME menu icon)
+        - NRO (Homebrew Menu)
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Game version
+      description: The release you downloaded, or the commit you built.
+    validations:
+      required: true
+  - type: input
+    id: firmware
+    attributes:
+      label: Firmware and Atmosphère versions
+      placeholder: e.g. 23.0.1 / Atmosphère 1.12.1
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Docked or handheld?
+      options:
+        - Docked
+        - Handheld
+        - Tabletop
+        - Both
+  - type: input
+    id: controllers
+    attributes:
+      label: Controllers
+      description: How many, and which kind for each player.
+      placeholder: e.g. P1 Pro Controller, P2 Joy-Con pair, P3+P4 single sideways Joy-Cons
+  - type: textarea
+    id: log
+    attributes:
+      label: Log
+      description: Attach `sdmc:/switch/supermariowar/smw.log`. If the game crashed and you started it again, attach `smw.prev.log` instead (it holds the previous run).

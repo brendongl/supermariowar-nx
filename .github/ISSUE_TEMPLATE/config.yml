@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Upstream Super Mario War (PC, web, Android)
+    url: https://github.com/mmatyas/supermariowar/issues
+    about: Bugs that also happen on the PC version belong upstream too.

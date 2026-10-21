@@ -1,0 +1,43 @@
+name: Build - Switch
+on: workflow_call
+
+jobs:
+  switch:
+    runs-on: ubuntu-24.04
+    container: devkitpro/devkita64:latest
+    name: Nintendo Switch
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: 'recursive'
+
+      - name: Cache SDL 3 for Switch
+        uses: actions/cache@v6
+        with:
+          path: .deps-switch
+          key: switch-deps-${{ hashFiles('platform/switch/build-deps.sh', 'platform/switch/patches/**') }}
+
+      - name: Build
+        run: platform/switch/build.sh
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: smw-switch-nro
+          path: build-switch/src/smw/smw.nro
+
+  soak:
+    runs-on: ubuntu-24.04
+    name: Auto-test soak (ASan + UBSan)
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: 'recursive'
+
+      - name: Soak for 10 minutes
+        run: platform/switch/test/linux/soak.sh 600 soak
+
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: soak-log
+          path: soak/smw.log
