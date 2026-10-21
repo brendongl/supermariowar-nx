@@ -21,6 +21,11 @@ public:
 
     bool GetInBase() { return fInBase; }
     short GetTeamID() { return teamID; }
+    // Called before a player is deleted, so no stale thrower pointer is left behind
+    void forgetPlayer(const CPlayer* player) {
+        if (owner_throw == player)
+            owner_throw = nullptr;
+    }
 
 private:
     short timer;

@@ -2415,16 +2415,23 @@ void CMap::drawfrontlayer()
 
 bool CMap::checkforwarp(short iData1, short iData2, short iData3, short iDirection)
 {
-    Warp * warp1 = NULL;
-    Warp * warp2 = NULL;
-
+    // Callers such as the AI pass tile coordinates of players that are
+    // partly off screen, so wrap x and treat anything outside the map as no warp
+    int x1 = iData1, y1, x2, y2;
     if (iDirection == 0 || iDirection == 2) {
-        warp1 = &warpdata[iData1][iData3];
-        warp2 = &warpdata[iData2][iData3];
+        x2 = iData2;
+        y1 = y2 = iData3;
     } else {
-        warp1 = &warpdata[iData1][iData2];
-        warp2 = &warpdata[iData1][iData3];
+        x2 = iData1;
+        y1 = iData2;
+        y2 = iData3;
     }
+
+    if (!wrapTileCoords(x1, y1) || !wrapTileCoords(x2, y2))
+        return false;
+
+    Warp * warp1 = &warpdata[x1][y1];
+    Warp * warp2 = &warpdata[x2][y2];
 
     return warp1->direction == warp2->direction
         && warp1->id == warp2->id

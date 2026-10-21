@@ -20,6 +20,8 @@
 #include "gamemodes/MiniBoss.h"
 #include "gamemodes/Tag.h"
 #include "objects/MysteryMushroomTempPlayer.h"
+#include "objects/carriable/CO_Egg.h"
+#include "objects/carriable/CO_Flag.h"
 #include "objects/carriable/CO_KuriboShoe.h"
 #include "objects/carriable/CO_Shell.h"
 #include "objects/carriable/CO_Spike.h"
@@ -543,6 +545,16 @@ void GameplayState::CleanDeadPlayers()
 
             if (gmChicken && gmChicken->chicken() == players[i])
                 gmChicken->clearChicken();
+
+            // Flags and eggs remember who threw them for a moment, to credit the score
+            for (const CObjectContainer& container : objectcontainer) {
+                for (const std::unique_ptr<CObject>& obj : container.list()) {
+                    if (auto* flag = dynamic_cast<CO_Flag*>(obj.get()))
+                        flag->forgetPlayer(players[i]);
+                    else if (auto* egg = dynamic_cast<CO_Egg*>(obj.get()))
+                        egg->forgetPlayer(players[i]);
+                }
+            }
 
             delete players[i];
 
@@ -1932,7 +1944,7 @@ extern std::string g_matchMapName;
 
 // A player overlapping solid tiles points to a collision bug. Debug builds freeze the
 // game for inspection; release auto-test builds log it and keep going.
-bool autotestPlayerStuck(const CPlayer& player)
+bool autotestPlayerStuck(const CPlayer& player, short tx, short ty, const char* where)
 {
 #ifdef _DEBUG
     game_values.flags.pausegame = true;
@@ -1945,8 +1957,9 @@ bool autotestPlayerStuck(const CPlayer& player)
     const Uint64 now = SDL_GetTicks();
     if (id >= 0 && id < 4 && now - last_report[id] > 10000) {
         last_report[id] = now;
-        printf("[autotest][warning] player %d inside a solid tile at (%d, %d) on %s\n",
-            id, player.centerX(), player.centerY(), g_matchMapName.c_str());
+        printf("[autotest][warning] player %d %s inside a solid tile: pos (%d, %d) vel (%.2f, %.2f) tile (%d, %d) flags=%d block=%d on %s\n",
+            id, where, player.leftX(), player.topY(), player.getVelX(), player.getVelY(), tx, ty, g_map->map(tx, ty),
+            g_map->block(tx, ty) ? g_map->blockat(tx, ty)->iType : -1, g_matchMapName.c_str());
     }
     return false;
 #endif
@@ -1959,82 +1972,35 @@ bool debug_gameplay()
     if (g_fAutoTest && !game_values.flags.swapplayers) {
         for (CPlayer* player : players) {
             if (player->isready()) {
-                //Detect player is in center of tile only
-                short x = (player->centerX()) / TILESIZE;
+                // Look for the player's center or any of its corners inside something
+                // solid. Hidden blocks and blocks the game currently lets players pass
+                // through (flipping flip blocks, switched off switch blocks) don't count.
+                auto solidAt = [](short px, short py) {
+                    if (py < 0 || py >= App::screenHeight)
+                        return false;
+                    short tx = ((px % App::screenWidth) + App::screenWidth) % App::screenWidth / TILESIZE;
+                    short ty = py / TILESIZE;
+                    if (g_map->map(tx, ty) & tile_flag_solid)
+                        return true;
+                    IO_Block* block = g_map->block(tx, ty);
+                    short blocktype = g_map->blockat(tx, ty)->iType;
+                    return block && blocktype != 3 && blocktype < 11 && !block->isTransparent() && !block->isHidden();
+                };
 
-                if (player->centerX() >= App::screenWidth)
-                    x = (player->centerX() - App::screenWidth) / TILESIZE;
-
-                short y = (player->centerY()) / TILESIZE;
-
-                int tile = tile_flag_nonsolid;
-                IO_Block * block = NULL;
-                short blocktype = -1;
-
-                if (player->centerY() >= 0 && player->centerY() < App::screenHeight) {
-                    tile = g_map->map(x, y);
-                    block = g_map->block(x, y);
-                    blocktype = g_map->blockat(x, y)->iType;
-                }
-
-                if ((tile & tile_flag_solid) ||
-                        (block && blocktype != 3 && blocktype < 11)) {
-                    if (autotestPlayerStuck(*player))
+                // rightX() and bottomY() are one past the player's last pixel
+                const struct { short x, y; const char* name; } points[] {
+                    {player->centerX(), player->centerY(), "center"},
+                    {player->leftX(), player->topY(), "top-left"},
+                    {short(player->rightX() - 1), player->topY(), "top-right"},
+                    {player->leftX(), short(player->bottomY() - 1), "bottom-left"},
+                    {short(player->rightX() - 1), short(player->bottomY() - 1), "bottom-right"},
+                };
+                for (const auto& point : points) {
+                    if (solidAt(point.x, point.y)) {
+                        short tx = ((point.x % App::screenWidth) + App::screenWidth) % App::screenWidth / TILESIZE;
+                        autotestPlayerStuck(*player, tx, point.y / TILESIZE, point.name);
                         break;
-                    continue;
-                }
-
-                //Detect if any corner of player is in a tile
-                short actualvalues[2][2];
-                actualvalues[0][0] = player->leftX();
-
-                if (actualvalues[0][0] < 0)
-                    actualvalues[0][0] += App::screenWidth;
-
-                actualvalues[0][1] = player->rightX();
-
-                if (actualvalues[0][1] >= App::screenWidth)
-                    actualvalues[0][1] -= App::screenWidth;
-
-                actualvalues[1][0] = player->topY();
-                actualvalues[1][1] = player->bottomY();
-
-                short corners[2][2];
-                corners[0][0] = player->leftX() / TILESIZE;
-
-                if (player->leftX() < 0)
-                    corners[0][0] = (player->leftX() + App::screenWidth) / TILESIZE;
-
-                corners[0][1] = (player->rightX()) / TILESIZE;
-
-                if (player->rightX() >= App::screenWidth)
-                    corners[0][1] = (player->rightX() - App::screenWidth) / TILESIZE;
-
-                corners[1][0] = player->topY() / TILESIZE;
-                corners[1][1] = (player->bottomY()) / TILESIZE;
-
-                for (short i = 0; i < 2; i++) {
-                    for (short j = 0; j < 2; j++) {
-                        int tile = tile_flag_nonsolid;
-                        IO_Block * block = NULL;
-                        short blocktype = -1;
-
-                        if (actualvalues[0][j] >= 0 && actualvalues[0][j] < App::screenWidth && actualvalues[1][i] > 0 && actualvalues[1][i] < App::screenHeight) {
-                            tile = g_map->map(corners[0][j], corners[1][i]);
-                            block = g_map->block(corners[0][j], corners[1][i]);
-                            blocktype = g_map->blockat(corners[0][j], corners[1][i])->iType;
-                        }
-
-                        if ( (tile & tile_flag_solid) ||
-                                (block && blocktype != 3 && blocktype < 11)) {
-                            if (autotestPlayerStuck(*player))
-                                break;
-                            continue;
-                        }
                     }
-
-                    if (game_values.flags.pausegame)
-                        break;
                 }
             }
 
@@ -2551,6 +2517,10 @@ void GameplayState::update()
 #endif
 
     handleInput();
+    // A quit request (closing the window, or the app from the HOME menu on
+    // Switch) has already cleaned up the players, so stop this frame here
+    if (game_values.appstate == AppState::Quit)
+        return;
     network_send_local_input();
 
     if (updateExitPauseDialog(iCountDownState)) {
