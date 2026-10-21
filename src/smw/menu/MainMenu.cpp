@@ -25,7 +25,11 @@ UI_MainMenu::UI_MainMenu()
     miPlayerSelect = new MI_PlayerSelect(&rm->menu_player_select, 120, 250, "Players", 400, 140);
 
 // disable Multiplayer button for web builds
-#ifdef __EMSCRIPTEN__
+#if defined(NETWORK_DISABLED) && !defined(__EMSCRIPTEN__)
+    miMultiplayerButton = nullptr;
+    miOptionsButton = new MI_Button(&rm->spr_selectfield, 120, 322, "Options", 200);
+    miControlsButton = new MI_Button(&rm->spr_selectfield, 320, 322, "Controls", 200);
+#elif defined(__EMSCRIPTEN__)
     miMultiplayerButton = new MI_Button(&rm->spr_selectfield, 120, 322, "Multiplayer - Under Construction", 400);
     miOptionsButton = new MI_Button(&rm->spr_selectfield, 120, 362, "Options", 400);
     miControlsButton = new MI_Button(&rm->spr_selectfield, 120, 402, "Controls", 400);
@@ -42,11 +46,18 @@ UI_MainMenu::UI_MainMenu()
 #ifdef __EMSCRIPTEN__
     miExitButton = NULL;
 #else
-    miExitButton = new MI_Button(&rm->spr_selectfield, 120, 402, "Exit", 640 * 0.625f);
+    miExitButton = new MI_Button(&rm->spr_selectfield, 120, miMultiplayerButton ? 402 : 362, "Exit", 640 * 0.625f);
     miExitButton->SetCode(MENU_CODE_EXIT_APPLICATION);
 #endif
 
-#ifndef __EMSCRIPTEN__
+#if defined(NETWORK_DISABLED) && !defined(__EMSCRIPTEN__)
+    AddControl(miMainStartButton, miExitButton, miPlayerSelect, NULL, miQuickGameButton);
+    AddControl(miQuickGameButton, miExitButton, miPlayerSelect, miMainStartButton, NULL);
+    AddControl(miPlayerSelect, miMainStartButton, miOptionsButton, NULL, NULL);
+    AddControl(miOptionsButton, miPlayerSelect, miExitButton, miControlsButton, miControlsButton);
+    AddControl(miControlsButton, miPlayerSelect, miExitButton, miOptionsButton, miOptionsButton);
+    AddControl(miExitButton, miOptionsButton, miMainStartButton, NULL, NULL);
+#elif !defined(__EMSCRIPTEN__)
     AddControl(miMainStartButton, miExitButton, miPlayerSelect, NULL, miQuickGameButton);
     AddControl(miQuickGameButton, miExitButton, miPlayerSelect, miMainStartButton, NULL);
     AddControl(miPlayerSelect, miMainStartButton, miMultiplayerButton, NULL, NULL);
@@ -72,3 +83,8 @@ UI_MainMenu::UI_MainMenu()
     AddNonControl(miSMWVersion);
     // AddNonControl(miSMWVersionText);
 };
+
+UI_Control* UI_MainMenu::quickGameButton() const
+{
+    return miQuickGameButton;
+}

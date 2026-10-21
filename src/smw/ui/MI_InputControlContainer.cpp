@@ -343,7 +343,7 @@ MI_InputControlContainer::MI_InputControlContainer(gfxSprite * spr_button, short
     miDeviceSelectField->add("Keyboard", -1);
 
     for (int iJoystick = 0; iJoystick < joystickcount; iJoystick++) {
-        miDeviceSelectField->add(SDL_GetJoystickNameForID(iJoystick), iJoystick, false);
+        miDeviceSelectField->add(SDL_GetJoystickName(joystickFromIndex(iJoystick)), iJoystick, false);
     }
 
     //If the device is not found, default to the keyboard

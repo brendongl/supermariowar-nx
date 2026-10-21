@@ -50,6 +50,13 @@ else()
 	)
 endif()
 
+if(NINTENDO_SWITCH)
+	target_sources(smw PRIVATE
+		platform/switch/SwitchPlatform.cpp
+		platform/switch/SwitchPlatform.h
+	)
+endif()
+
 if (WIN32)
 	# Add EXE icon on Windows
 	target_sources(smw PRIVATE "${PROJECT_SOURCE_DIR}/resources/windows/smw.rc")
@@ -84,4 +91,30 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND NOT SMW_INSTALL_PORTABLE)
 	install(FILES "${PROJECT_BINARY_DIR}/supermariowar.desktop" DESTINATION "${SMW_DESKTOPDIR}")
 	install(FILES "${PROJECT_SOURCE_DIR}/resources/icons/smw.xpm" DESTINATION "${SMW_PIXMAPDIR}")
 	install(FILES "${PROJECT_SOURCE_DIR}/resources/icons/smw.png" DESTINATION "${SMW_ICONDIR}/32x32/apps/")
+endif()
+
+#
+# Nintendo Switch: NRO with the game data in RomFS
+#
+if(NINTENDO_SWITCH)
+	set(SMW_ROMFS_DIR "${CMAKE_BINARY_DIR}/romfs")
+	file(MAKE_DIRECTORY "${SMW_ROMFS_DIR}")
+	add_custom_target(smw_romfs
+		COMMAND ${CMAKE_COMMAND} -E rm -rf "${SMW_ROMFS_DIR}/data"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/data" "${SMW_ROMFS_DIR}/data"
+		COMMAND ${CMAKE_COMMAND} -E rm -rf "${SMW_ROMFS_DIR}/data/.git" "${SMW_ROMFS_DIR}/data/maps/ZZleveleditor.map"
+		COMMENT "Staging game data into RomFS"
+		VERBATIM
+	)
+	nx_generate_nacp(OUTPUT smw.nacp
+		NAME "${SMW_SWITCH_TITLE}"
+		AUTHOR "${SMW_SWITCH_AUTHOR}"
+		VERSION "${SMW_SWITCH_VERSION}"
+	)
+	nx_create_nro(smw
+		NACP smw.nacp
+		ICON "${PROJECT_SOURCE_DIR}/platform/switch/icon.jpg"
+		ROMFS "${SMW_ROMFS_DIR}"
+	)
+	add_dependencies(smw_nro smw_romfs)
 endif()

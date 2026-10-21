@@ -13,6 +13,8 @@ class UI_MainMenu : public UI_Menu {
 public:
     UI_MainMenu();
 
+    UI_Control* quickGameButton() const;
+
 private:
     MI_Image* miSMWTitle;
     MI_Image* miSMWVersion;

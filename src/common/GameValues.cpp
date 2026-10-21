@@ -47,6 +47,15 @@ SDL_Keycode controlkeys[2][2][4][NUM_KEYS] = { { { {SDLK_LEFT, SDLK_RIGHT, SDLK_
         }
     },
     //left, right, jump, down, turbo, powerup, start, cancel;
+#ifdef __SWITCH__
+    // d-pad (also the left stick and a single Joy-Con's stick), A jump, Y run, L power-up, + pause, - exit
+#define SWITCH_GAME_KEYS {JOY_BUTTON_START + 12, JOY_BUTTON_START + 14, JOY_BUTTON_START + 0, JOY_BUTTON_START + 15, JOY_BUTTON_START + 3, JOY_BUTTON_START + 6, JOY_BUTTON_START + 10, JOY_BUTTON_START + 11}
+    // d-pad, A select, B back, Y random, L fast scroll
+#define SWITCH_MENU_KEYS {JOY_BUTTON_START + 13, JOY_BUTTON_START + 15, JOY_BUTTON_START + 12, JOY_BUTTON_START + 14, JOY_BUTTON_START + 0, JOY_BUTTON_START + 1, JOY_BUTTON_START + 3, JOY_BUTTON_START + 6}
+    { { SWITCH_GAME_KEYS, SWITCH_GAME_KEYS, SWITCH_GAME_KEYS, SWITCH_GAME_KEYS },
+        { SWITCH_MENU_KEYS, SWITCH_MENU_KEYS, SWITCH_MENU_KEYS, SWITCH_MENU_KEYS }
+    }
+#else
     { { {JOY_STICK_1_LEFT, JOY_STICK_1_RIGHT, JOY_BUTTON_START, JOY_STICK_1_DOWN, JOY_BUTTON_START + 1, JOY_BUTTON_START + 2, JOY_BUTTON_START + 3, JOY_BUTTON_START + 4},
             {JOY_STICK_1_LEFT, JOY_STICK_1_RIGHT, JOY_BUTTON_START, JOY_STICK_1_DOWN, JOY_BUTTON_START + 1, JOY_BUTTON_START + 2, JOY_BUTTON_START + 3, JOY_BUTTON_START + 4},
             {JOY_STICK_1_LEFT, JOY_STICK_1_RIGHT, JOY_BUTTON_START, JOY_STICK_1_DOWN, JOY_BUTTON_START + 1, JOY_BUTTON_START + 2, JOY_BUTTON_START + 3, JOY_BUTTON_START + 4},
@@ -60,6 +69,7 @@ SDL_Keycode controlkeys[2][2][4][NUM_KEYS] = { { { {SDLK_LEFT, SDLK_RIGHT, SDLK_
             {JOY_STICK_1_UP, JOY_STICK_1_DOWN, JOY_STICK_1_LEFT, JOY_STICK_1_RIGHT, JOY_BUTTON_START, JOY_BUTTON_START + 1, JOY_BUTTON_START + 2, JOY_BUTTON_START + 3}
         }
     }
+#endif
 };
 
 namespace {
@@ -248,6 +258,11 @@ void CGameValues::init()
         //Setup the default key/button input configurations
         for (short iInputType = 0; iInputType < 2; iInputType++) { //for keyboard/joystick
             inputConfiguration[iPlayer][iInputType].iDevice = iInputType - 1;
+#ifdef __SWITCH__
+            // Controller slot N belongs to player N
+            if (iInputType == 1)
+                inputConfiguration[iPlayer][iInputType].iDevice = iPlayer;
+#endif
 
             for (short iInputState = 0; iInputState < 2; iInputState++) { //for game/menu
                 for (short iKey = 0; iKey < NUM_KEYS; iKey++) {
@@ -257,7 +272,11 @@ void CGameValues::init()
         }
 
         //Set the players input to the default configuration (will be overwritten by options.bin settings)
+#ifdef __SWITCH__
+        playerInput.inputControls[iPlayer] = &inputConfiguration[iPlayer][1];
+#else
         playerInput.inputControls[iPlayer] = &inputConfiguration[iPlayer][0];
+#endif
     }
 
     //Set the default powerup weights for bonus wheel and [?] boxes

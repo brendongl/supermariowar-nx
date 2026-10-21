@@ -19,7 +19,7 @@ public:
     CPlayer* chicken() const { return m_chicken; }
     void clearChicken();
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(SMW_AUTOTEST)
     void setdebuggoal() override {
         goal = 100;
     }

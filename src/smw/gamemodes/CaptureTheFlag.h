@@ -17,7 +17,7 @@ class CGM_CaptureTheFlag : public CGameMode
         void playerextraguy(CPlayer &player, short iType) override;
         PlayerKillType CheckWinner(CPlayer * player) override;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(SMW_AUTOTEST)
     void setdebuggoal() override {
         goal = 5;
     }

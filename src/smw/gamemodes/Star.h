@@ -31,7 +31,7 @@ class CGM_Star : public CGM_TimeLimit
         return iCurrentModeType;
     }
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(SMW_AUTOTEST)
     void setdebuggoal() override {
         goal = 1;
     }

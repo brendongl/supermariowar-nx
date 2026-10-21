@@ -4,6 +4,68 @@
 #include "GlobalConstants.h"
 
 extern CGameValues game_values;
+extern SDL_Joystick** joysticks;
+extern int joystickcount;
+
+int joystickIndexFromID(SDL_JoystickID id)
+{
+    for (int i = 0; i < joystickcount; i++) {
+        if (joysticks[i] && SDL_GetJoystickID(joysticks[i]) == id)
+            return i;
+    }
+    return -2; // never matches DEVICE_KEYBOARD or a joystick index
+}
+
+SDL_Joystick* joystickFromIndex(int index)
+{
+    if (index < 0 || index >= joystickcount)
+        return nullptr;
+    return joysticks[index];
+}
+
+namespace {
+#ifdef __SWITCH__
+// Extra physical buttons that also trigger a bound button, so the d-pad and the left
+// stick both steer, and either face button of a pair works. Indices follow SDL's
+// Switch joystick: 0 A, 1 B, 2 X, 3 Y, 6 L, 7 R, 8 ZL/SL, 9 ZR/SR, 12-15 d-pad
+// (left, up, right, down; the stick on a single Joy-Con), 16-19 left stick.
+int switchAlias(int button, short iGameState)
+{
+    if (button >= 16 && button <= 19)
+        return button - 4;
+    if (button >= 7 && button <= 9)
+        return 6;
+    if (iGameState == 0) {
+        if (button == 1) return 0;
+        if (button == 2) return 3;
+    }
+    return button;
+}
+
+bool isBoundButtonDown(SDL_Joystick* joystick, int bound, short iGameState)
+{
+    if (!joystick)
+        return false;
+    const int count = SDL_GetNumJoystickButtons(joystick);
+    for (int b = 0; b < count; b++) {
+        if ((b == bound || switchAlias(b, iGameState) == bound) && SDL_GetJoystickButton(joystick, b))
+            return true;
+    }
+    return false;
+}
+#endif
+
+bool joyButtonMatches(SDL_Keycode binding, int button, short iGameState)
+{
+    if (binding == SDL_Keycode(button + JOY_BUTTON_START))
+        return true;
+#ifdef __SWITCH__
+    return binding == SDL_Keycode(switchAlias(button, iGameState) + JOY_BUTTON_START);
+#else
+    return false;
+#endif
+}
+} // namespace
 
 CPlayerInput::CPlayerInput()
 {
@@ -185,7 +247,7 @@ void CPlayerInput::Update(SDL_Event event, short iGameState)
 			}
         } else {
             if (SDL_EVENT_JOYSTICK_HAT_MOTION == event.type) {
-				if (iDeviceID != event.jhat.which)
+				if (iDeviceID != joystickIndexFromID(event.jhat.which))
 					continue;
 
                 for (int iKey = 0; iKey < NUM_KEYS; iKey++) {
@@ -214,11 +276,11 @@ void CPlayerInput::Update(SDL_Event event, short iGameState)
 					}
 				}
             } else if (SDL_EVENT_JOYSTICK_BUTTON_DOWN == event.type) {
-				if (iDeviceID != event.jbutton.which)
+				if (iDeviceID != joystickIndexFromID(event.jbutton.which))
 					continue;
 
                 for (int iKey = 0; iKey < NUM_KEYS && !fFound; iKey++) {
-                    if (inputControl->keys[iKey] == event.jbutton.button + JOY_BUTTON_START) {
+                    if (joyButtonMatches(inputControl->keys[iKey], event.jbutton.button, iGameState)) {
 						fFound = true;
 
 						//Ignore input for cpu controlled players
@@ -232,22 +294,27 @@ void CPlayerInput::Update(SDL_Event event, short iGameState)
 					}
 				}
             } else if (SDL_EVENT_JOYSTICK_BUTTON_UP == event.type) {
-				if (iDeviceID != event.jbutton.which)
+				if (iDeviceID != joystickIndexFromID(event.jbutton.which))
 					continue;
 
                 for (int iKey = 0; iKey < NUM_KEYS && !fFound; iKey++) {
-                    if (inputControl->keys[iKey] == event.jbutton.button + JOY_BUTTON_START) {
+                    if (joyButtonMatches(inputControl->keys[iKey], event.jbutton.button, iGameState)) {
 						fFound = true;
 
 						//Ignore input for cpu controlled players
 						if (iGameState == 0 && game_values.playercontrol[iPlayer] != 1 && iKey < 6)
 							continue;
 
+#ifdef __SWITCH__
+						// Stay down while another button bound to the same action is held
+						if (isBoundButtonDown(joystickFromIndex(iDeviceID), inputControl->keys[iKey] - JOY_BUTTON_START, iGameState))
+							continue;
+#endif
 						outputControl->keys[iKey].fDown = false;
 					}
 				}
             } else if (SDL_EVENT_JOYSTICK_AXIS_MOTION == event.type) {
-				if (iDeviceID != event.jaxis.which)
+				if (iDeviceID != joystickIndexFromID(event.jaxis.which))
 					continue;
 
                 for (int iKey = 0; iKey < NUM_KEYS; iKey++) {

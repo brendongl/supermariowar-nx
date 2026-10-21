@@ -13,7 +13,7 @@ class CGM_Owned : public CGameMode
         PlayerKillType playerkilledself(CPlayer &player, KillStyle style) override;
         void playerextraguy(CPlayer &player, short iType) override;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(SMW_AUTOTEST)
     void setdebuggoal() override {
         goal = 100;
     }

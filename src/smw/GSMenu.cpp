@@ -62,13 +62,14 @@
 
 #include <cstdlib> // atoi()
 #include <cassert>
+#include <cstring>
 #include <sstream>
 
 
 extern SDL_Surface* screen;
 extern SDL_Surface* blitdest;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(SMW_AUTOTEST)
 extern bool	g_fAutoTest;
 extern bool g_fRecordTest;
 #endif
@@ -162,6 +163,27 @@ bool MenuState::init()
 
     mCurrentMenu = mMainMenu.get();
     szCurrentMapName = mGameSettingsMenu->miMapField->GetMapName();
+
+#if defined(SMW_AUTOTEST)
+    // Unattended soak test: an "autotest" file in the settings directory makes four CPU
+    // players run random menus, modes and maps until the game is closed.
+    if (FileExists(GetHomeDirectory() + "autotest")) {
+        printf("[autotest] enabled\n");
+        g_fAutoTest = true;
+        // "fast" in the file lifts the frame limiter, for host-side soaks
+        if (FILE* fp = fopen((GetHomeDirectory() + "autotest").c_str(), "r")) {
+            char mode[8] {};
+            if (fgets(mode, sizeof(mode), fp) && strncmp(mode, "fast", 4) == 0) {
+                game_values.framelimiter = 0;
+                printf("[autotest] frame limiter off\n");
+            }
+            fclose(fp);
+        }
+        for (short iPlayer = 0; iPlayer < 4; iPlayer++)
+            game_values.playercontrol[iPlayer] = 2;
+        LoadScript("scripts/StartMenuAutomation.txt");
+    }
+#endif
 
     return true;
 }
@@ -439,7 +461,7 @@ void MenuState::update()
                     mCurrentMenu = mMainMenu.get();
                     mCurrentMenu->ResetMenu();
 
-                    LoadScript("Scripts/StartMenuAutomation.txt");
+                    LoadScript("scripts/StartMenuAutomation.txt");
                 }
             }
 
@@ -449,7 +471,7 @@ void MenuState::update()
                 if (g_fRecordTest) {
                     StartRecordScript();
                 } else {
-                    SaveScript("Scripts/SavedScript.txt");
+                    SaveScript("scripts/SavedScript.txt");
                 }
             }
 
@@ -538,9 +560,14 @@ void MenuState::update()
     }
     */
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
     if (g_fAutoTest)
         GetNextScriptOperation();
+#elif defined(SMW_AUTOTEST)
+    if (g_fAutoTest)
+        AutotestStep();
+#endif
+#if defined(_DEBUG) || defined(SMW_AUTOTEST)
 
     if (g_fRecordTest)
         SetNextScriptOperation();
@@ -1352,6 +1379,7 @@ void MenuState::update()
                 } else if (game_values.matchtype == MatchType::QuickGame) {
                     //Load a random map for the quick game
                     std::string szMapName = maplist->randomFilename();
+                    printf("[match] map=%s\n", szMapName.c_str());
                     g_map->loadMap(szMapName, read_type_full);
                     sShortMapName = stripPathAndExtension(szMapName);
 
@@ -1428,7 +1456,7 @@ void MenuState::update()
         rm->menu_font_large.drawf(0, App::screenHeight - rm->menu_font_large.getHeight(), "Actual:%.1f/%.1f, Flip:%.1f, Potential:%.1f", realfps, 1000.0f / (float)WAITTIME, flipfps, 1000.0f / (float)ticks);
 */
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(SMW_AUTOTEST)
     if (g_fAutoTest)
         rm->menu_font_small.drawRightJustified(635, 5, "Auto");
 
@@ -1519,7 +1547,13 @@ bool MenuState::ReadTourFile()
 void MenuState::StartGame()
 {
     printf("> StartGame\n");
-#ifdef _DEBUG
+    {
+        static unsigned match_count = 0;
+        printf("[match] #%u mode=%s map=%s type=%d\n", ++match_count,
+            game_values.gamemode->GetModeName().c_str(), maplist->currentFilename().c_str(),
+            static_cast<int>(game_values.matchtype));
+    }
+#if defined(_DEBUG) || defined(SMW_AUTOTEST)
     iScriptState = 2;
     fScriptRunPreGameOptions = false;
 #endif
@@ -1685,14 +1719,58 @@ void MenuState::ResetTournamentBackToMainMenu()
     }
 }
 
+#if defined(SMW_AUTOTEST)
+// Soak test driver: start Quick Games (random mode, goal, settings and map) with four
+// CPU players forever, confirming any result screens in between.
+void MenuState::AutotestStep()
+{
+    if (AppState::Menu != game_values.appstate)
+        return;
+
+    static int wait = 0;
+    static UI_Menu* last_menu = nullptr;
+    static int frames_in_menu = 0;
+    if (mCurrentMenu != last_menu) {
+        last_menu = mCurrentMenu;
+        frames_in_menu = 0;
+    }
+    frames_in_menu++;
+
+    if (++wait < 20)
+        return;
+    wait = 0;
+
+    COutputControl& keys = game_values.playerInput.outputControls[0];
+    if (mCurrentMenu == mMainMenu.get()) {
+        for (short iPlayer = 0; iPlayer < 4; iPlayer++)
+            game_values.playercontrol[iPlayer] = 2;
+        if (mCurrentMenu->currentFocus() == mMainMenu->quickGameButton())
+            keys.menu_select.fPressed = true;
+        else
+            keys.menu_right.fPressed = true;
+    } else if (mCurrentMenu == mTeamSelectMenu.get()) {
+        for (short iPlayer = 0; iPlayer < 4; iPlayer++)
+            game_values.playerInput.outputControls[iPlayer].menu_select.fPressed = true;
+    } else if (frames_in_menu > 60 * 30) {
+        // Anywhere unexpected for half a minute: back out towards the main menu
+        printf("[autotest] leaving an unexpected menu\n");
+        keys.menu_cancel.fPressed = true;
+        frames_in_menu = 0;
+    } else {
+        // Scoreboards, bonus wheel and other confirmation screens
+        keys.menu_select.fPressed = true;
+    }
+}
+#endif
+
 //Debugging code for writing and playing test scripts
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(SMW_AUTOTEST)
 
 void MenuState::LoadScript(const char * szScriptFile)
 {
     operations.clear();
 
-    FILE * fp = fopen(szScriptFile, "r");
+    FILE * fp = fopen(convertPath(szScriptFile).c_str(), "r");
 
     if (fp != NULL) {
         char buffer[256];
@@ -1750,7 +1828,7 @@ void MenuState::GetNextScriptOperation()
         if (mCurrentMenu == mGameSettingsMenu.get()) {
             if (!fScriptRunPreGameOptions) {
                 fScriptRunPreGameOptions = true;
-                LoadScript("Scripts/GameModeOptionsOnly.txt");
+                LoadScript("scripts/GameModeOptionsOnly.txt");
                 iScriptState = 0;
                 return;
             } else if (game_values.gamemode->gamemode == game_mode_frag ||
@@ -1759,29 +1837,29 @@ void MenuState::GetNextScriptOperation()
                       game_values.gamemode->gamemode == game_mode_classic ||
                       game_values.gamemode->gamemode == game_mode_eggs ||
                       game_values.gamemode->gamemode == game_mode_owned) {
-                LoadScript("Scripts/NoModeOptions.txt");
+                LoadScript("scripts/NoModeOptions.txt");
             } else if (game_values.gamemode->gamemode == game_mode_jail) {
-                LoadScript("Scripts/JailModeOptions.txt");
+                LoadScript("scripts/JailModeOptions.txt");
             } else if (game_values.gamemode->gamemode == game_mode_stomp) {
-                LoadScript("Scripts/StompModeOptions.txt");
+                LoadScript("scripts/StompModeOptions.txt");
             } else if (game_values.gamemode->gamemode == game_mode_ctf) {
-                LoadScript("Scripts/CaptureTheFlagModeOptions.txt");
+                LoadScript("scripts/CaptureTheFlagModeOptions.txt");
             } else if (game_values.gamemode->gamemode == game_mode_chicken) {
-                LoadScript("Scripts/ChickenModeOptions.txt");
+                LoadScript("scripts/ChickenModeOptions.txt");
             } else if (game_values.gamemode->gamemode == game_mode_tag) {
-                LoadScript("Scripts/TagModeOptions.txt");
+                LoadScript("scripts/TagModeOptions.txt");
             } else if (game_values.gamemode->gamemode == game_mode_star) {
-                LoadScript("Scripts/StarModeOptions.txt");
+                LoadScript("scripts/StarModeOptions.txt");
             } else if (game_values.gamemode->gamemode == game_mode_domination) {
-                LoadScript("Scripts/DominationModeOptions.txt");
+                LoadScript("scripts/DominationModeOptions.txt");
             } else if (game_values.gamemode->gamemode == game_mode_koth) {
-                LoadScript("Scripts/KingOfTheHillModeOptions.txt");
+                LoadScript("scripts/KingOfTheHillModeOptions.txt");
             } else if (game_values.gamemode->gamemode == game_mode_race) {
-                LoadScript("Scripts/RaceModeOptions.txt");
+                LoadScript("scripts/RaceModeOptions.txt");
             } else if (game_values.gamemode->gamemode == game_mode_frenzy) {
-                LoadScript("Scripts/FrenzyModeOptions.txt");
+                LoadScript("scripts/FrenzyModeOptions.txt");
             } else if (game_values.gamemode->gamemode == game_mode_survival) {
-                LoadScript("Scripts/SurvivalModeOptions.txt");
+                LoadScript("scripts/SurvivalModeOptions.txt");
             }
 
             game_values.gamemode->setdebuggoal();
@@ -1812,7 +1890,7 @@ void MenuState::GetNextScriptOperation()
             iScriptState = 0;
             mCurrentMenu = mMainMenu.get();
             mCurrentMenu->ResetMenu();
-            LoadScript("Scripts/StartMenuAutomation.txt");
+            LoadScript("scripts/StartMenuAutomation.txt");
             fScriptRunPreGameOptions = true;
             return;
         } else if (mCurrentMenu == mBonusWheelMenu.get()) {
@@ -1842,12 +1920,12 @@ void MenuState::GetNextScriptOperation()
             return;
         } else if (mCurrentMenu == mGameSettingsMenu.get()) {
             iScriptState = 0;
-            LoadScript("Scripts/GameModeOptionsOnly.txt");
+            LoadScript("scripts/GameModeOptionsOnly.txt");
             fScriptRunPreGameOptions = true;
             return;
         } else if (mCurrentMenu == mMainMenu.get()) {
             iScriptState = 0;
-            LoadScript("Scripts/StartMenuAutomation.txt");
+            LoadScript("scripts/StartMenuAutomation.txt");
             fScriptRunPreGameOptions = true;
             return;
         } else if (mCurrentMenu == mTourStopMenu.get()) {
@@ -1908,7 +1986,7 @@ void MenuState::StartRecordScript()
 
 void MenuState::SaveScript(const char * szScriptFile)
 {
-    FILE * fp = fopen(szScriptFile, "w");
+    FILE * fp = fopen(convertPath(szScriptFile).c_str(), "w");
 
     if (fp) {
         std::vector<ScriptOperation*>::iterator itr = operations.begin();

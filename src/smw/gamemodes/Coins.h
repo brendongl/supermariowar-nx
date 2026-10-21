@@ -15,7 +15,7 @@ class CGM_Coins : public CGameMode
 
         PlayerKillType CheckWinner(CPlayer * player) override;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(SMW_AUTOTEST)
     void setdebuggoal() override {
         goal = 5;
     }

@@ -203,13 +203,28 @@ class CMap
 
 		//returns the tiletype at the specific position (map coordinates) of the
 		//front most visible tile
+    // Objects near the screen edges can ask for tiles just outside the map: columns
+    // wrap around like the level does, rows above or below the screen are empty.
+    static bool wrapTileCoords(int& x, int y) {
+        if (x < 0)
+            x += MAPWIDTH;
+        else if (x >= MAPWIDTH)
+            x -= MAPWIDTH;
+        return x >= 0 && x < MAPWIDTH && y >= 0 && y < MAPHEIGHT;
+    }
+
     int map(int x, int y) {
+        if (!wrapTileCoords(x, y))
+            return tile_flag_nonsolid;
         return tileToFlags(mapdatatop[x][y]);
     }
 
     IO_Block * block(short x, short y) {
-			return blockdata[x][y];
-		}
+        int wx = x;
+        if (!wrapTileCoords(wx, y))
+            return nullptr;
+        return blockdata[wx][y];
+    }
 
     Warp * warp(short x, short y) {
 			return &warpdata[x][y];

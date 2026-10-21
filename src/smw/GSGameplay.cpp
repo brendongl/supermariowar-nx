@@ -204,7 +204,7 @@ constexpr short g_iCollisionMap[MOVINGOBJECT_LAST][MOVINGOBJECT_LAST] = {
 };
 
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(SMW_AUTOTEST)
 short iSledgeBrotherSetting = 0;
 short iSledgeBrotherAttribute = 0;
 
@@ -296,6 +296,10 @@ void GameplayState::createPlayers()
                 CPlayerAI * ai = NULL;
                 if (game_values.playercontrol[iPlayer] == 2)
                     ai = new CPlayerAI();
+#if defined(_DEBUG) || defined(SMW_AUTOTEST)
+                else if (g_fAutoTest)
+                    ai = new CPlayerAI();
+#endif
 
                 players.emplace_back(new CPlayer(iPlayer, players.size(), teamid, subteamid, game_values.colorids[iPlayer], rm->spr_player[iPlayer], score[teamid], &(respawnCount[iPlayer]), ai));
             } else if (!game_values.keeppowerup) {
@@ -1642,12 +1646,6 @@ void LoadMapObjects(bool fPreview)
 void CleanUp()
 {
     short i;
-    //delete object list
-    for (CPlayer* player : players) {
-        delete player;
-    }
-    players.clear();
-
     eyecandy[0].clean();
     eyecandy[1].clean();
     eyecandy[2].clean();
@@ -1655,9 +1653,15 @@ void CleanUp()
 
     noncolcontainer.clean();
 
+    // Objects first: a carried shell or block clears its owner's carriedItem when destroyed
     objectcontainer[0].clean();
     objectcontainer[1].clean();
     objectcontainer[2].clean();
+
+    for (CPlayer* player : players) {
+        delete player;
+    }
+    players.clear();
 
     LoadMapObjects(true);
     g_map->clearWarpLocks();
@@ -1911,7 +1915,7 @@ void secretBoss()
 }
 */
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(SMW_AUTOTEST)
 void debugAutoKillEveryone()
 {
     if (game_values.autokill) {
@@ -1924,7 +1928,30 @@ void debugAutoKillEveryone()
     }
 }
 
-void debug_gameplay()
+// A player overlapping solid tiles points to a collision bug. Debug builds freeze the
+// game for inspection; release auto-test builds log it and keep going.
+bool autotestPlayerStuck(const CPlayer& player)
+{
+#ifdef _DEBUG
+    game_values.flags.pausegame = true;
+    game_values.frameadvance = true;
+    g_fAutoTest = false;
+    return true;
+#else
+    static Uint64 last_report[4] {};
+    const short id = player.getGlobalID();
+    const Uint64 now = SDL_GetTicks();
+    if (id >= 0 && id < 4 && now - last_report[id] > 10000) {
+        last_report[id] = now;
+        printf("[autotest][warning] player %d inside a solid tile at (%d, %d) on %s\n",
+            id, player.centerX(), player.centerY(), maplist->currentFilename().c_str());
+    }
+    return false;
+#endif
+}
+
+// Returns true when the auto-test left the match for the menus
+bool debug_gameplay()
 {
     static short endgametimer = (short)(RANDOM_INT(200));
     if (g_fAutoTest && !game_values.flags.swapplayers) {
@@ -1950,10 +1977,9 @@ void debug_gameplay()
 
                 if ((tile & tile_flag_solid) ||
                         (block && blocktype != 3 && blocktype < 11)) {
-                    game_values.flags.pausegame = true;
-                    game_values.frameadvance = true;
-                    g_fAutoTest = false;
-                    break;
+                    if (autotestPlayerStuck(*player))
+                        break;
+                    continue;
                 }
 
                 //Detect if any corner of player is in a tile
@@ -1999,10 +2025,9 @@ void debug_gameplay()
 
                         if ( (tile & tile_flag_solid) ||
                                 (block && blocktype != 3 && blocktype < 11)) {
-                            game_values.flags.pausegame = true;
-                            game_values.frameadvance = true;
-                            g_fAutoTest = false;
-                            break;
+                            if (autotestPlayerStuck(*player))
+                                break;
+                            continue;
                         }
                     }
 
@@ -2046,19 +2071,22 @@ void debug_gameplay()
                 CleanUp();
                 game_values.appstate = AppState::Menu;
 
-                return;
+                return true;
             }
         } else {
             if (++exitgametimer >= 8000) {
+                printf("[autotest] match timed out, back to the menus\n");
                 CleanUp();
                 game_values.flags.exitinggame = false;
                 game_values.flags.exityes = false;
                 game_values.appstate = AppState::Menu;
 
-                return;
+                return true;
             }
         }
     }
+
+    return false;
 }
 #endif
 
@@ -2077,7 +2105,7 @@ void GameplayState::onEnterState()
 
     initRunGame();
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(SMW_AUTOTEST)
     exitgametimer = 0;
 #endif
 }
@@ -2513,8 +2541,11 @@ void GameplayState::update()
         iScoreTextOffset[iTeam] = 34 * game_values.teamcounts[iTeam] + 1;
     }
 
-#ifdef _DEBUG
-    debug_gameplay();
+#if defined(_DEBUG) || defined(SMW_AUTOTEST)
+    if (debug_gameplay()) {
+        GameStateManager::instance().changeStateTo(&MenuState::instance());
+        return;
+    }
 #endif
 
     handleInput();
@@ -2562,7 +2593,7 @@ void GameplayState::update()
     playMusic();
 
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(SMW_AUTOTEST)
     if (g_fAutoTest)
         rm->menu_font_small.drawRightJustified(635, 5, "Auto");
 #endif

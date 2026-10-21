@@ -154,7 +154,14 @@ void SplashScreenState::update()
         game_values.playerInput.Update(loop_event, 1);
     }
 
-    for (int iPlayer = 0; iPlayer < 4; iPlayer++) {
+#if defined(SMW_AUTOTEST)
+    static const bool autotest = FileExists(GetHomeDirectory() + "autotest");
+    if (autotest)
+        game_values.playerInput.outputControls[0].menu_select.fPressed = true;
+#endif
+
+    // Continuing before loading finished (state 8) would enter the menus without graphics
+    for (int iPlayer = 0; iPlayer < 4 && state == 8; iPlayer++) {
         if (game_values.playerInput.outputControls[iPlayer].menu_select.fPressed ||
             game_values.playerInput.outputControls[iPlayer].menu_cancel.fPressed ||
             game_values.playerInput.outputControls[iPlayer].menu_random.fPressed) {

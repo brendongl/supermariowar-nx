@@ -25,6 +25,16 @@ std::string GetHomeDirectory()
         result = std::string(folder) + result;
     return result;
 
+#elif defined(__SWITCH__)
+    // RomFS is read-only, so settings, caches and screenshots live on the SD card
+    static const std::string result = [] {
+        const std::string dir = "sdmc:/switch/supermariowar/";
+        std::error_code ec;
+        fs::create_directories(dir, ec);
+        return dir;
+    }();
+    return result;
+
 #elif ANDROID
     const char* extstorage = getenv("EXTERNAL_STORAGE");
     std::string result(extstorage ? extstorage: "/mnt/sdcard");
@@ -126,6 +136,23 @@ std::string convertPath(const std::string& source)
 
 		are_paths_initialized = true;
     }
+
+#ifdef __SWITCH__
+    // Writable data subdirectories are redirected from RomFS to the SD card
+    constexpr std::array<std::string_view, 3> writable_prefixes {
+        "maps/cache/",
+        "screenshots/",
+        "filters/",
+    };
+    for (std::string_view prefix : writable_prefixes) {
+        if (source.starts_with(prefix)) {
+            const std::string dir = GetHomeDirectory() + std::string(prefix);
+            std::error_code ec;
+            fs::create_directories(dir, ec);
+            return dir + source.substr(prefix.length());
+        }
+    }
+#endif
 
     return SMW_Root_Data_Dir + source;
 }

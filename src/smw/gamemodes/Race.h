@@ -18,7 +18,7 @@ class CGM_Race : public CGameMode
     }
         void setNextGoal(short teamID);
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(SMW_AUTOTEST)
     void setdebuggoal() override {
         goal = 5;
     }

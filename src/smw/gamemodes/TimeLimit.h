@@ -18,7 +18,7 @@ public:
 
     void addtime(short iTime);
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(SMW_AUTOTEST)
     void setdebuggoal() override {
         goal = 30;
     }

@@ -71,7 +71,7 @@ class CGameMode
         return fReverseScoring;
     }
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(SMW_AUTOTEST)
 		virtual void setdebuggoal() {};
 #endif
 

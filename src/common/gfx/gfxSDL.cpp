@@ -50,9 +50,20 @@ SDL_Window* createWindow(bool fullscreen)
     Uint32 window_flags = SDL_WINDOW_RESIZABLE;
     if (fullscreen)
         window_flags |= SDL_WINDOW_FULLSCREEN;
+    int window_w = GFX_SCREEN_W;
+    int window_h = GFX_SCREEN_H;
+#ifdef __SWITCH__
+    // One EGL window covering the screen (720p handheld, 1080p docked). SDL resizes
+    // resizable windows on dock changes and the renderer letterboxes the 640x480 game.
+    window_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
+    if (const SDL_DisplayMode* mode = SDL_GetCurrentDisplayMode(SDL_GetPrimaryDisplay())) {
+        window_w = mode->w;
+        window_h = mode->h;
+    }
+#endif
 
     SDL_Window* window = SDL_CreateWindow("smw",
-        GFX_SCREEN_W, GFX_SCREEN_H,
+        window_w, window_h,
         window_flags);
     if (!window)
         throw_error("Couldn't create window: {}", SDL_GetError());
@@ -151,6 +162,10 @@ void GraphicsSDL::flipScreen() const
 
 void GraphicsSDL::changeFullScreen(bool fullscreen) const
 {
+#ifdef __SWITCH__
+    // Always full screen; SDL sizes the window to the current output
+    return;
+#endif
     if (!SDL_SetWindowFullscreen(sdl_window, fullscreen)) {
         fprintf(stderr, "[gfx] Couldn't toggle fullscreen mode: %s\n", SDL_GetError());
         return;

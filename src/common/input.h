@@ -92,6 +92,11 @@ struct COutputControl {
 	}
 };
 
+// The game refers to joysticks by their index in the opened joystick list,
+// while SDL3 events carry instance IDs. These translate between the two.
+int joystickIndexFromID(SDL_JoystickID id);
+SDL_Joystick* joystickFromIndex(int index);
+
 struct CInputPlayerControl {
 	short iDevice;
 	CInputControl inputGameControls[2]; //0 == game controls, 1 == menu controls

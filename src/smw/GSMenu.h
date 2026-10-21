@@ -40,7 +40,7 @@ class UI_NetRoomMenu;
 class UI_NetServersMenu;
 
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(SMW_AUTOTEST)
 class ScriptOperation
 {
 	public:
@@ -75,7 +75,7 @@ class MenuState : public GameState
 
         static MenuState& instance();
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(SMW_AUTOTEST)
 
 		void LoadScript(const char * szScriptFile);
 		void ResetScript();
@@ -90,6 +90,9 @@ class MenuState : public GameState
 		void SaveScript(const char * szScriptFile);
 		void SetNextScriptOperation();
 		void AddEmtpyLineToScript();
+#endif
+#if defined(SMW_AUTOTEST)
+		void AutotestStep();
 #endif
 
 	private:

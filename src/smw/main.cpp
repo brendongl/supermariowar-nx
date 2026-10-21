@@ -64,6 +64,10 @@
 #include <emscripten.h>
 #endif
 
+#ifdef __SWITCH__
+#include "platform/switch/SwitchPlatform.h"
+#endif
+
 #ifdef _MSC_VER
 #if _MSC_VER >= 1400
     #include <stdio.h>
@@ -140,6 +144,7 @@ void gameloop_frame();
 
 void gameloop()
 {
+    printf("[init] entering the game loop\n");
     SplashScreenState::instance().init();
     GameStateManager::instance().currentState = &SplashScreenState::instance();
 
@@ -159,6 +164,9 @@ void gameloop_frame()
         FPSLimiter::instance().beforeFlip();
         gfx_flipscreen();
         FPSLimiter::instance().afterFlip();
+#ifdef __SWITCH__
+        switch_platform::onFrame();
+#endif
     }
 
 #ifndef __EMSCRIPTEN__
@@ -212,11 +220,13 @@ void create_globals()
 
 void init_joysticks()
 {
-    SDL_GetJoysticks(&joystickcount);
+    SDL_JoystickID* ids = SDL_GetJoysticks(&joystickcount);
     joysticks = new SDL_Joystick*[joystickcount];
 
     for (int i = 0; i < joystickcount; i++)
-        joysticks[i] = SDL_OpenJoystick(i);
+        joysticks[i] = SDL_OpenJoystick(ids[i]);
+
+    SDL_free(ids);
 
     SDL_SetJoystickEventsEnabled(true);
 }
@@ -293,6 +303,10 @@ void main_game();
 
 int main(int argc, char *argv[])
 {
+#ifdef __SWITCH__
+    switch_platform::init();
+    struct SwitchExit { ~SwitchExit() { switch_platform::exit(); } } switch_exit;
+#endif
     const cmd::Args cmd = cmd::parse_args(argc, argv);
     if (!cmd.success) {
         return 1;
