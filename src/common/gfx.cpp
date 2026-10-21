@@ -204,6 +204,26 @@ void gfx_show_catched_error(const std::string& error)
     gfx.showErrorBox(message.c_str());
 }
 
+bool gfx_sidepanels() {
+    return gfx.sidePanelsEnabled();
+}
+
+SDL_Surface* gfx_leftpanel() {
+    return gfx.leftPanel();
+}
+
+void gfx_loadsidepanels(const std::filesystem::path& left, const std::filesystem::path& right) {
+    if (!gfx.sidePanelsEnabled())
+        return;
+    SDL_Surface* l = IMG_Load(left.string().c_str());
+    SDL_Surface* r = IMG_Load(right.string().c_str());
+    if (!l || !r)
+        printf("[gfx] Side panel art missing (%s / %s)\n", left.string().c_str(), right.string().c_str());
+    gfx.setPanelBackgrounds(l, r);
+    SDL_DestroySurface(l);
+    SDL_DestroySurface(r);
+}
+
 void gfx_take_screenshot() {
     gfx.takeScreenshot();
 }

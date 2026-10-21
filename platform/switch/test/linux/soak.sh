@@ -23,7 +23,7 @@ run $IMAGE cmake --build build-linux-asan --target smw >/dev/null || exit 1
 
 docker run --rm -u "$(id -u):$(id -g)" -e HOME=/home/t \
     -e SDL_VIDEO_DRIVER=offscreen -e SDL_AUDIO_DRIVER=dummy \
-    -e ASAN_OPTIONS=detect_leaks=0 -e UBSAN_OPTIONS=print_stacktrace=1 \
+    -e ASAN_OPTIONS=detect_leaks=0 -e UBSAN_OPTIONS=print_stacktrace=1 ${SMW_SIDE_PANELS:+-e SMW_SIDE_PANELS=1} \
     -v "$OUT/home":/home/t -v "$PWD":/src -w /src $IMAGE \
     timeout "$SECS" build-linux-asan/smw --datadir /src/data > "$OUT/smw.log" 2>&1
 

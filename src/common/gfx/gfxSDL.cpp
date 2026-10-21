@@ -1,5 +1,7 @@
 #include "gfxSDL.h"
 
+#include "gfx.h"
+
 #include "path.h"
 
 #include <SDL3_image/SDL_image.h>
@@ -78,6 +80,20 @@ const char* findPreferredRendererIndex() {
     return nullptr;
 }
 
+bool wantSidePanels()
+{
+#ifdef __SWITCH__
+    return !SDL_getenv("SMW_NO_SIDE_PANELS");
+#else
+    return SDL_getenv("SMW_SIDE_PANELS") != nullptr;
+#endif
+}
+
+int logicalWidth()
+{
+    return wantSidePanels() ? SidePanels::LeftWidth + GFX_SCREEN_W + SidePanels::RightWidth : GFX_SCREEN_W;
+}
+
 SDL_Renderer* createRenderer(SDL_Window* window)
 {
     SDL_Renderer* renderer = SDL_CreateRenderer(window, findPreferredRendererIndex());
@@ -85,26 +101,26 @@ SDL_Renderer* createRenderer(SDL_Window* window)
         throw_error("Couldn't create renderer: {}", SDL_GetError());
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_SetRenderLogicalPresentation(renderer, GFX_SCREEN_W, GFX_SCREEN_H, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+    SDL_SetRenderLogicalPresentation(renderer, logicalWidth(), GFX_SCREEN_H, SDL_LOGICAL_PRESENTATION_LETTERBOX);
     printf("[gfx] Renderer: %s\n", SDL_GetRendererName(renderer));
     return renderer;
 }
 
-SDL_Surface* createScreenSurface()
+SDL_Surface* createScreenSurface(int w = GFX_SCREEN_W)
 {
-    SDL_Surface* surface = SDL_CreateSurface(GFX_SCREEN_W, GFX_SCREEN_H, SDL_PIXELFORMAT_ARGB8888);
+    SDL_Surface* surface = SDL_CreateSurface(w, GFX_SCREEN_H, SDL_PIXELFORMAT_ARGB8888);
     if (!surface)
         throw_error("Couldn't create video buffer: {}", SDL_GetError());
 
     return surface;
 }
 
-SDL_Texture* createScreenTexture(SDL_Renderer* renderer)
+SDL_Texture* createScreenTexture(SDL_Renderer* renderer, int w = GFX_SCREEN_W)
 {
     SDL_Texture* texture = SDL_CreateTexture(renderer,
         SDL_PIXELFORMAT_ARGB8888,
         SDL_TEXTUREACCESS_STREAMING,
-        GFX_SCREEN_W, GFX_SCREEN_H);
+        w, GFX_SCREEN_H);
     if (!texture)
         throw_error("Couldn't create video texture: {}", SDL_GetError());
 
@@ -124,6 +140,20 @@ bool GraphicsSDL::init(bool fullscreen)
     sdl_screen_surface = createScreenSurface();
     sdl_screen_texture = createScreenTexture(sdl_renderer);
 
+    if (wantSidePanels()) {
+        sdl_left_surface = createScreenSurface(SidePanels::LeftWidth);
+        sdl_left_background = createScreenSurface(SidePanels::LeftWidth);
+        sdl_left_texture = createScreenTexture(sdl_renderer, SidePanels::LeftWidth);
+        sdl_right_texture = createScreenTexture(sdl_renderer, SidePanels::RightWidth);
+        SDL_FillSurfaceRect(sdl_left_background, nullptr, SDL_MapSurfaceRGB(sdl_left_background, 0, 0, 0));
+        SDL_FillSurfaceRect(sdl_left_surface, nullptr, SDL_MapSurfaceRGB(sdl_left_surface, 0, 0, 0));
+        SDL_Surface* black = createScreenSurface(SidePanels::RightWidth);
+        SDL_FillSurfaceRect(black, nullptr, SDL_MapSurfaceRGB(black, 0, 0, 0));
+        SDL_UpdateTexture(sdl_right_texture, nullptr, black->pixels, black->pitch);
+        SDL_DestroySurface(black);
+        printf("[gfx] Side panels enabled (%d + %d + %d)\n", SidePanels::LeftWidth, GFX_SCREEN_W, SidePanels::RightWidth);
+    }
+
     printf("[gfx] Game window initialized (%dx%d, %dbpp)\n",
         sdl_screen_surface->w,
         sdl_screen_surface->h,
@@ -133,8 +163,30 @@ bool GraphicsSDL::init(bool fullscreen)
     return true;
 }
 
+void GraphicsSDL::setPanelBackgrounds(SDL_Surface* left, SDL_Surface* right)
+{
+    if (!sidePanelsEnabled())
+        return;
+
+    if (left) {
+        SDL_BlitSurface(left, nullptr, sdl_left_background, nullptr);
+        SDL_BlitSurface(sdl_left_background, nullptr, sdl_left_surface, nullptr);
+    }
+    if (right) {
+        SDL_Surface* converted = SDL_ConvertSurface(right, SDL_PIXELFORMAT_ARGB8888);
+        if (converted) {
+            SDL_UpdateTexture(sdl_right_texture, nullptr, converted->pixels, converted->pitch);
+            SDL_DestroySurface(converted);
+        }
+    }
+}
+
 GraphicsSDL::~GraphicsSDL()
 {
+    SDL_DestroyTexture(sdl_left_texture);
+    SDL_DestroyTexture(sdl_right_texture);
+    SDL_DestroySurface(sdl_left_surface);
+    SDL_DestroySurface(sdl_left_background);
     SDL_DestroyTexture(sdl_screen_texture);
     SDL_DestroySurface(sdl_screen_surface);
     SDL_DestroyRenderer(sdl_renderer);
@@ -156,7 +208,19 @@ void GraphicsSDL::flipScreen() const
 {
     SDL_UpdateTexture(sdl_screen_texture, nullptr, sdl_screen_surface->pixels, sdl_screen_surface->pitch);
     SDL_RenderClear(sdl_renderer);
-    SDL_RenderTexture(sdl_renderer, sdl_screen_texture, nullptr, nullptr);
+    if (sidePanelsEnabled()) {
+        SDL_UpdateTexture(sdl_left_texture, nullptr, sdl_left_surface->pixels, sdl_left_surface->pitch);
+        const SDL_FRect left {0, 0, SidePanels::LeftWidth, GFX_SCREEN_H};
+        const SDL_FRect game {SidePanels::LeftWidth, 0, GFX_SCREEN_W, GFX_SCREEN_H};
+        const SDL_FRect right {SidePanels::LeftWidth + GFX_SCREEN_W, 0, SidePanels::RightWidth, GFX_SCREEN_H};
+        SDL_RenderTexture(sdl_renderer, sdl_left_texture, nullptr, &left);
+        SDL_RenderTexture(sdl_renderer, sdl_screen_texture, nullptr, &game);
+        SDL_RenderTexture(sdl_renderer, sdl_right_texture, nullptr, &right);
+        // The HUD is drawn again next frame, on a clean background
+        SDL_BlitSurface(sdl_left_background, nullptr, sdl_left_surface, nullptr);
+    } else {
+        SDL_RenderTexture(sdl_renderer, sdl_screen_texture, nullptr, nullptr);
+    }
     SDL_RenderPresent(sdl_renderer);
 }
 

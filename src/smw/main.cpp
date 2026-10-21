@@ -415,6 +415,8 @@ void main_game()
         gfx_loadpalette(convertPath("gfx/packs/palette.bmp", gamegraphicspacklist->currentPath()));
     }
 
+    gfx_loadsidepanels(convertPath("gfx/sidepanels/left.png"), convertPath("gfx/sidepanels/right.png"));
+
     srand((unsigned int)time(NULL));
 /*
     bool fLoadOK = LoadAndSplashScreenState();

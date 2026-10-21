@@ -417,10 +417,12 @@ void CResourceManager::loadAllGraphics()
     loadWorldGraphics();
     loadGameGraphics();
 
-    spr_backmap[0] = builder("gfx/packs/backgrounds/Land_Classic.png").withoutColorKey().create();
-    spr_backmap[1] = builder("gfx/packs/backgrounds/Land_Classic.png").withoutColorKey().create();
-    spr_frontmap[0] = builder("gfx/packs/backgrounds/Land_Classic.png").withoutColorKey().create();
-    spr_frontmap[1] = builder("gfx/packs/backgrounds/Land_Classic.png").withoutColorKey().create();
+    // No RLE: these are drawn into after loading (map predraw, animated tiles) and
+    // SDL3 keeps blitting the stale RLE copy, which leaks the magenta colour key
+    spr_backmap[0] = builder("gfx/packs/backgrounds/Land_Classic.png").withoutColorKey().withoutOptimization().create();
+    spr_backmap[1] = builder("gfx/packs/backgrounds/Land_Classic.png").withoutColorKey().withoutOptimization().create();
+    spr_frontmap[0] = builder("gfx/packs/backgrounds/Land_Classic.png").withoutColorKey().withoutOptimization().create();
+    spr_frontmap[1] = builder("gfx/packs/backgrounds/Land_Classic.png").withoutColorKey().withoutOptimization().create();
 
     spr_overlay = builder("gfx/packs/menu/menu_shade.png").create();
 }

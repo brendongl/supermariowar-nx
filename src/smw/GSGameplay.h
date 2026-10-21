@@ -33,6 +33,7 @@ class GameplayState : public GameState
         void drawPlayerSwap();
         void drawScreenShakeBackground();
         void drawScoreboard(short iScoreTextOffset[4]);
+        void drawScoreboardTo(short iScoreTextOffset[4]);
         void drawWindMeter();
         void drawCountdown();
         void drawSpotlights();

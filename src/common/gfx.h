@@ -41,6 +41,18 @@ void gfx_settitle(const char*);
 void gfx_show_catched_error(const std::string&);
 void gfx_take_screenshot();
 
+// 16:9 side panels (Switch). The left panel holds the in-game HUD; it is reset to its
+// background after every flip. Both are null/no-ops when the panels are off.
+// Panel widths in game pixels. 160 fits the widest score box (a 3-player team);
+// 160 + 640 + 53 = 853, which is 480 * 16 / 9.
+namespace SidePanels {
+constexpr int LeftWidth = 160;
+constexpr int RightWidth = 53;
+}
+bool gfx_sidepanels();
+SDL_Surface* gfx_leftpanel();
+void gfx_loadsidepanels(const std::filesystem::path& left, const std::filesystem::path& right);
+
 void gfx_close();
 bool gfx_loadpalette(const std::filesystem::path& palette_path);
 

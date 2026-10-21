@@ -1,5 +1,7 @@
 #include "GameMode.h"
 
+#include "gfx.h"
+
 #include "eyecandy.h"
 #include "GameValues.h"
 #include "net.h"
@@ -124,6 +126,13 @@ void ShowScoreBoard()
     for (short i = 0; i < score_cnt; i++) {
         score[i]->destx = 309 - 34 * game_values.teamcounts[i];
         score[i]->desty = score[i]->displayorder * iScoreboardElementHeight + 140;
+
+        // With side panels the in-game boxes live in the left panel; slide the final
+        // scoreboard in from that side of the playfield
+        if (gfx_sidepanels()) {
+            score[i]->fromx = score[i]->x - SidePanels::LeftWidth;
+            score[i]->fromy = score[i]->y;
+        }
     }
 
     if (game_values.music) {

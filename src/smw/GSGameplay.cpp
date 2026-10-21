@@ -5,6 +5,7 @@
 #include "GameMode.h"
 #include "GameValues.h"
 #include "GSMenu.h"
+#include "gfx.h"
 #include "net.h"
 #include "map.h"
 #include "MapList.h"
@@ -332,7 +333,12 @@ void GameplayState::initScoreDisplayPosition()
     totalspace += 20 * (score_cnt - 1);
 
     for (i = 0; i < score_cnt; i++) {
-        if (game_values.scoreboardstyle == ScoreboardStyle::Top || game_values.scoreboardstyle == ScoreboardStyle::Bottom) {
+        if (gfx_sidepanels()) {
+            // Stacked in the left panel, centred, one team per row
+            const short boxWidth = 56 + 34 * game_values.teamcounts[i];
+            score[i]->x = (SidePanels::LeftWidth - boxWidth) / 2;
+            score[i]->y = 70 + i * 92;
+        } else if (game_values.scoreboardstyle == ScoreboardStyle::Top || game_values.scoreboardstyle == ScoreboardStyle::Bottom) {
             score[i]->x = ((App::screenWidth - totalspace) >> 1);
 
             for (short k = 0; k < i; k++)
@@ -909,6 +915,17 @@ void handleObj2ObjCollisions()
 }
 
 void GameplayState::drawScoreboard(short iScoreTextOffset[4])
+{
+    // During play the boxes go to the left side panel; the end-of-game scoreboard
+    // slides into the playfield as usual
+    SDL_Surface* const previousTarget = blitdest;
+    if (gfx_sidepanels() && !game_values.flags.showscoreboard)
+        blitdest = gfx_leftpanel();
+    drawScoreboardTo(iScoreTextOffset);
+    blitdest = previousTarget;
+}
+
+void GameplayState::drawScoreboardTo(short iScoreTextOffset[4])
 {
     g_iWinningPlayer = -1;
 
