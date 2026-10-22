@@ -12,7 +12,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/../../.."
 ROOT=$PWD
-VER=${1:-$(sed -n 's/^\s*VERSION \([0-9.]*\)$/\1/p' CMakeLists.txt | head -1)}
+VER=${1:-$(sed -n 's/^set(SMW_SWITCH_VERSION "\([0-9.]*\)".*/\1/p' cmake/PlatformSwitch.cmake)}
 TID=017397C52C004000
 NRO_PATH=sdmc:/switch/supermariowar/smw.nro
 NAME="Super Mario War"

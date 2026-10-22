@@ -1,10 +1,13 @@
 # Super Mario War NX
 
-A native Nintendo Switch port of [Super Mario War](https://github.com/mmatyas/supermariowar), the fan-made multiplayer Super Mario Bros. deathmatch game. It ships as an installable **NSP** (its own HOME menu icon) and as an **NRO** for the Homebrew Menu.
+A native Nintendo Switch port of [Super Mario War](https://github.com/mmatyas/supermariowar), the fan-made multiplayer Super Mario Bros. deathmatch game. It runs as an **NRO** from the Homebrew Menu, with an optional forwarder **NSP** that gives it its own HOME menu icon.
+
+![Four players as Dice Guy on Ice Shelf, running on a Switch](docs/switch/screenshot-ice-shelf.jpg)
 
 - Up to **4 players** on one console: Joy-Con pairs, single sideways Joy-Cons, Pro Controllers or handheld mode, in any mix
 - All 22 game modes, tournaments, tours, world maps and the bundled maps, skins, music and sound packs
-- 60 fps, rendered at the console's output resolution (720p handheld, 1080p docked) with the 640x480 game scaled pixel-sharp and letterboxed
+- 60 fps, rendered at the console's output resolution (720p handheld, 1080p docked) with the 640x480 game scaled pixel-sharp
+- Fills the 16:9 screen with side panels: the score boxes, lives and stored items move to a panel on the left, so the whole arena is free
 - Extra character: **Dice Guy**, the mascot of [Sip n Play](https://sipnplay.cafe), a board game cafe in Saigon
 - Settings, screenshots and map caches are saved on the SD card in `sdmc:/switch/supermariowar/`
 
@@ -12,9 +15,9 @@ This repository follows the upstream game. The Switch-specific code lives in `pl
 
 ## Installing
 
-You need a Switch running custom firmware (Atmosphère).
+You need a Switch running custom firmware (Atmosphère). Download the files from the [latest release](../../releases/latest).
 
-- **NRO + forwarder NSP** (recommended): copy `smw.nro` to `sdmc:/switch/supermariowar/smw.nro`, then install `SuperMarioWar-NX-*-forwarder.nsp` with an installer such as DBI, Tinfoil or Awoo for a HOME menu icon. The title ID is `017397C52C004000`. Installing NSPs requires signature patches that match your firmware.
+- **NRO + forwarder NSP** (recommended): extract `SuperMarioWar-NX-v*.zip` to the root of your SD card (it puts `smw.nro` in `sdmc:/switch/supermariowar/`), then install `SuperMarioWar-NX-v*-forwarder.nsp` with an installer such as DBI, Tinfoil or Awoo for a HOME menu icon. The title ID is `017397C52C004000`. Installing NSPs requires signature patches that match your firmware.
 - **NRO only**: copy `smw.nro` to `sdmc:/switch/supermariowar/` and start it from the Homebrew Menu (use title override, not the Album, for full memory).
 
 A standalone NSP (`platform/switch/nsp/build-nsp.sh`) also builds, but it currently crashes Atmosphère's fatal module on launch on real hardware, so don't install it until that is fixed.

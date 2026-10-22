@@ -13,4 +13,5 @@ set(FETCHCONTENT_FULLY_DISCONNECTED ON)
 
 set(SMW_SWITCH_TITLE   "Super Mario War" CACHE STRING "")
 set(SMW_SWITCH_AUTHOR  "72dpiarmy & contributors" CACHE STRING "")
-set(SMW_SWITCH_VERSION "${PROJECT_VERSION}" CACHE STRING "")
+# The Switch port has its own release numbering, separate from the upstream game (2.0).
+set(SMW_SWITCH_VERSION "1.0.0" CACHE STRING "")

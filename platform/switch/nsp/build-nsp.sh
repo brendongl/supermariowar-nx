@@ -8,7 +8,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/../../.."
 ROOT=$PWD
-VER=${1:-$(sed -n 's/^\s*VERSION \([0-9.]*\)$/\1/p' CMakeLists.txt | head -1)}
+VER=${1:-$(sed -n 's/^set(SMW_SWITCH_VERSION "\([0-9.]*\)".*/\1/p' cmake/PlatformSwitch.cmake)}
 TID=017397c52c004000  # must match platform/switch/nsp/app.json
 NAME="Super Mario War"
 AUTHOR="72dpiarmy & contributors (Switch port: supermariowar-nx)"
