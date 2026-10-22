@@ -12,6 +12,7 @@ class CGM_Frenzy : public CGM_Frag
         void think() override;
 
         void setFrenzyOwner(CPlayer* palyer);
+        CPlayer* frenzyOwner() const { return m_frenzyowner; }
 
     private:
         short timer;

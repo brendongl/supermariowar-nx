@@ -158,14 +158,20 @@ void gameloop_frame()
 #endif
     {
         FPSLimiter::instance().frameStart();
+#ifdef __SWITCH__
+        const Uint64 updateStart = SDL_GetTicksNS();
+#endif
 
         GameStateManager::instance().currentState->update();
 
+#ifdef __SWITCH__
+        const Uint64 flipStart = SDL_GetTicksNS();
+#endif
         FPSLimiter::instance().beforeFlip();
         gfx_flipscreen();
         FPSLimiter::instance().afterFlip();
 #ifdef __SWITCH__
-        switch_platform::onFrame();
+        switch_platform::onFrame(flipStart - updateStart, SDL_GetTicksNS() - flipStart);
 #endif
     }
 

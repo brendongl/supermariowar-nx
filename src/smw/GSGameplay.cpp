@@ -19,6 +19,7 @@
 #include "WorldTourStop.h"
 #include "gamemodes/Chicken.h"
 #include "gamemodes/MiniBoss.h"
+#include "gamemodes/Frenzy.h"
 #include "gamemodes/Tag.h"
 #include "objects/MysteryMushroomTempPlayer.h"
 #include "objects/carriable/CO_Egg.h"
@@ -535,6 +536,7 @@ void GameplayState::CleanDeadPlayers()
 
     auto* gmChicken = dynamic_cast<CGM_Chicken*>(game_values.gamemode);
     auto* gmTag = dynamic_cast<CGM_Tag*>(game_values.gamemode);
+    auto* gmFrenzy = dynamic_cast<CGM_Frenzy*>(game_values.gamemode);
 
     for (size_t i = 0; i < players.size(); i++) {
         if (players[i]->state == PlayerState::Dead) {
@@ -548,6 +550,9 @@ void GameplayState::CleanDeadPlayers()
 
             if (gmTag && gmTag->tagged() == players[i])
                 gmTag->setTagged(nullptr);
+
+            if (gmFrenzy && gmFrenzy->frenzyOwner() == players[i])
+                gmFrenzy->setFrenzyOwner(nullptr);
 
             if (gmChicken && gmChicken->chicken() == players[i])
                 gmChicken->clearChicken();

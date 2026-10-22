@@ -66,7 +66,7 @@ Upstream moved to SDL 3, and devkitPro currently ships only SDL 2 packages for t
 
 ## Testing
 
-`SMW_AUTOTEST` (on by default for Switch builds) compiles in an unattended soak test. Create an empty file named `autotest` in `sdmc:/switch/supermariowar/` and launch the game: four CPU players play random Quick Games (random mode, goal, settings and map) until you close it. Every match, warning and a frame-rate heartbeat go to `sdmc:/switch/supermariowar/smw.log`. Delete the file to play normally.
+`SMW_AUTOTEST` (on by default for Switch builds) compiles in an unattended soak test. Create an empty file named `autotest` in `sdmc:/switch/supermariowar/` and launch the game: four CPU players play random Quick Games (random mode, goal, settings and map) until you close it. Every match, warning and a heartbeat (frame rate, plus milliseconds spent updating/drawing and presenting) go to `sdmc:/switch/supermariowar/smw.log`. Optional lines in the file: `fast` turns off the frame limiter, and `map=<file name without .map>` plays only that map, for comparing performance between builds. Delete the file to play normally.
 
 The same tree also builds on Linux with AddressSanitizer and UndefinedBehaviorSanitizer for fast headless soaks. See [CONTRIBUTING.md](CONTRIBUTING.md).
 

@@ -6,6 +6,7 @@
 
 #include <SDL3/SDL_timer.h>
 
+#include <algorithm>
 #include <cstdio>
 #include <filesystem>
 
@@ -49,19 +50,26 @@ void init()
     appletSetMediaPlaybackState(true);
 }
 
-void onFrame()
+void onFrame(uint64_t updateNs, uint64_t flipNs)
 {
     static uint64_t frames = 0;
     static uint64_t window_start = SDL_GetTicks();
+    static uint64_t update_sum = 0, update_max = 0, flip_sum = 0, flip_max = 0;
     frames++;
+    update_sum += updateNs;
+    flip_sum += flipNs;
+    update_max = std::max(update_max, updateNs);
+    flip_max = std::max(flip_max, flipNs);
     if (frames == 1)
         printf("[switch] first frame presented\n");
     if (frames % 3600 == 0) {
         const uint64_t now = SDL_GetTicks();
-        printf("[switch] frame %llu, %.1f fps, uptime %llus\n",
+        printf("[switch] frame %llu, %.1f fps, uptime %llus, update avg %.2f max %.2f ms, flip avg %.2f max %.2f ms\n",
             (unsigned long long)frames, 3600000.0 / double(now - window_start),
-            (unsigned long long)(now / 1000));
+            (unsigned long long)(now / 1000),
+            update_sum / 3600.0 / 1e6, update_max / 1e6, flip_sum / 3600.0 / 1e6, flip_max / 1e6);
         window_start = now;
+        update_sum = update_max = flip_sum = flip_max = 0;
     }
 }
 

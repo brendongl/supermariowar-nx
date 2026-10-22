@@ -417,12 +417,15 @@ void CResourceManager::loadAllGraphics()
     loadWorldGraphics();
     loadGameGraphics();
 
-    // No RLE: these are drawn into after loading (map predraw, animated tiles) and
-    // SDL3 keeps blitting the stale RLE copy, which leaks the magenta colour key
-    spr_backmap[0] = builder("gfx/packs/backgrounds/Land_Classic.png").withoutColorKey().withoutOptimization().create();
-    spr_backmap[1] = builder("gfx/packs/backgrounds/Land_Classic.png").withoutColorKey().withoutOptimization().create();
-    spr_frontmap[0] = builder("gfx/packs/backgrounds/Land_Classic.png").withoutColorKey().withoutOptimization().create();
-    spr_frontmap[1] = builder("gfx/packs/backgrounds/Land_Classic.png").withoutColorKey().withoutOptimization().create();
+    spr_backmap[0] = builder("gfx/packs/backgrounds/Land_Classic.png").withoutColorKey().create();
+    spr_backmap[1] = builder("gfx/packs/backgrounds/Land_Classic.png").withoutColorKey().create();
+    spr_frontmap[0] = builder("gfx/packs/backgrounds/Land_Classic.png").withoutColorKey().create();
+    spr_frontmap[1] = builder("gfx/packs/backgrounds/Land_Classic.png").withoutColorKey().create();
+    // The predrawn map layers are opaque apart from the magenta colour key. With blending
+    // on, SDL3 RLE-encodes ARGB surfaces by alpha and ignores the colour key, so the
+    // magenta showed through. Without blending SDL uses colour-key RLE instead.
+    for (gfxSprite* layer : {&spr_backmap[0], &spr_backmap[1], &spr_frontmap[0], &spr_frontmap[1]})
+        SDL_SetSurfaceBlendMode(layer->getSurface(), SDL_BLENDMODE_NONE);
 
     spr_overlay = builder("gfx/packs/menu/menu_shade.png").create();
 }

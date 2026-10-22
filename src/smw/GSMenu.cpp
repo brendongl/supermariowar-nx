@@ -78,6 +78,7 @@ extern void SetGameModeSettingsFromMenu();
 
 // Short name of the map the current match runs on, for logs
 std::string g_matchMapName;
+std::string g_autotestMap;
 extern void LoadMapObjects(bool fPreview);
 extern void UpdateScoreBoard();
 extern short LookupTeamID(short id);
@@ -175,10 +176,18 @@ bool MenuState::init()
         g_fAutoTest = true;
         // "fast" in the file lifts the frame limiter, for host-side soaks
         if (FILE* fp = fopen((GetHomeDirectory() + "autotest").c_str(), "r")) {
-            char mode[8] {};
-            if (fgets(mode, sizeof(mode), fp) && strncmp(mode, "fast", 4) == 0) {
-                game_values.framelimiter = 0;
-                printf("[autotest] frame limiter off\n");
+            // Optional lines: "fast" lifts the frame limiter; "map=<file name without
+            // .map>" plays only that map, for repeatable performance comparisons
+            char line[256] {};
+            while (fgets(line, sizeof(line), fp)) {
+                line[strcspn(line, "\r\n")] = 0;
+                if (strncmp(line, "fast", 4) == 0) {
+                    game_values.framelimiter = 0;
+                    printf("[autotest] frame limiter off\n");
+                } else if (strncmp(line, "map=", 4) == 0) {
+                    g_autotestMap = line + 4;
+                    printf("[autotest] only map %s\n", g_autotestMap.c_str());
+                }
             }
             fclose(fp);
         }
@@ -1382,6 +1391,8 @@ void MenuState::update()
                 } else if (game_values.matchtype == MatchType::QuickGame) {
                     //Load a random map for the quick game
                     std::string szMapName = maplist->randomFilename();
+                    if (g_fAutoTest && !g_autotestMap.empty())
+                        szMapName = convertPath("maps/" + g_autotestMap + ".map");
                     g_map->loadMap(szMapName, read_type_full);
                     sShortMapName = stripPathAndExtension(szMapName);
 
