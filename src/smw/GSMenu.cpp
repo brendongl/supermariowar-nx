@@ -187,6 +187,17 @@ bool MenuState::init()
                 } else if (strncmp(line, "map=", 4) == 0) {
                     g_autotestMap = line + 4;
                     printf("[autotest] only map %s\n", g_autotestMap.c_str());
+                } else if (strncmp(line, "skin=", 5) == 0) {
+                    // Every player uses this skin (name as shown in the menus)
+                    for (size_t i = 0; i < skinlist->count(); i++) {
+                        if (skinlist->at(i).name == line + 5) {
+                            for (short iPlayer = 0; iPlayer < 4; iPlayer++) {
+                                game_values.skinids[iPlayer] = static_cast<short>(i);
+                                game_values.randomskin[iPlayer] = false;
+                            }
+                            printf("[autotest] all players use skin %s\n", line + 5);
+                        }
+                    }
                 }
             }
             fclose(fp);

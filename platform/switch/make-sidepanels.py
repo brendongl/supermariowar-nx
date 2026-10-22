@@ -11,7 +11,7 @@ from PIL import Image
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")
 OUT = os.path.join(ROOT, "platform", "switch", "data", "gfx", "sidepanels")
 FONT = os.path.join(ROOT, "data", "gfx", "packs", "Classic", "fonts", "font_small.png")
-DICE_GUY = os.path.join(ROOT, "platform", "switch", "data", "gfx", "skins", "SipNPlay_DiceGuy.png")
+DICE_GUY = os.path.join(ROOT, "platform", "switch", "data", "gfx", "skins", "SipNPlay_Dice Guy.png")
 
 BG = (28, 32, 56)
 BRICK = (36, 42, 72)
@@ -106,8 +106,7 @@ def main():
     divider(left, 158)
     text(left, glyphs, "Super Mario War", 79, 14)
     text(left, glyphs, "NX", 79, 32)
-    sprite(left, guy, 0, 8, 440)
-    text(left, glyphs, "sipnplay.cafe", 96, 452)
+    sprite(left, guy, 0, 64, 440)
     left.save(os.path.join(OUT, "left.png"))
 
     right = bricks(53, 480)
