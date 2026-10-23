@@ -39,6 +39,8 @@ target_sources(smw PRIVATE
     MI_World.h
     MI_WorldPreviewDisplay.cpp
     MI_WorldPreviewDisplay.h
+    ModernMenu.cpp
+    ModernMenu.h
     NetworkListScroll.cpp
     NetworkListScroll.h
 )

@@ -80,3 +80,31 @@ allowed restoration. Toad 1.5.0 does not support /files/move, /process/list or
 
 Final exit evidence is in build-exit-test.Xf0kPw. Game Lab #4 remains open until
 the widescreen feature is released.
+
+## Final UI and Quick Start validation
+
+Quiet lease `1380599b-2856-41d7-be11-3382b74e79d2` tested the final UI candidate
+on Toad. The deployed/downloaded NRO SHA256 matched
+`dece0fdc44761db5573d72039d39f68af9feb8a33a62f40f6d12d951a4494d89`.
+
+- Welcome, eight-player fighter select, play choice and native 16:9 match setup
+  rendered correctly.
+- B returned from play choice to the roster. X opened full Match Setup. B then
+  returned to play choice.
+- Y revealed Jungle Wide / Frag Limit, then rerolled to Boo is Back Wide / Stomp.
+  Both short descriptions fit. A started the revealed Boo is Back stage and live
+  gameplay displayed all eight HUD slots.
+- The exact final build closed from live gameplay through HOME/X/A and returned
+  to HOME without an error dialog or relaunch.
+
+Hardware testing exposed and resolved two failures before this pass: long reveal
+descriptions clipped, and the Switch alternate menu action was still bound to L.
+Descriptions are now concise; physical X is the primary alternate action, with L
+kept as a compatibility alias.
+
+Evidence is in `build-ui-toad.NN2ac8`. The original NRO was restored and rehashed
+as `d8e8432069695ca03f62f9c8264e720052bc1a7fd2a79faa1b6b11d0bbd0ebdc`.
+Test-created options and controls were deleted; servers/autotest were already
+absent. HOME was visually checked, the virtual controller was cleared/detached,
+and the lease was completed. Physical four-controller pairing and sustained FPS
+remain missing evidence, not failed tests.

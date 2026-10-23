@@ -17,6 +17,8 @@ target_sources(smw PRIVATE
     PlayerControlsMenu.h
     PlayerControlsSelectMenu.cpp
     PlayerControlsSelectMenu.h
+    PlayChoiceMenu.cpp
+    PlayChoiceMenu.h
     TeamSelectMenu.cpp
     TeamSelectMenu.h
     TournamentScoreboardMenu.cpp

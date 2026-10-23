@@ -9,6 +9,9 @@
 #include "eyecandy.h"
 #include "path.h"
 #include "ResourceManager.h"
+#include "ui/ModernMenu.h"
+
+#include <SDL3_image/SDL_image.h>
 
 extern SDL_Surface* screen;
 extern SDL_Surface* blitdest;
@@ -16,6 +19,7 @@ extern SDL_Surface* blitdest;
 extern CEyecandyContainer eyecandy[3];
 
 extern MapList *maplist;
+extern SkinList *skinlist;
 extern MusicList *musiclist;
 extern GraphicsList *menugraphicspacklist;
 
@@ -47,6 +51,7 @@ void SplashScreenState::onLeaveState()
 
 bool SplashScreenState::init()
 {
+    App::screenWidth = App::maxScreenWidth;
     rm->loadStartGraphics();
 
 //  gfx_loadimagenocolorkey(&rm->menu_dpi_logo, convertPath("gfx/packs/menu/splash_72dpi.png", menugraphicspacklist->current_name()));
@@ -156,8 +161,12 @@ void SplashScreenState::update()
 
 #if defined(SMW_AUTOTEST)
     static const bool autotest = FileExists(GetHomeDirectory() + "autotest");
-    if (autotest)
+    static bool welcomeCaptureDelay = false;
+    const bool captureWelcome = SDL_getenv("SMW_CAPTURE_DIR") != nullptr;
+    if (autotest && (!captureWelcome || welcomeCaptureDelay))
         game_values.playerInput.outputControls[0].menu_select.fPressed = true;
+    if (autotest && captureWelcome && state == 8)
+        welcomeCaptureDelay = true;
 #endif
 
     // Continuing before loading finished (state 8) would enter the menus without graphics
@@ -226,7 +235,7 @@ void SplashScreenState::update()
     //  }
     //}
 
-    SDL_FillSurfaceRect(screen, NULL, 0x0);
+    ModernMenu::backdrop();
 
     //if (state == 0 || state == 1 || state == 2)
     //{
@@ -240,32 +249,53 @@ void SplashScreenState::update()
     //}
     //else
     if (state == 6 || state == 7 || state == 8) {
-        rm->menu_backdrop.setalpha((Uint8)alpha);
-        rm->menu_backdrop.draw(0, 0);
-
         rm->menu_smw.setalpha((Uint8)alpha);
         rm->menu_smw.draw(App::screenWidth/2 - ((short)rm->menu_smw.getWidth() >> 1), 30);  //smw logo
 
         rm->menu_version.setalpha((Uint8)alpha);
-        rm->menu_version.draw(628 - rm->menu_version.getWidth(), 10); //smw logo
+        rm->menu_version.draw(App::screenWidth/2 + 116, 148);
 
         rm->menu_font_large.setAlpha((Uint8)alpha);
         //rm->menu_font_large.drawRightJustified(App::screenWidth * 0.98f, 45, "WIP");
 
-        menu_credits->setalpha((Uint8)alpha);
-        menu_credits->draw(227, 200);
+        if (state == 8) {
+            ModernMenu::panel(App::screenWidth / 2 - 165, 262, 330, 44);
+            rm->menu_font_large.drawCentered(App::screenWidth / 2, 272, "PRESS ANY BUTTON");
+            rm->menu_font_small.drawCentered(App::screenWidth / 2, 316,
+                "Up to 8 players - Joy-Con, Pro Controller & keyboard");
+
+            for (short player = 0; player < MAX_PLAYERS; ++player) {
+                const int x = App::screenWidth / 2 - 216 + player * 58;
+                const SDL_Rect src{0, 0, 32, 32};
+                const SDL_Rect dst{x, 402, 48, 48};
+                rm->spr_player[player][0].drawStretch(src, blitdest, dst);
+            }
+
+            ModernMenu::fill(0, 444, App::screenWidth, 36, 14, 18, 42);
+            ModernMenu::fill(0, 444, App::screenWidth, 2, 72, 84, 140);
+            rm->menu_font_small.draw(12, 450, "A tribute to Nintendo & Samuele Poletto");
+            rm->menu_font_small.draw(12, 465, "Created by Florian Hufsky, Two52, Steven Graff & Jared");
+            rm->menu_font_small.drawRightJustified(App::screenWidth - 12, 457, "sipnplay.cafe");
+        }
     }
 
     if (state == 7) {
 //            _load_drawmsg("Loading...");
         rm->menu_font_large.drawCentered(App::screenWidth/2, App::screenHeight * 0.875f, "Loading...");
     } else if (state == 8) {
-//            _load_drawmsg("Press Any Key To Continue");
-        rm->menu_font_large.drawCentered(App::screenWidth/2, App::screenHeight * 0.875f, "Press Any Key To Continue");
-
         eyecandy[2].cleanDeadObjects();
         eyecandy[2].update();
         eyecandy[2].draw();
+
+#if defined(SMW_AUTOTEST)
+        static bool capturedWelcome = false;
+        if (!capturedWelcome) {
+            if (const char* dir = SDL_getenv("SMW_CAPTURE_DIR")) {
+                const std::string path = std::string(dir) + "/menu-welcome.png";
+                capturedWelcome = IMG_SavePNG(screen, path.c_str());
+            }
+        }
+#endif
 
         /*          static int timer = 60;
                     static int index = 0;
@@ -291,6 +321,12 @@ void SplashScreenState::update()
 
         rm->loadAllGraphics();
         rm->LoadGameSounds();
+
+        for (short player = 0; player < MAX_PLAYERS; ++player) {
+            if (game_values.skinids[player] < 0 || game_values.skinids[player] >= skinlist->count())
+                game_values.skinids[player] = player % skinlist->count();
+            rm->LoadMenuSkin(player, game_values.skinids[player], player, false);
+        }
 
         if (!game_values.soundcapable) {
             game_values.sound = false;

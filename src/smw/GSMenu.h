@@ -15,6 +15,8 @@ class UI_MapFilterEditMenu;
 class UI_MatchSelectionMenu;
 class UI_ModeOptionsMenu;
 class UI_OptionsMenu;
+class UI_PlayChoiceMenu;
+class UI_QuickRevealMenu;
 class UI_PlayerControlsMenu;
 class UI_PlayerControlsSelectMenu;
 class UI_TeamSelectMenu;
@@ -134,6 +136,8 @@ class MenuState : public GameState
 		std::unique_ptr<UI_ModeOptionsMenu> mModeOptionsMenu;
 		std::unique_ptr<UI_MatchSelectionMenu> mMatchSelectionMenu;
 		std::unique_ptr<UI_GameSettingsMenu> mGameSettingsMenu;
+		std::unique_ptr<UI_PlayChoiceMenu> mPlayChoiceMenu;
+		std::unique_ptr<UI_QuickRevealMenu> mQuickRevealMenu;
 		std::unique_ptr<UI_MapFilterEditMenu> mMapFilterEditMenu;
 		std::unique_ptr<UI_TourStopMenu> mTourStopMenu;
 		std::unique_ptr<UI_WorldMenu> mWorldMenu;

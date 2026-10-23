@@ -7,9 +7,11 @@
 #include "ResourceManager.h"
 #include "FileList.h"
 #include "ui/MI_Image.h"
+#include "ui/ModernMenu.h"
 
 extern CGameValues game_values;
 extern CResourceManager* rm;
+extern SDL_Surface* blitdest;
 
 extern SkinList *skinlist;
 
@@ -62,53 +64,99 @@ void MI_TeamSelect::Draw()
     if (!m_visible)
         return;
 
-    miImage->Draw();
-
-    short iPlayerCount = 0;
-
-    for (short iPlayer = 0; iPlayer < 4; iPlayer++) {
-        if (game_values.playercontrol[iPlayer] > 0)
-            iPlayerCount++;
-    }
-
-    for (short iTeam = 0; iTeam < 4; iTeam++) {
-        for (short iTeamItem = 0; iTeamItem < iTeamCounts[iTeam]; iTeamItem++) {
-            short iPlayerID = iTeamIDs[iTeam][iTeamItem];
-
-            if (game_values.randomskin[iPlayerID])
-                spr->draw(iTeam * 96 + 43 + m_pos.x, iTeamItem * 36 + 52 + m_pos.y, {416, fReady[iPlayerID] ? 0 : iRandomAnimationFrame, 42, 32});
-            else
-                rm->spr_player[iPlayerID][fReady[iPlayerID] ? 0 : iAnimationFrame].draw(iTeam * 96 + 48 + m_pos.x, iTeamItem * 36 + 52 + m_pos.y, {0, 0, 32, 32});
-
-            rm->spr_menu_boxed_numbers.draw(iTeam * 96 + 44 + m_pos.x, iTeamItem * 36 + 72 + m_pos.y, {iPlayerID * 16, game_values.colorids[iPlayerID] * 16, 16, 16});
-        }
-
-        if (game_values.playercontrol[iTeam] > 0) {
-            rm->spr_player_select_ready.draw(iTeam * 160 + 16, 368, {0, 0, 128, 96});
-
-            rm->spr_menu_boxed_numbers.draw(iTeam * 160 + 32, 388, {iTeam * 16, game_values.colorids[iTeam] * 16, 16, 16});
-            rm->menu_font_small.drawChopRight(iTeam * 160 + 52, 404 - rm->menu_font_small.getHeight(), 80, game_values.randomskin[iTeam] ? "Random" : skinlist->at(game_values.skinids[iTeam]).name.c_str());
-
-            rm->spr_player_select_ready.draw(iTeam * 160 + 64, 408, {128, (!fReady[iTeam] ? 0 : (game_values.playercontrol[iTeam] == 1 ? 32 : 64)), 34, 32});
+    ModernMenu::header("CHOOSE YOUR FIGHTER");
+    short joined = 0, ready = 0;
+    for (short p = 0; p < MAX_PLAYERS; ++p) {
+        if (game_values.playercontrol[p] > 0) {
+            ++joined;
+            if (fReady[p]) ++ready;
         }
     }
+    const std::string status = std::to_string(joined) + " / 8 JOINED    "
+        + std::to_string(ready) + " / " + std::to_string(joined) + " READY";
+    rm->menu_font_small.drawRightJustified(App::screenWidth - 22, 17, status);
 
-    int extras = 0;
-    for (short player = MAX_INPUT_PLAYERS; player < MAX_PLAYERS; ++player)
-        extras += game_values.playercontrol[player] > 0;
-    if (extras) {
-        const std::string caption = std::to_string(extras) + " extra CPUs - random fighters, separate teams";
-        rm->menu_font_small.drawCentered(320, 452, caption.c_str());
+    constexpr int cardW = 200, cardH = 190, gapX = 8, gapY = 8;
+    constexpr int x0 = 16, y0 = 50;
+    for (short player = 0; player < MAX_PLAYERS; ++player) {
+        const int x = x0 + (player % 4) * (cardW + gapX);
+        const int y = y0 + (player / 4) * (cardH + gapY);
+        const bool active = game_values.playercontrol[player] > 0;
+        const short team = player < MAX_INPUT_PLAYERS ? std::max<short>(0, GetTeam(player)) : player;
+        Uint8 r, g, b;
+        ModernMenu::teamColor(team, r, g, b);
+        ModernMenu::panel(x, y, cardW, cardH, active ? 18 : 14, active ? 24 : 18, active ? 52 : 38);
+
+        const std::string number = "P" + std::to_string(player + 1);
+        if (!active) {
+            rm->menu_font_small.draw(x + 12, y + 12, number);
+            rm->menu_font_large.drawCentered(x + cardW / 2, y + 68, "?");
+            rm->menu_font_small.drawCentered(x + cardW / 2, y + 122,
+                player >= MAX_INPUT_PLAYERS ? "X  ADD CPU" : "JOIN ON MAIN MENU");
+            continue;
+        }
+
+        ModernMenu::strip(x + 5, y + 5, cardW - 10, 22, r, g, b);
+        rm->spr_menu_boxed_numbers.draw(x + 9, y + 8,
+            {player * 16, std::min<short>(team, 7) * 16, 16, 16});
+        rm->menu_font_small.draw(x + 30, y + 9, number);
+        rm->menu_font_small.drawRightJustified(x + cardW - 10, y + 9,
+            game_values.playercontrol[player] == 2 ? "CPU" : "PLAYER");
+
+        ModernMenu::fill(x + 6, y + 28, cardW - 12, 84, 112, 184, 224);
+        ModernMenu::fill(x + 6, y + 94, cardW - 12, 18, 72, 152, 48);
+        const SDL_Rect src{0, 0, 32, 32};
+        const SDL_Rect dst{x + cardW / 2 - 32, y + 45, 64, 64};
+        rm->spr_player[player][fReady[player] ? 0 : iAnimationFrame].drawStretch(src, blitdest, dst);
+
+        const char* skinName = game_values.randomskin[player]
+            ? "Random" : skinlist->at(game_values.skinids[player]).name.c_str();
+        rm->menu_font_large.drawChopCentered(x + cardW / 2, y + 119, cardW - 24, skinName);
+        rm->menu_font_small.draw(x + 10, y + 151, "TEAM");
+        for (short t = 0; t < 8; ++t) {
+            Uint8 tr, tg, tb;
+            ModernMenu::teamColor(t, tr, tg, tb);
+            const int sx = x + 62 + t * 16;
+            if (t == team) ModernMenu::fill(sx - 2, y + 149, 16, 16, 248, 248, 255);
+            ModernMenu::fill(sx, y + 151, 12, 12, tr, tg, tb);
+        }
+        if (fReady[player]) {
+            ModernMenu::strip(x + 8, y + 167, cardW - 16, 18,
+                game_values.playercontrol[player] == 2 ? 40 : 48,
+                game_values.playercontrol[player] == 2 ? 72 : 152,
+                game_values.playercontrol[player] == 2 ? 128 : 40);
+            rm->menu_font_small.drawCentered(x + cardW / 2, y + 169,
+                game_values.playercontrol[player] == 2 ? "CPU - NORMAL" : "READY!");
+        } else {
+            ModernMenu::strip(x + 8, y + 167, cardW - 16, 18, 60, 64, 92);
+            rm->menu_font_small.drawCentered(x + cardW / 2, y + 169, "PICKING...");
+        }
     }
-    if (fAllReady) {
-        rm->menu_plain_field.draw(m_pos.x + 108, m_pos.y + App::screenHeight * 0.47f, {0, 160, 100, 32});
-        rm->menu_plain_field.draw(m_pos.x + 208, m_pos.y + App::screenHeight * 0.47f, {412, 160, 100, 32});
-        rm->menu_font_large.drawCentered(App::screenWidth/2, m_pos.y + App::screenHeight * 0.48f, "Continue");
-    }
+
+    ModernMenu::footer("A Ready    B Back    X CPU    Y Random    L/R Team",
+        fAllReady ? "A  START MATCH" : nullptr);
 }
 
 MenuCodeEnum MI_TeamSelect::SendInput(CPlayerInput * playerInput)
 {
+    if (playerInput->outputControls[0].menu_scrollfast.fPressed) {
+        short slot = -1;
+        for (short p = MAX_INPUT_PLAYERS; p < MAX_PLAYERS; ++p) {
+            if (!game_values.playercontrol[p]) { slot = p; break; }
+        }
+        if (slot >= 0) {
+            game_values.playercontrol[slot] = 2;
+            game_values.randomskin[slot] = true;
+            game_values.skinids[slot] = RANDOM_INT(skinlist->count());
+        } else {
+            for (short p = MAX_PLAYERS - 1; p >= MAX_INPUT_PLAYERS; --p) {
+                if (game_values.playercontrol[p]) { game_values.playercontrol[p] = 0; break; }
+            }
+        }
+        Reset();
+        return MENU_CODE_NONE;
+    }
+
     for (short iPlayer = 0; iPlayer < 4; iPlayer++) {
         COutputControl * playerKeys = &game_values.playerInput.outputControls[iPlayer];
 
@@ -207,13 +255,20 @@ MenuCodeEnum MI_TeamSelect::SendInput(CPlayerInput * playerInput)
 
             if (fAllReady && (DEVICE_KEYBOARD != playerInput->inputControls[iPlayer]->iDevice || iPlayer == 0)) {
                 fModifying = false;
-                printf("MI_TeamSelect::SendInput MENU_CODE_TO_GAME_SETUP_MENU\n");
-                return MENU_CODE_TO_GAME_SETUP_MENU;
+                if (game_values.matchtype == MatchType::Tournament ||
+                        game_values.matchtype == MatchType::Tour ||
+                        game_values.matchtype == MatchType::World ||
+                        game_values.matchtype == MatchType::MiniGame) {
+                    printf("MI_TeamSelect::SendInput MENU_CODE_TO_GAME_SETUP_MENU\n");
+                    return MENU_CODE_TO_GAME_SETUP_MENU;
+                }
+                printf("MI_TeamSelect::SendInput MENU_CODE_TO_PLAY_CHOICE_MENU\n");
+                return MENU_CODE_TO_PLAY_CHOICE_MENU;
             }
 
             fAllReady = true;
-            for (short i = 0; i < 4; i++) {
-                if (!fReady[i]) {
+            for (short i = 0; i < MAX_PLAYERS; i++) {
+                if (game_values.playercontrol[i] > 0 && !fReady[i]) {
                     fAllReady = false;
                     break;
                 }
@@ -227,7 +282,8 @@ MenuCodeEnum MI_TeamSelect::SendInput(CPlayerInput * playerInput)
             } else {
                 if (DEVICE_KEYBOARD != playerInput->inputControls[iPlayer]->iDevice || iPlayer == 0) {
                     fModifying = false;
-                    return MENU_CODE_BACK_TO_MATCH_SELECTION_MENU;
+                    return game_values.matchtype == MatchType::SingleGame || game_values.matchtype == MatchType::QuickGame
+                        ? MENU_CODE_TO_MAIN_MENU : MENU_CODE_BACK_TO_MATCH_SELECTION_MENU;
                 }
             }
         }
@@ -376,7 +432,17 @@ void MI_TeamSelect::Reset()
 
     fAllReady = true;
 
-    for (short iPlayer = 0; iPlayer < 4; iPlayer++) {
+    for (short iPlayer = 0; iPlayer < MAX_PLAYERS; iPlayer++) {
+        if (iPlayer >= MAX_INPUT_PLAYERS) {
+            fReady[iPlayer] = true;
+            if (game_values.playercontrol[iPlayer] > 0) {
+                game_values.colorids[iPlayer] = iPlayer;
+                while (!rm->LoadMenuSkin(iPlayer, game_values.skinids[iPlayer], game_values.colorids[iPlayer], false)) {
+                    if (++game_values.skinids[iPlayer] >= skinlist->count()) game_values.skinids[iPlayer] = 0;
+                }
+            }
+            continue;
+        }
         iFastScroll[iPlayer] = 0;
         iFastScrollTimer[iPlayer] = 0;
 

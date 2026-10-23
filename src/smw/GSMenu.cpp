@@ -25,6 +25,7 @@
 #include "ui/MI_TournamentScoreboard.h"
 #include "ui/MI_TourStop.h"
 #include "ui/MI_World.h"
+#include "ui/ModernMenu.h"
 #include "Version.h"
 #include "world.h"
 #include "WorldTourStop.h"
@@ -39,6 +40,7 @@
 #include "menu/OptionsMenu.h"
 #include "menu/PlayerControlsMenu.h"
 #include "menu/PlayerControlsSelectMenu.h"
+#include "menu/PlayChoiceMenu.h"
 #include "menu/TeamSelectMenu.h"
 #include "menu/TournamentScoreboardMenu.h"
 #include "menu/TourStopMenu.h"
@@ -154,6 +156,8 @@ bool MenuState::init()
     mModeOptionsMenu = std::make_unique<UI_ModeOptionsMenu>();
     mMatchSelectionMenu = std::make_unique<UI_MatchSelectionMenu>();
     mGameSettingsMenu = std::make_unique<UI_GameSettingsMenu>();
+    mPlayChoiceMenu = std::make_unique<UI_PlayChoiceMenu>();
+    mQuickRevealMenu = std::make_unique<UI_QuickRevealMenu>();
     mMapFilterEditMenu = std::make_unique<UI_MapFilterEditMenu>();
     mTourStopMenu = std::make_unique<UI_TourStopMenu>();
     mWorldMenu = std::make_unique<UI_WorldMenu>();
@@ -544,6 +548,12 @@ void MenuState::onEnterState()
 
 void MenuState::update()
 {
+    const bool modernWideMenu = mCurrentMenu == mTeamSelectMenu.get()
+        || mCurrentMenu == mGameSettingsMenu.get()
+        || mCurrentMenu == mPlayChoiceMenu.get()
+        || mCurrentMenu == mQuickRevealMenu.get();
+    App::screenWidth = modernWideMenu ? App::maxScreenWidth : App::menuWidth;
+
     if (netplay.active)
         netplay.client.update();
 
@@ -710,7 +720,9 @@ void MenuState::update()
 
     bool fGenerateMapThumbs = false;
     if (AppState::Menu == game_values.appstate) {
-        MenuCodeEnum code = mCurrentMenu->SendInput(&game_values.playerInput);
+        MenuCodeEnum code = mCurrentMenu == mQuickRevealMenu.get() && mQuickRevealMenu->Finished()
+            ? MENU_CODE_START_GAME
+            : mCurrentMenu->SendInput(&game_values.playerInput);
 
         // Shortcut to game start
         if (netplay.active) {
@@ -732,14 +744,16 @@ void MenuState::update()
 
             mCurrentMenu = mMainMenu.get();
         } else if (MENU_CODE_BACK_TO_MATCH_SELECTION_MENU == code) {
-            mCurrentMenu = mMatchSelectionMenu.get();
-            iUnlockMinigameOptionIndex = 0;
-        } else if (MENU_CODE_TO_MATCH_SELECTION_MENU == code) {
             const int players = std::count_if(std::begin(game_values.playercontrol), std::end(game_values.playercontrol), [](short p) { return p > 0; });
             mMatchSelectionMenu->SetWidePlayers(players > 4);
             mMatchSelectionMenu->WorldMapChanged();
-
             mCurrentMenu = mMatchSelectionMenu.get();
+            mCurrentMenu->ResetMenu();
+            iUnlockMinigameOptionIndex = 0;
+        } else if (MENU_CODE_TO_MATCH_SELECTION_MENU == code) {
+            game_values.matchtype = MatchType::SingleGame;
+            mTeamSelectMenu->ResetTeamSelect();
+            mCurrentMenu = mTeamSelectMenu.get();
             mCurrentMenu->ResetMenu();
             iUnlockMinigameOptionIndex = 0;
         } else if (MENU_CODE_MATCH_SELECTION_START == code || MENU_CODE_QUICK_GAME_START == code) {
@@ -802,7 +816,37 @@ void MenuState::update()
 			gfx_changefullscreen(game_values.fullscreen);
             blitdest = screen;
         }
-        else if (MENU_CODE_TO_GAME_SETUP_MENU == code) {
+        else if (MENU_CODE_TO_PLAY_CHOICE_MENU == code) {
+            score_cnt = mTeamSelectMenu->GetTeamCount();
+            const short players = std::count_if(std::begin(game_values.playercontrol), std::end(game_values.playercontrol), [](short p) { return p > 0; });
+            maplist->SetPlayerCount(players);
+            mGameSettingsMenu->miMapField->LoadCurrentMap();
+            game_values.matchtype = MatchType::SingleGame;
+            game_values.tournamentcontrolteam = -1;
+            SetControllingTeamForSettingsMenu(-1, false);
+            mCurrentMenu = mPlayChoiceMenu.get();
+            mCurrentMenu->ResetMenu();
+        } else if (MENU_CODE_QUICK_REVEAL == code || MENU_CODE_QUICK_REROLL == code) {
+            static constexpr GameModeType quickModes[] = {
+                game_mode_classic, game_mode_frag, game_mode_coins, game_mode_stomp,
+                game_mode_star, game_mode_koth, game_mode_frenzy, game_mode_survival
+            };
+            game_values.matchtype = MatchType::QuickGame;
+            game_values.gamemode = gamemodes[quickModes[RANDOM_INT(8)]];
+            SModeOption* options = game_values.gamemode->GetOptions();
+            game_values.gamemode->goal = options[RANDOM_INT(6) + 1].iValue;
+            game_values.tournamentwinner = -1;
+            mGameSettingsMenu->miMapField->ChooseRandomMap();
+            mGameSettingsMenu->miMapField->LoadCurrentMap();
+            mQuickRevealMenu->ResetReveal(game_values.gamemode, mGameSettingsMenu->miMapField->GetMapName());
+            mCurrentMenu = mQuickRevealMenu.get();
+        } else if (MENU_CODE_BACK_TO_PLAY_CHOICE == code) {
+            game_values.matchtype = MatchType::SingleGame;
+            mCurrentMenu = mPlayChoiceMenu.get();
+            mCurrentMenu->ResetMenu();
+        } else if (MENU_CODE_TO_GAME_SETUP_MENU == code) {
+            if (mCurrentMenu == mPlayChoiceMenu.get())
+                game_values.matchtype = MatchType::SingleGame;
             printf("MENU_CODE_TO_GAME_SETUP_MENU\n");
             //Moves teams to the first arrays in the list and counts the number of teams
             score_cnt = mTeamSelectMenu->GetTeamCount();
@@ -1038,7 +1082,10 @@ void MenuState::update()
             mGameSettingsMenu->RefreshGameModeButtons();
             mNetNewRoomSettingsMenu->RefreshGameModeButtons();
         } else if (MENU_CODE_BACK_TEAM_SELECT_MENU == code) {
-            if (game_values.matchtype == MatchType::World) {
+            if (mCurrentMenu == mPlayChoiceMenu.get()) {
+                mCurrentMenu = mTeamSelectMenu.get();
+                mCurrentMenu->ResetMenu();
+            } else if (game_values.matchtype == MatchType::World) {
                 mWorldMenu->OpenExitDialog();
             } else if (game_values.matchtype == MatchType::Tour) {
                 mTourStopMenu->OpenExitDialog();
@@ -1048,7 +1095,7 @@ void MenuState::update()
                 if (iTournamentAITimer > 0)
                     SetControllingTeamForSettingsMenu(-1, false);
             } else {
-                mCurrentMenu = mTeamSelectMenu.get();
+                mCurrentMenu = mPlayChoiceMenu.get();
                 mCurrentMenu->ResetMenu();
             }
         } else if (MENU_CODE_SOUND_VOLUME_CHANGED == code) {
@@ -1421,9 +1468,16 @@ void MenuState::update()
 
     //--------------- draw everything ----------------------
 
+    // A transition can change the active menu after the width was selected above.
+    const bool drawModernWideMenu = mCurrentMenu == mTeamSelectMenu.get()
+        || mCurrentMenu == mGameSettingsMenu.get()
+        || mCurrentMenu == mPlayChoiceMenu.get()
+        || mCurrentMenu == mQuickRevealMenu.get();
+    App::screenWidth = drawModernWideMenu ? App::maxScreenWidth : App::menuWidth;
+
     //Don't draw backdrop for world
     if (mCurrentMenu != mWorldMenu.get())
-        rm->menu_backdrop.draw(0, 0);
+        drawModernWideMenu ? ModernMenu::backdrop() : rm->menu_backdrop.draw(0, 0);
     else
         SDL_FillSurfaceRect(screen, NULL, SDL_MapSurfaceRGB(screen, 0, 0, 0));
 
@@ -1433,7 +1487,11 @@ void MenuState::update()
     if (g_fAutoTest) {
         if (const char* dir = SDL_getenv("SMW_CAPTURE_DIR")) {
             static unsigned captured = 0;
-            const unsigned bit = mCurrentMenu == mMainMenu.get() ? 1 : mCurrentMenu == mTeamSelectMenu.get() ? 2 : mCurrentMenu == mGameSettingsMenu.get() ? 4 : 0;
+            const unsigned bit = mCurrentMenu == mMainMenu.get() ? 1
+                : mCurrentMenu == mTeamSelectMenu.get() ? 2
+                : mCurrentMenu == mGameSettingsMenu.get() ? 4
+                : mCurrentMenu == mPlayChoiceMenu.get() ? 8
+                : mCurrentMenu == mQuickRevealMenu.get() ? 16 : 0;
             if (bit && !(captured & bit)) {
                 const std::string name = std::string(dir) + "/menu-" + std::to_string(bit) + ".png";
                 if (IMG_SavePNG(screen, name.c_str())) captured |= bit;
@@ -1539,7 +1597,7 @@ void MenuState::update()
                     }
                 } else if (game_values.matchtype == MatchType::QuickGame) {
                     //Load a random map for the quick game
-                    std::string szMapName = maplist->randomFilename();
+                    std::string szMapName = maplist->currentFilename();
 #if defined(SMW_AUTOTEST)
                     if (g_fAutoTest && !g_autotestMap.empty())
                         szMapName = convertPath("maps/" + g_autotestMap + ".map");
@@ -1909,16 +1967,76 @@ void MenuState::AutotestStep()
     wait = 0;
 
     COutputControl& keys = game_values.playerInput.outputControls[0];
+    const char* captureMode = SDL_getenv("SMW_CAPTURE_MENUS");
+    const bool captureMenus = captureMode != nullptr;
+    const bool uiNavTest = SDL_getenv("SMW_UI_NAV_TEST") != nullptr;
+    static bool customChoiceMoved = false;
+    static int uiNavStage = 0;
+    if (uiNavTest) {
+        if (mCurrentMenu == mMainMenu.get()) {
+            if (uiNavStage == 7) {
+                printf("[ui-nav] complete\n");
+                std::exit(0);
+            }
+            for (short player = 0; player < g_autotestPlayers; ++player)
+                game_values.playercontrol[player] = 2;
+            keys.menu_select.fPressed = true;
+        } else if (mCurrentMenu == mTeamSelectMenu.get()) {
+            for (short player = 0; player < g_autotestPlayers; ++player)
+                game_values.playerInput.outputControls[player].menu_select.fPressed = true;
+        } else if (mCurrentMenu == mPlayChoiceMenu.get()) {
+            if (uiNavStage == 0) {
+                keys.menu_cancel.fPressed = true;
+                uiNavStage = 1;
+            } else if (uiNavStage == 1) {
+                keys.menu_scrollfast.fPressed = true;
+                uiNavStage = 2;
+            } else if (uiNavStage == 3) {
+                keys.menu_random.fPressed = true;
+                uiNavStage = 4;
+            } else if (uiNavStage == 6) {
+                keys.menu_select.fPressed = true;
+                uiNavStage = 7;
+            }
+        } else if (mCurrentMenu == mGameSettingsMenu.get() && uiNavStage == 2) {
+            keys.menu_cancel.fPressed = true;
+            uiNavStage = 3;
+        } else if (mCurrentMenu == mQuickRevealMenu.get()) {
+            if (uiNavStage == 4) {
+                keys.menu_random.fPressed = true;
+                uiNavStage = 5;
+            } else if (uiNavStage == 5) {
+                keys.menu_cancel.fPressed = true;
+                uiNavStage = 6;
+            }
+        }
+        return;
+    }
     if (mCurrentMenu == mMainMenu.get()) {
         for (short iPlayer = 0; iPlayer < g_autotestPlayers; iPlayer++)
             game_values.playercontrol[iPlayer] = 2;
-        if (mCurrentMenu->currentFocus() == mMainMenu->quickGameButton())
+        if (captureMenus)
+            keys.menu_select.fPressed = true;
+        else if (mCurrentMenu->currentFocus() == mMainMenu->quickGameButton())
             keys.menu_select.fPressed = true;
         else
             keys.menu_right.fPressed = true;
+    } else if (captureMenus && mCurrentMenu == mMatchSelectionMenu.get()) {
+        keys.menu_select.fPressed = true;
     } else if (mCurrentMenu == mTeamSelectMenu.get()) {
-        for (short iPlayer = 0; iPlayer < 4; iPlayer++)
+        for (short iPlayer = 0; iPlayer < g_autotestPlayers; iPlayer++)
             game_values.playerInput.outputControls[iPlayer].menu_select.fPressed = true;
+    } else if (captureMenus && mCurrentMenu == mPlayChoiceMenu.get()) {
+        if (std::strcmp(captureMode, "custom") == 0 && !customChoiceMoved) {
+            keys.menu_down.fPressed = true;
+            customChoiceMoved = true;
+        } else {
+            keys.menu_select.fPressed = true;
+        }
+    } else if (captureMenus && mCurrentMenu == mQuickRevealMenu.get()) {
+        return;
+    } else if (captureMenus && mCurrentMenu == mGameSettingsMenu.get()) {
+        return;
     } else if (frames_in_menu > 60 * 30) {
         // Anywhere unexpected for half a minute: back out towards the main menu
         printf("[autotest] leaving an unexpected menu\n");

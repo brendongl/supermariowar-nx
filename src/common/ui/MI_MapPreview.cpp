@@ -69,6 +69,18 @@ void MI_MapPreview::Draw()
     if (!m_visible)
         return;
 
+    if (wideThumbnail) {
+        const short previewWidth = MAPWIDTH * 16;
+        const short iMapBoxX = m_pos.x + (iWidth - previewWidth) / 2;
+        SDL_Rect outer{iMapBoxX - 3, m_pos.y + 41, previewWidth + 6, 246};
+        SDL_FillSurfaceRect(blitdest, &outer, SDL_MapSurfaceRGB(blitdest, 0, 0, 0));
+        SDL_Rect inner{iMapBoxX - 1, m_pos.y + 43, previewWidth + 2, 242};
+        SDL_FillSurfaceRect(blitdest, &inner, SDL_MapSurfaceRGB(blitdest, 232, 236, 248));
+        rectDst = {iMapBoxX, m_pos.y + 44, previewWidth, 240};
+        wideThumbnail.drawStretch({0, 0, wideThumbnail.getWidth(), wideThumbnail.getHeight()}, blitdest, rectDst);
+        return;
+    }
+
     short iMapBoxX = m_pos.x + (iWidth >> 1) - 176 - iSlideListOut;
 
     //Draw the background for the map preview
@@ -79,10 +91,6 @@ void MI_MapPreview::Draw()
 
     rectDst.x = iMapBoxX + 16;
 
-    if (wideThumbnail) {
-        wideThumbnail.drawStretch({0, 0, 160, 120}, blitdest, rectDst);
-        return;
-    }
     surfaceMapBackground.draw(blitdest, rectDst);
 
     g_map->drawPlatforms(rectDst.x, rectDst.y, 0);
@@ -128,7 +136,7 @@ void MI_MapPreview::LoadMap(const std::string& szMapPath)
     g_map->loadMap(szMapPath, read_type_preview);
     wideThumbnail = gfxSprite();
     if (MAPWIDTH != MAPWIDTH_NORMAL) {
-        wideThumbnail = g_map->createThumbnailSurface(false);
+        wideThumbnail = g_map->createThumbnailSurface(false, true);
         return;
     }
     smallDelay(); //Sleeps to help the music from skipping

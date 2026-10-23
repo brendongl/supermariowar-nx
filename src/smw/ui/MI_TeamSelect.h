@@ -37,7 +37,7 @@ class MI_TeamSelect : public UI_Control
 		short iAnimationFrame;
 		short iRandomAnimationFrame;
 
-		bool fReady[4];
+		bool fReady[MAX_PLAYERS];
 		bool fAllReady;
 
 		short iFastScroll[4];

@@ -35,6 +35,9 @@ int switchAlias(int button, short iGameState)
         return button - 4;
     if (button >= 7 && button <= 9)
         return 6;
+    // Preserve L as an alternate for the menu's X action.
+    if (iGameState == 1 && button == 6)
+        return 2;
     if (iGameState == 0) {
         if (button == 1) return 0;
         if (button == 2) return 3;

@@ -12,6 +12,8 @@
 #include "ui/MI_MapFilterScroll.h"
 #include "ui/MI_SelectField.h"
 #include "ui/MI_Text.h"
+#include "ui/ModernMenu.h"
+#include "uicontrol.h"
 
 extern CGameMode* gamemodes[GAMEMODE_LAST];
 extern short currentgamemode;
@@ -36,16 +38,51 @@ const char* g_szAutoFilterNames[NUM_AUTO_FILTERS] {
     "Map Items",
 };
 const short g_iAutoFilterIcons[NUM_AUTO_FILTERS] {37, 29, 33, 1, 0, 6, 40, 73, 19, 87, 17, 118};
+
+class MI_ModernGameSettingsFrame : public UI_Control {
+public:
+    MI_ModernGameSettingsFrame() : UI_Control(0, 0) {}
+
+    void Draw() override {
+        ModernMenu::header("MATCH SETUP");
+        ModernMenu::strip(210, 15, 72, 19, 40, 120, 40);
+        rm->menu_font_small.drawCentered(246, 17, "FIGHTERS");
+        rm->menu_font_small.draw(290, 17, ">  RULES  >  STAGE");
+
+        ModernMenu::panel(8, 48, 282, 398);
+        rm->menu_font_small.draw(22, 58, "GAME MODE");
+        rm->menu_font_small.drawRightJustified(276, 58,
+            (std::to_string(currentgamemode + 1) + " / " + std::to_string(GAMEMODE_LAST)).c_str());
+        for (short row = 0; row < 9; ++row) {
+            const short mode = (currentgamemode + row) % GAMEMODE_LAST;
+            const int y = 120 + row * 25;
+            if (row == 0) ModernMenu::strip(16, y - 3, 266, 23, 92, 184, 8);
+            rm->menu_mode_small.draw(24, y, {mode * 16, 0, 16, 16});
+            rm->menu_font_small.draw(48, y + 1, gamemodes[mode]->GetModeName());
+        }
+        ModernMenu::fill(16, 350, 266, 2, 72, 84, 140);
+        rm->menu_font_small.drawCentered(149, 362, "Choose the mode and its goal.");
+        rm->menu_font_small.drawCentered(149, 380, "Full options stay available.");
+
+        ModernMenu::panel(298, 48, 558, 300);
+        rm->menu_font_small.draw(312, 58, "STAGE");
+        ModernMenu::panel(298, 354, 558, 92);
+        rm->menu_font_small.draw(312, 364, "RULES");
+        ModernMenu::footer("A Select    B Back    Y Random stage    L/R Stage");
+    }
+};
 } // namespace
 
 
 UI_GameSettingsMenu::UI_GameSettingsMenu()
     : UI_Menu()
 {
-    miSettingsStartButton = new MI_Button(&rm->spr_selectfield, 70, 45, "Start", 500);
+    auto* modernFrame = new MI_ModernGameSettingsFrame();
+
+    miSettingsStartButton = new MI_Button(&rm->spr_selectfield, 690, 407, "Start", 150);
     miSettingsStartButton->SetCode(MENU_CODE_START_GAME);
 
-    miModeField = new MI_ImageSelectField(&rm->spr_selectfield, &rm->menu_mode_small, 70, 85, "Mode", 500, 120, 16, 16);
+    miModeField = new MI_ImageSelectField(&rm->spr_selectfield, &rm->menu_mode_small, 16, 80, "Mode", 266, 92, 16, 16);
 
     for (short iGameMode = 0; iGameMode < GAMEMODE_LAST; iGameMode++) {
         miModeField->add(gamemodes[iGameMode]->GetModeName(), iGameMode);
@@ -55,7 +92,7 @@ UI_GameSettingsMenu::UI_GameSettingsMenu()
     miModeField->setItemChangedCode(MENU_CODE_MODE_CHANGED);
 
     for (short iGameMode = 0; iGameMode < GAMEMODE_LAST; iGameMode++) {
-        miGoalField[iGameMode] = new MI_SelectField<short>(&rm->spr_selectfield, 70, 125, gamemodes[iGameMode]->GetGoalName().c_str(), 352, 120);
+        miGoalField[iGameMode] = new MI_SelectField<short>(&rm->spr_selectfield, 306, 376, gamemodes[iGameMode]->GetGoalName().c_str(), 264, 100);
         // miGoalField[iGameMode]->SetKey(gamemodes[iGameMode]->goal);
         miGoalField[iGameMode]->setVisible(iGameMode == 0);
 
@@ -68,18 +105,18 @@ UI_GameSettingsMenu::UI_GameSettingsMenu()
         miGoalField[iGameMode]->setCurrentValue(gamemodes[iGameMode]->goal);
     }
 
-    miModeSettingsButton = new MI_Button(&rm->spr_selectfield, 430, 125, "Settings", 140);
+    miModeSettingsButton = new MI_Button(&rm->spr_selectfield, 580, 376, "Settings", 126);
     miModeSettingsButton->SetCode(MENU_CODE_TO_MODE_SETTINGS_MENU);
 
-    miMapField = new MI_MapField(&rm->spr_selectfield, 70, 165, "Map", 500, 120, true);
+    miMapField = new MI_MapField(&rm->spr_selectfield, 306, 68, "Stage", 536, 100, true);
 
-    miMapFiltersButton = new MI_Button(&rm->spr_selectfield, 430, 205, "Filters", 140);
+    miMapFiltersButton = new MI_Button(&rm->spr_selectfield, 306, 407, "Filters", 126);
     miMapFiltersButton->SetCode(MENU_CODE_TO_MAP_FILTERS);
 
-    miMapFiltersOnImage = new MI_Image(&rm->menu_map_filter, 530, 213, 0, 48, 16, 16, 1, 1, 0);
+    miMapFiltersOnImage = new MI_Image(&rm->menu_map_filter, 410, 415, 0, 48, 16, 16, 1, 1, 0);
     miMapFiltersOnImage->setVisible(false);
 
-    miMapThumbnailsButton = new MI_Button(&rm->spr_selectfield, 430, 245, "Thumbs", 140);
+    miMapThumbnailsButton = new MI_Button(&rm->spr_selectfield, 442, 407, "Browse", 126);
     miMapThumbnailsButton->SetCode(MENU_CODE_TO_MAP_BROWSER_THUMBNAILS);
 
     miMapFilterScroll = new MI_MapFilterScroll(&rm->menu_plain_field, 120, 72, 400, 9);
@@ -98,9 +135,8 @@ UI_GameSettingsMenu::UI_GameSettingsMenu()
     }
 
 
-    miGameSettingsLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
-    miGameSettingsMenuRightHeaderBar = new MI_Image(&rm->menu_plain_field, 320, 0, 192, 0, 320, 32, 1, 1, 0);
     miGameSettingsMenuHeaderText = new MI_HeaderText("Single Game Menu", 320, 5);
+    miGameSettingsMenuHeaderText->setVisible(false);
 
 
     // Exit tournament dialog box
@@ -119,6 +155,9 @@ UI_GameSettingsMenu::UI_GameSettingsMenu()
     miGameSettingsExitDialogYesButton->setVisible(false);
     miGameSettingsExitDialogNoButton->setVisible(false);
 
+    AddNonControl(modernFrame);
+    AddNonControl(miGameSettingsMenuHeaderText);
+
     AddControl(miSettingsStartButton, miMapThumbnailsButton, miModeField, NULL, NULL);
     AddControl(miModeField, miSettingsStartButton, miGoalField[0], NULL, NULL);
 
@@ -135,10 +174,6 @@ UI_GameSettingsMenu::UI_GameSettingsMenu()
     AddControl(miMapThumbnailsButton, miMapFiltersButton, miSettingsStartButton, NULL, NULL);
 
     AddControl(miMapFilterScroll, NULL, NULL, NULL, NULL);
-
-    AddNonControl(miGameSettingsLeftHeaderBar);
-    AddNonControl(miGameSettingsMenuRightHeaderBar);
-    AddNonControl(miGameSettingsMenuHeaderText);
 
     AddNonControl(miGameSettingsExitDialogImage);
     AddNonControl(miGameSettingsExitDialogExitText);

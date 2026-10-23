@@ -31,7 +31,7 @@ public:
 
     void ResetMenu();
 
-    MenuCodeEnum SendInput(CPlayerInput* playerInput);
+    virtual MenuCodeEnum SendInput(CPlayerInput* playerInput);
     void Update();
     void Draw();
 
