@@ -251,3 +251,13 @@ authorized for this project test only; no blanket cafe fleet permission exists.
 - Files changed: the eight-controller/UI files listed in the preceding gate; `servers.toml` remains untouched and untracked.
 - Active helpers: none. Active build jobs: none.
 - Next action: reserve Toad, close the old build safely, install and hash-verify this NRO, clear automation/control overrides, launch normally, and leave it ready for Brendon.
+
+## Toad deployment gate — blocked by console connectivity
+
+- Reserved Toad under lease `c69cfb35-5d71-4a77-8c08-714f1385f5d3` and captured HOME before writing anything.
+- The managed API then returned empty replies. The NRO upload failed with `Broken pipe` after **0 bytes**, so the installed file was not changed or partially overwritten.
+- A broker refresh confirmed Toad changed from `horizon` to `offline`; a later fleet status check still showed it offline.
+- Missing evidence: final NRO installed/hash-verified and physical eight-controller behavior. No new game test failed because the candidate never reached the console.
+- Files changed: checkpoint only after commit `eb4f673c` (`Add eight-controller player flow`).
+- Active helpers/builds: none.
+- Next action: when Toad's managed connection returns, acquire a new Toad lease and resume at upload; do not rebuild or repeat completed PC gates.
