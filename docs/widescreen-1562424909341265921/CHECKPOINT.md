@@ -261,3 +261,14 @@ authorized for this project test only; no blanket cafe fleet permission exists.
 - Files changed: checkpoint only after commit `eb4f673c` (`Add eight-controller player flow`).
 - Active helpers/builds: none.
 - Next action: when Toad's managed connection returns, acquire a new Toad lease and resume at upload; do not rebuild or repeat completed PC gates.
+
+## Final Toad deployment — 2026-10-23
+
+- Toad returned online. Queued lease `efd77d24-63fb-4de3-8e5e-7f556d7258f8` waited for the existing MD2 icon-swap owner and acquired normally; no owner was bypassed.
+- Verified HOME before writing. Deleted `options.toml` and `controls.sdl2.bin`; `autotest` was already absent.
+- Uploaded the final 64,775,803-byte NRO. Console-side SHA-256 exactly matches `e19c825310dbbd969e66c046444041a0010a4aeb918a15d705607b78058260cc`.
+- Launched Super Mario War and visually verified the new Welcome screen with “Up to 8 players”. Cleared and detached the sys-autopilot virtual controller; `/status` reports `controllerAttached:false`.
+- Final console directory contains the NRO, logs, filters and maps only: no autotest/options/controls override. Game is intentionally left running at Welcome for Brendon's physical test.
+- Remaining evidence: physical eight-controller pairing, per-player L/R and ZL/ZR fighter controls, P1-only menu enforcement, manual Quick-start A, and all eight players moving in-match. These are missing user hardware results, not failed tests.
+- Files changed: checkpoint only after commits `eb4f673c` and `7bbd262a`. Active helpers/builds: none.
+- Next action: receive Brendon's physical test result and immediately fix any observed defect before release.
