@@ -1,0 +1,140 @@
+[
+  {
+    "stage": 1,
+    "name": "4matsy_Block! Block!",
+    "background": "Land_Classic.png",
+    "review_version": "v3"
+  },
+  {
+    "stage": 2,
+    "name": "tubesteak_mountain waterfall",
+    "background": "Platforms_GreenSpottedHills.png",
+    "review_version": "v3"
+  },
+  {
+    "stage": 3,
+    "name": "ventuz_bounce2lava",
+    "background": "Battle_Manor.png",
+    "review_version": "v3"
+  },
+  {
+    "stage": 4,
+    "name": "ym7_Sky Garden",
+    "background": "Clouds_Clouds.png",
+    "review_version": "v4"
+  },
+  {
+    "stage": 5,
+    "name": "two52_the pit",
+    "background": "Underground_Cave.png",
+    "review_version": "v2"
+  },
+  {
+    "stage": 6,
+    "name": "Xijar_Greden",
+    "background": "Platforms_JaggedGreenStones.png",
+    "review_version": "v3"
+  },
+  {
+    "stage": 7,
+    "name": "Xijar_Wonder Winterland",
+    "background": "Snow_SnowTrees.png",
+    "review_version": "v4"
+  },
+  {
+    "stage": 8,
+    "name": "ym7_castor wilds",
+    "background": "Land_InTheTrees.png",
+    "review_version": "v3"
+  },
+  {
+    "stage": 9,
+    "name": "bcatcher_yoshi island",
+    "background": "Clouds_AboveTheClouds.png",
+    "review_version": "v4"
+  },
+  {
+    "stage": 10,
+    "name": "Sgraff_Haunted Temple",
+    "background": "Platforms_AnOminousWorld.png",
+    "review_version": "v3"
+  },
+  {
+    "stage": 11,
+    "name": "Xijar_Death Island",
+    "background": "Desert_Desert.png",
+    "review_version": "v2"
+  },
+  {
+    "stage": 13,
+    "name": "4matsy_Heinous Heights",
+    "background": "Platforms_CloudsAndWaterfalls.png",
+    "review_version": "v2"
+  },
+  {
+    "stage": 14,
+    "name": "two52_chainlink",
+    "background": "Castle_Dungeon.png",
+    "review_version": "v4"
+  },
+  {
+    "stage": 15,
+    "name": "4matsy_Ninja Gaiden 1 - 1-1",
+    "background": "Bonus_HillsAtNight.png",
+    "review_version": "v2"
+  },
+  {
+    "stage": 16,
+    "name": "Xijar_Boo is Back",
+    "background": "Castle_GoombaHall.png",
+    "review_version": "v2"
+  },
+  {
+    "stage": 17,
+    "name": "bcatcher_field day",
+    "background": "Land_CastleWall.png",
+    "review_version": "v2"
+  },
+  {
+    "stage": 18,
+    "name": "tubesteak_ssbmjunglejapes",
+    "background": "Land_InTheTrees2.png",
+    "review_version": "v2"
+  },
+  {
+    "stage": 19,
+    "name": "tubesteak_dkjungle",
+    "background": "Land_GreenMountains.png",
+    "review_version": "v3"
+  },
+  {
+    "stage": 20,
+    "name": "hazey_Lava Island",
+    "background": "Underground_BrownRockWall.png",
+    "review_version": "v3"
+  },
+  {
+    "stage": 21,
+    "name": "GG_The hotter the better",
+    "background": "Desert_Pyramids.png",
+    "review_version": "v3"
+  },
+  {
+    "stage": 22,
+    "name": "Tanuki_Jungle Bridge",
+    "background": "Platforms_JaggedGreenStones3.png",
+    "review_version": "v2"
+  },
+  {
+    "stage": 23,
+    "name": "Link901_Watery Day",
+    "background": "Underwater_Underwater.png",
+    "review_version": "v3"
+  },
+  {
+    "stage": 24,
+    "name": "ym7_jungle",
+    "background": "Platforms_UpInTheTreetop.png",
+    "review_version": "v2"
+  }
+]

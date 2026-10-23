@@ -337,3 +337,35 @@ TEST_CASE("Applying a TOML document without chapters keeps the existing values")
     CHECK(restored.fireballttl == CGameConfig {}.fireballttl);
     CHECK(restored.gamemodemenusettings.chicken.usetarget == CGameConfig {}.gamemodemenusettings.chicken.usetarget);
 }
+
+
+TEST_CASE("Legacy four-player configuration preserves the extra slots") {
+    CGameConfig settings {};
+    config::Bridge bridge {};
+    const auto doc = toml::parse_str(R"(
+        [players]
+        skins = ["mario", "luigi", "peach", "toad"]
+        player_slots = ["human", "cpu", "empty", "cpu"]
+    )");
+    config::apply_config_document(settings, bridge, doc);
+    CHECK(bridge.skins[3] == "toad");
+    CHECK(bridge.player_slots[0] == PlayerSlot::Human);
+    CHECK(bridge.player_slots[3] == PlayerSlot::Cpu);
+    for (size_t i = 4; i < MAX_PLAYERS; ++i) {
+        CHECK(bridge.skins[i].empty());
+        CHECK(bridge.player_slots[i] == PlayerSlot::Empty);
+    }
+}
+
+TEST_CASE("Invalid player entry does not partially overwrite the other slots") {
+    CGameConfig settings {};
+    config::Bridge bridge {};
+    bridge.player_slots.fill(PlayerSlot::Cpu);
+    const auto before = bridge.player_slots;
+    const auto doc = toml::parse_str(R"(
+        [players]
+        player_slots = ["human", "empty", "human", "unknown"]
+    )");
+    config::apply_config_document(settings, bridge, doc);
+    CHECK(bridge.player_slots == before);
+}

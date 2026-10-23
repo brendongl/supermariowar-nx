@@ -17,6 +17,8 @@ public:
     std::vector<bool> pfFilters;
     std::string filename;
 
+    short width = 20;
+
     short iIndex = 0;
     short iFilteredIndex = 0;
 
@@ -51,6 +53,10 @@ public:
 		void random(bool fUseFilters);
 
     std::string randomFilename() const;
+    // Editors leave this unset; gameplay always sets the active participant count.
+    void SetPlayerCount(short players);
+    bool WidthAllowed(const MapListNode& node) const;
+
 
     /// Sets whether the current map is valid and can be loaded
     void setValid(bool fValid) {
@@ -117,6 +123,7 @@ public:
     std::vector<decltype(maps)::iterator> mlnMaps;
 
     size_t iFilteredMapCount;
+    short requiredWidth = 0;
 };
 
 #endif // MAPLIST_H

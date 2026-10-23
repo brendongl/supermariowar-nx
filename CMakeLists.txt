@@ -171,6 +171,9 @@ install(DIRECTORY data/
 	PATTERN .git EXCLUDE
 	PATTERN ZZleveleditor.map EXCLUDE
 )
+# Approved wide maps and their art are shared by desktop and Switch builds.
+install(DIRECTORY platform/widescreen/data/ DESTINATION "${SMW_DATADIR}")
+
 install(FILES docs/readme-v1.8.html DESTINATION "${SMW_DOCDIR}")
 
 #-----------------------------------------------------------------------------

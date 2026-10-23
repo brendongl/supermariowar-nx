@@ -1,0 +1,479 @@
+{
+  "unit_tests": {
+    "passed": 61,
+    "assertions": 185
+  },
+  "map_validation": {
+    "converted": 23,
+    "center_cells_checked": 6900
+  },
+  "map_pools": {
+    "2": 290,
+    "4": 290,
+    "5": 24,
+    "8": 24,
+    "random_picks_per_count": 100
+  },
+  "full_eight_cpu_sweep": [
+    {
+      "stage": 1,
+      "code": 124,
+      "matches": 2,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.2o3UQM/01",
+      "passed": true
+    },
+    {
+      "stage": 2,
+      "code": 124,
+      "matches": 2,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.2o3UQM/02",
+      "passed": true
+    },
+    {
+      "stage": 3,
+      "code": 124,
+      "matches": 2,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.2o3UQM/03",
+      "passed": true
+    },
+    {
+      "stage": 4,
+      "code": 124,
+      "matches": 2,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.2o3UQM/04",
+      "passed": true
+    },
+    {
+      "stage": 5,
+      "code": 124,
+      "matches": 2,
+      "warnings": 4,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.2o3UQM/05",
+      "passed": false
+    },
+    {
+      "stage": 6,
+      "code": 124,
+      "matches": 2,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.2o3UQM/06",
+      "passed": true
+    },
+    {
+      "stage": 7,
+      "code": 124,
+      "matches": 2,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.2o3UQM/07",
+      "passed": true
+    },
+    {
+      "stage": 8,
+      "code": 124,
+      "matches": 3,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.2o3UQM/08",
+      "passed": true
+    },
+    {
+      "stage": 9,
+      "code": 124,
+      "matches": 4,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.2o3UQM/09",
+      "passed": true
+    },
+    {
+      "stage": 10,
+      "code": 124,
+      "matches": 2,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.2o3UQM/10",
+      "passed": true
+    },
+    {
+      "stage": 11,
+      "code": 124,
+      "matches": 3,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.2o3UQM/11",
+      "passed": true
+    },
+    {
+      "stage": 13,
+      "code": 124,
+      "matches": 2,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.2o3UQM/13",
+      "passed": true
+    },
+    {
+      "stage": 14,
+      "code": 124,
+      "matches": 3,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.2o3UQM/14",
+      "passed": true
+    },
+    {
+      "stage": 15,
+      "code": 124,
+      "matches": 3,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.2o3UQM/15",
+      "passed": true
+    },
+    {
+      "stage": 16,
+      "code": 124,
+      "matches": 3,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.2o3UQM/16",
+      "passed": true
+    },
+    {
+      "stage": 17,
+      "code": 124,
+      "matches": 2,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.2o3UQM/17",
+      "passed": true
+    },
+    {
+      "stage": 18,
+      "code": 124,
+      "matches": 3,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.2o3UQM/18",
+      "passed": true
+    },
+    {
+      "stage": 19,
+      "code": 124,
+      "matches": 3,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.2o3UQM/19",
+      "passed": true
+    },
+    {
+      "stage": 20,
+      "code": 124,
+      "matches": 3,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.2o3UQM/20",
+      "passed": true
+    },
+    {
+      "stage": 21,
+      "code": 124,
+      "matches": 3,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.2o3UQM/21",
+      "passed": true
+    },
+    {
+      "stage": 22,
+      "code": 124,
+      "matches": 3,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.2o3UQM/22",
+      "passed": true
+    },
+    {
+      "stage": 23,
+      "code": 124,
+      "matches": 3,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.2o3UQM/23",
+      "passed": true
+    },
+    {
+      "stage": 24,
+      "code": 124,
+      "matches": 4,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.2o3UQM/24",
+      "passed": true
+    }
+  ],
+  "the_pit_after_collision_fix": [
+    {
+      "stage": 5,
+      "players": 8,
+      "original": false,
+      "arena": [
+        [
+          "27",
+          "8",
+          "8"
+        ],
+        [
+          "27",
+          "8",
+          "8"
+        ],
+        [
+          "27",
+          "8",
+          "8"
+        ],
+        [
+          "27",
+          "8",
+          "8"
+        ]
+      ],
+      "mode": "Greed",
+      "binary_sha256": "0d48e1266d8573ac9c56ab618ad5a93782bfaf208179efbbcc67164cac981ba0",
+      "code": 124,
+      "matches": 4,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.s45hzl/05",
+      "passed": true
+    }
+  ],
+  "original_four_player_regression": [
+    {
+      "stage": 1,
+      "players": 4,
+      "original": true,
+      "arena": [
+        [
+          "20",
+          "4",
+          "4"
+        ],
+        [
+          "20",
+          "4",
+          "4"
+        ],
+        [
+          "20",
+          "4",
+          "4"
+        ]
+      ],
+      "mode": "random",
+      "binary_sha256": "0d48e1266d8573ac9c56ab618ad5a93782bfaf208179efbbcc67164cac981ba0",
+      "code": 124,
+      "matches": 3,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.5JMBxI/01",
+      "passed": true
+    },
+    {
+      "stage": 5,
+      "players": 4,
+      "original": true,
+      "arena": [
+        [
+          "20",
+          "4",
+          "4"
+        ],
+        [
+          "20",
+          "4",
+          "4"
+        ],
+        [
+          "20",
+          "4",
+          "4"
+        ]
+      ],
+      "mode": "random",
+      "binary_sha256": "0d48e1266d8573ac9c56ab618ad5a93782bfaf208179efbbcc67164cac981ba0",
+      "code": 124,
+      "matches": 3,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.5JMBxI/05",
+      "passed": true
+    },
+    {
+      "stage": 7,
+      "players": 4,
+      "original": true,
+      "arena": [
+        [
+          "20",
+          "4",
+          "4"
+        ],
+        [
+          "20",
+          "4",
+          "4"
+        ],
+        [
+          "20",
+          "4",
+          "4"
+        ]
+      ],
+      "mode": "random",
+      "binary_sha256": "0d48e1266d8573ac9c56ab618ad5a93782bfaf208179efbbcc67164cac981ba0",
+      "code": 124,
+      "matches": 3,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.5JMBxI/07",
+      "passed": true
+    }
+  ],
+  "five_player_boundary": [
+    {
+      "stage": 4,
+      "players": 5,
+      "original": false,
+      "arena": [
+        [
+          "27",
+          "5",
+          "5"
+        ],
+        [
+          "27",
+          "5",
+          "5"
+        ],
+        [
+          "27",
+          "5",
+          "5"
+        ]
+      ],
+      "mode": "random",
+      "binary_sha256": "76e53d56d31efaf886017a355cc66050dbb8d7234951afa6fedf3505b5c625cd",
+      "code": 124,
+      "matches": 3,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.JdOg8E/04",
+      "passed": true
+    },
+    {
+      "stage": 14,
+      "players": 5,
+      "original": false,
+      "arena": [
+        [
+          "27",
+          "5",
+          "5"
+        ],
+        [
+          "27",
+          "5",
+          "5"
+        ],
+        [
+          "27",
+          "5",
+          "5"
+        ]
+      ],
+      "mode": "random",
+      "binary_sha256": "76e53d56d31efaf886017a355cc66050dbb8d7234951afa6fedf3505b5c625cd",
+      "code": 124,
+      "matches": 3,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.JdOg8E/14",
+      "passed": true
+    }
+  ],
+  "winterland_final_art": [
+    {
+      "stage": 7,
+      "players": 8,
+      "original": false,
+      "arena": [
+        [
+          "27",
+          "8",
+          "8"
+        ],
+        [
+          "27",
+          "8",
+          "8"
+        ]
+      ],
+      "mode": "random",
+      "binary_sha256": "76e53d56d31efaf886017a355cc66050dbb8d7234951afa6fedf3505b5c625cd",
+      "code": 124,
+      "matches": 2,
+      "warnings": 0,
+      "sanitizer": false,
+      "frames": 3,
+      "path": "/home/brendongl/projects/supermariowar-nx/build-wide-soak.o0pyqf/07",
+      "passed": true
+    }
+  ],
+  "switch_nro_sha256": "3a78897f2ce90786fa7350a98600f1fb9f0d3fb1b8b8221477f0d4a573879e3a",
+  "embedded_shared_assets_verified": 140,
+  "physical_switch": "Pending: Fox occupied. Own queued reservation cancelled; no console touched.",
+  "emulator": "Blocked before game launch: std::logic_error basic_string construction from null in isolated Eden profile.",
+  "public_release": "Not published"
+}

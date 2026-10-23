@@ -180,7 +180,10 @@ class CMap
 		/// block, top type, no-spawn flags) to column dstX, starting at row dstRow.
 		void copyColumn(short srcX, short dstX, short firstRow, short lastRow, short dstRow);
 
-		gfxSprite createThumbnailSurface(bool fUseClassicPack);
+		/// Offline authoring: attach a seven-column art atlas and apply checked cell edits.
+		void authorWideSides(const std::string& tileset, const std::string& edits);
+
+		gfxSprite createThumbnailSurface(bool fUseClassicPack, bool nativeWidth = false);
 		void saveThumbnail(const std::string &file, bool fUseClassicPack);
 
 		void UpdateAllTileGaps();

@@ -93,6 +93,13 @@ void MI_TeamSelect::Draw()
         }
     }
 
+    int extras = 0;
+    for (short player = MAX_INPUT_PLAYERS; player < MAX_PLAYERS; ++player)
+        extras += game_values.playercontrol[player] > 0;
+    if (extras) {
+        const std::string caption = std::to_string(extras) + " extra CPUs - random fighters, separate teams";
+        rm->menu_font_small.drawCentered(320, 452, caption.c_str());
+    }
     if (fAllReady) {
         rm->menu_plain_field.draw(m_pos.x + 108, m_pos.y + App::screenHeight * 0.47f, {0, 160, 100, 32});
         rm->menu_plain_field.draw(m_pos.x + 208, m_pos.y + App::screenHeight * 0.47f, {412, 160, 100, 32});
@@ -406,6 +413,8 @@ void MI_TeamSelect::Reset()
 short MI_TeamSelect::OrganizeTeams()
 {
     iNumTeams = 0;
+    for (short iTeam = 0; iTeam < MAX_PLAYERS; ++iTeam)
+        game_values.teamcounts[iTeam] = 0;
     for (short iTeam = 0; iTeam < 4; iTeam++) {
         game_values.teamcounts[iTeam] = 0;
 
@@ -418,6 +427,14 @@ short MI_TeamSelect::OrganizeTeams()
         }
     }
 
+    for (short player = MAX_INPUT_PLAYERS; player < MAX_PLAYERS; ++player) {
+        if (!game_values.playercontrol[player]) continue;
+        game_values.playercontrol[player] = 2;
+        game_values.teamids[iNumTeams][0] = player;
+        game_values.teamcounts[iNumTeams++] = 1;
+        game_values.colorids[player] = player;
+        game_values.randomskin[player] = true;
+    }
     return iNumTeams;
 }
 

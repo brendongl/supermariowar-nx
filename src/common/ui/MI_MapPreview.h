@@ -37,6 +37,7 @@ protected:
     gfxSprite * spr;
 
     gfxSprite surfaceMapBackground;
+    gfxSprite wideThumbnail;
     gfxSprite surfaceMapBlockLayer;
     gfxSprite surfaceMapForeground;
     SDL_Rect rectDst;

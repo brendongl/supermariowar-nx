@@ -18,7 +18,7 @@ MI_PlayerSelect::MI_PlayerSelect(gfxSprite * nspr, short x, short y, std::string
     miModifyImage = std::make_unique<MI_Image>(nspr, m_pos.x, m_pos.y - 6, 32, 128, 78, 78, 4, 1, 8);
     miModifyImage->setVisible(false);
 
-    const short iSpacing = (width - indent - 136) / 5;
+    const short iSpacing = (width - indent - 8 * 34) / 9;
     for (size_t i = 0; i < iPlayerPosition.size(); i++) {
         iPlayerPosition[i] = iSpacing + indent + i * (iSpacing + 34);
     }
@@ -37,7 +37,7 @@ MenuCodeEnum MI_PlayerSelect::SendInput(CPlayerInput* playerInput)
 {
     for (int iPlayer = 0; iPlayer < 4; iPlayer++) {
         if (playerInput->outputControls[iPlayer].menu_right.fPressed) {
-            if (++iSelectedPlayer > 3)
+            if (++iSelectedPlayer > 7)
                 iSelectedPlayer = 0;
 
             SetImagePosition();
@@ -45,16 +45,18 @@ MenuCodeEnum MI_PlayerSelect::SendInput(CPlayerInput* playerInput)
 
         if (playerInput->outputControls[iPlayer].menu_left.fPressed) {
             if (--iSelectedPlayer < 0)
-                iSelectedPlayer = 3;
+                iSelectedPlayer = 7;
 
             SetImagePosition();
         }
 
         if (playerInput->outputControls[iPlayer].menu_up.fPressed) {
-            if (--game_values.playercontrol[iSelectedPlayer] < 0)
+            if (iSelectedPlayer >= MAX_INPUT_PLAYERS)
+                game_values.playercontrol[iSelectedPlayer] = game_values.playercontrol[iSelectedPlayer] ? 0 : 2;
+            else if (--game_values.playercontrol[iSelectedPlayer] < 0)
                 game_values.playercontrol[iSelectedPlayer] = 2;
 
-            if (game_values.playercontrol[iSelectedPlayer] == 0) {
+            if (iSelectedPlayer < MAX_INPUT_PLAYERS && game_values.playercontrol[iSelectedPlayer] == 0) {
                 int iCountPlayers = 0;
                 for (int iPlayer = 0; iPlayer < 4; iPlayer++) {
                     if (game_values.playercontrol[iPlayer] > 0)
@@ -67,10 +69,12 @@ MenuCodeEnum MI_PlayerSelect::SendInput(CPlayerInput* playerInput)
         }
 
         if (playerInput->outputControls[iPlayer].menu_down.fPressed) {
-            if (++game_values.playercontrol[iSelectedPlayer] > 2)
+            if (iSelectedPlayer >= MAX_INPUT_PLAYERS)
+                game_values.playercontrol[iSelectedPlayer] = game_values.playercontrol[iSelectedPlayer] ? 0 : 2;
+            else if (++game_values.playercontrol[iSelectedPlayer] > 2)
                 game_values.playercontrol[iSelectedPlayer] = 0;
 
-            if (game_values.playercontrol[iSelectedPlayer] == 0) {
+            if (iSelectedPlayer < MAX_INPUT_PLAYERS && game_values.playercontrol[iSelectedPlayer] == 0) {
                 int iCountPlayers = 0;
                 for (int iPlayer = 0; iPlayer < 4; iPlayer++) {
                     if (game_values.playercontrol[iPlayer] > 0)
@@ -115,7 +119,9 @@ void MI_PlayerSelect::Draw()
 
     miModifyImage->Draw();
 
-    for (short iPlayer = 0; iPlayer < 4; iPlayer++) {
+    for (short iPlayer = 0; iPlayer < MAX_PLAYERS; iPlayer++) {
+        const std::string label = std::to_string(iPlayer + 1);
+        rm->menu_font_small.drawCentered(m_pos.x + iPlayerPosition[iPlayer] + 17, m_pos.y + 2, label.c_str());
         spr->draw(m_pos.x + iPlayerPosition[iPlayer], m_pos.y + 16, {game_values.playercontrol[iPlayer] * 34 + 32, 206, 34, 32});
     }
 }

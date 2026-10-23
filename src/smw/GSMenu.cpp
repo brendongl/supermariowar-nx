@@ -65,6 +65,8 @@
 #include <cassert>
 #include <cstring>
 #include <sstream>
+#include <fstream>
+#include <SDL3_image/SDL_image.h>
 
 
 extern SDL_Surface* screen;
@@ -171,6 +173,68 @@ bool MenuState::init()
     szCurrentMapName = mGameSettingsMenu->miMapField->GetMapName();
 
 #if defined(SMW_AUTOTEST)
+    if (SDL_getenv("SMW_CHECK_MAP_POOLS")) {
+        try {
+            for (short players : {2, 4, 5, 8, 4, 8}) {
+                maplist->SetPlayerCount(players);
+                const short expected = players > 4 ? 27 : 20;
+                for (size_t n = 0; n < maplist->filteredCount(); ++n) {
+                    auto node = maplist->GetIteratorAt(n, true);
+                    g_map->loadMap(node->second.filename, read_type_summary);
+                    if (MAPWIDTH != expected) throw std::runtime_error("Browser exposed wrong width");
+                }
+                for (int n = 0; n < 100; ++n) {
+                    maplist->random(n % 2 == 0);
+                    g_map->loadMap(maplist->currentFilename(), read_type_summary);
+                    if (MAPWIDTH != expected) throw std::runtime_error("Manual random chose wrong width");
+                    g_map->loadMap(maplist->randomFilename(), read_type_summary);
+                    if (MAPWIDTH != expected) throw std::runtime_error("Quick Game chose wrong width");
+                }
+                printf("[pool-test] players=%d width=%d maps=%zu passed\n", players, expected, maplist->filteredCount());
+            }
+            exit(0);
+        } catch (const std::exception& error) {
+            fprintf(stderr, "[pool-test] FAILED: %s\n", error.what());
+            exit(1);
+        }
+    }
+
+    // Offline batch authoring. Each line is source|output|background|atlas|edits.
+    // The normal map reader/writer preserves warps, hazards and block settings.
+    if (const char* manifest = SDL_getenv("SMW_AUTHOR")) {
+        try {
+            std::ifstream input(manifest);
+            if (!input) throw std::runtime_error("Cannot open authoring manifest");
+            std::string line;
+            int count = 0;
+            while (std::getline(input, line)) {
+                if (line.empty() || line[0] == '#') continue;
+                std::istringstream fields(line);
+                std::vector<std::string> parts;
+                std::string part;
+                while (std::getline(fields, part, '|')) parts.push_back(part);
+                if (parts.size() != 5) throw std::runtime_error("Invalid authoring manifest row");
+                g_map->loadMap(convertPath(parts[0]), read_type_full);
+                if (!g_map->widen(27, 3)) throw std::runtime_error("Map cannot be widened: " + parts[0]);
+                g_map->szBackgroundFile = parts[2];
+                g_map->authorWideSides(parts[3], parts[4]);
+                g_map->saveMap(convertPath(parts[1]));
+                // Read back the complete map immediately, including supplemental data.
+                g_map->loadMap(convertPath(parts[1]), read_type_full);
+                auto preview = g_map->createThumbnailSurface(true, true);
+                if (!IMG_SavePNG(preview.getSurface(), (parts[4] + ".png").c_str()))
+                    throw std::runtime_error("Cannot save author preview");
+                printf("[author] verified %s width=%d\n", parts[1].c_str(), MAPWIDTH);
+                ++count;
+            }
+            printf("[author] complete: %d maps\n", count);
+            exit(count ? 0 : 1);
+        } catch (const std::exception& error) {
+            fprintf(stderr, "[author] failed: %s\n", error.what());
+            exit(1);
+        }
+    }
+
     // Dev tool for widescreen maps:
     //   SMW_WIDEN="in.map;out.map;<width>;<offset>[;dst=src[@r0-r1[:t]],...[;background.png]]"
     // loads in.map, widens it to <width> tiles with the old content moved <offset>
@@ -229,8 +293,7 @@ bool MenuState::init()
                     g_autotestMap = line + 4;
                     printf("[autotest] only map %s\n", g_autotestMap.c_str());
                 } else if (strncmp(line, "players=", 8) == 0) {
-                    // More than 4 CPU players, each on its own team (the team select
-                    // screen only handles 4, so the teams are set up when the game starts)
+                    // Extra CPU slots use the same team organization as normal play.
                     g_autotestPlayers = std::clamp<short>(static_cast<short>(atoi(line + 8)), 2, MAX_PLAYERS);
                     for (short iPlayer = 4; iPlayer < g_autotestPlayers; iPlayer++)
                         game_values.randomskin[iPlayer] = true;
@@ -672,6 +735,8 @@ void MenuState::update()
             mCurrentMenu = mMatchSelectionMenu.get();
             iUnlockMinigameOptionIndex = 0;
         } else if (MENU_CODE_TO_MATCH_SELECTION_MENU == code) {
+            const int players = std::count_if(std::begin(game_values.playercontrol), std::end(game_values.playercontrol), [](short p) { return p > 0; });
+            mMatchSelectionMenu->SetWidePlayers(players > 4);
             mMatchSelectionMenu->WorldMapChanged();
 
             mCurrentMenu = mMatchSelectionMenu.get();
@@ -704,6 +769,8 @@ void MenuState::update()
         } else if (MENU_CODE_BACK_TO_OPTIONS_MENU == code) {
             mCurrentMenu = mOptionsMenu.get();
         } else if (MENU_CODE_TO_NET_SERVERS_MENU == code) {
+            for (short p = MAX_INPUT_PLAYERS; p < MAX_PLAYERS; ++p) game_values.playercontrol[p] = 0;
+            maplist->SetPlayerCount(4);
             mCurrentMenu = mNetServersMenu.get();
             mCurrentMenu->ResetMenu();
             net_startSession();
@@ -739,17 +806,9 @@ void MenuState::update()
             printf("MENU_CODE_TO_GAME_SETUP_MENU\n");
             //Moves teams to the first arrays in the list and counts the number of teams
             score_cnt = mTeamSelectMenu->GetTeamCount();
-#if defined(SMW_AUTOTEST)
-            if (g_fAutoTest && g_autotestPlayers > 4) {
-                for (short iPlayer = 0; iPlayer < g_autotestPlayers; iPlayer++) {
-                    game_values.playercontrol[iPlayer] = 2;
-                    game_values.teamids[iPlayer][0] = iPlayer;
-                    game_values.teamcounts[iPlayer] = 1;
-                    game_values.colorids[iPlayer] = iPlayer;
-                }
-                score_cnt = g_autotestPlayers;
-            }
-#endif
+            const short players = std::count_if(std::begin(game_values.playercontrol), std::end(game_values.playercontrol), [](short p) { return p > 0; });
+            maplist->SetPlayerCount(players);
+            mGameSettingsMenu->miMapField->LoadCurrentMap();
             iDisplayError = DISPLAY_ERROR_NONE;
             iDisplayErrorTimer = 0;
             bool fErrorReadingTourFile = false;
@@ -793,6 +852,13 @@ void MenuState::update()
             } else if (MatchType::QuickGame == game_values.matchtype) {
                 printf(" Match type: Quick game\n");
                 short iRandomMode = RANDOM_INT( GAMEMODE_LAST);
+#if defined(SMW_AUTOTEST)
+                if (g_fAutoTest) {
+                    if (const char* mode = SDL_getenv("SMW_TEST_MODE"))
+                        for (short i = 0; i < GAMEMODE_LAST; ++i)
+                            if (gamemodes[i]->GetModeName() == mode) iRandomMode = i;
+                }
+#endif
                 game_values.gamemode = gamemodes[iRandomMode];
 
                 SModeOption * options = game_values.gamemode->GetOptions();
@@ -1363,6 +1429,18 @@ void MenuState::update()
 
     mCurrentMenu->Update();
     mCurrentMenu->Draw();
+#if defined(SMW_AUTOTEST)
+    if (g_fAutoTest) {
+        if (const char* dir = SDL_getenv("SMW_CAPTURE_DIR")) {
+            static unsigned captured = 0;
+            const unsigned bit = mCurrentMenu == mMainMenu.get() ? 1 : mCurrentMenu == mTeamSelectMenu.get() ? 2 : mCurrentMenu == mGameSettingsMenu.get() ? 4 : 0;
+            if (bit && !(captured & bit)) {
+                const std::string name = std::string(dir) + "/menu-" + std::to_string(bit) + ".png";
+                if (IMG_SavePNG(screen, name.c_str())) captured |= bit;
+            }
+        }
+    }
+#endif
 
     if (iDisplayError > DISPLAY_ERROR_NONE) {
         rm->spr_selectfield.draw(70, 400, {0, 0, 484, 32});

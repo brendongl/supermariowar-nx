@@ -1,0 +1,702 @@
+[
+  {
+    "path": "gfx/packs/Classic/backgrounds/Battle_Manor_Review03Wide.png",
+    "sha256": "710353938fa86e0215fc2f9b57e25ff0cab850c41631a5e35bcd4ccc8d60a299",
+    "size": 12571
+  },
+  {
+    "path": "gfx/packs/Classic/backgrounds/Bonus_HillsAtNight_Review15Wide.png",
+    "sha256": "33f72b80b9c50310c702d95b49844fc65c76dc3fdf062678d1346b1c0b812302",
+    "size": 10276
+  },
+  {
+    "path": "gfx/packs/Classic/backgrounds/Castle_Dungeon_Review14Wide.png",
+    "sha256": "92252fd54d51e3dc269aa999555a4cc1b49f0c99453b679f4cd36dd8d7ac851d",
+    "size": 16855
+  },
+  {
+    "path": "gfx/packs/Classic/backgrounds/Castle_GoombaHall_Review16Wide.png",
+    "sha256": "d7f75e18fb02fca2608ec602ead2e6ba6997b9d2ffaac1bb2870e6619e117a9c",
+    "size": 6639
+  },
+  {
+    "path": "gfx/packs/Classic/backgrounds/Clouds_AboveTheClouds_Review09Wide.png",
+    "sha256": "5d07b24e8668a7bae8d0f2a196da840bc521355145e4a9872c48f38954a813fc",
+    "size": 14599
+  },
+  {
+    "path": "gfx/packs/Classic/backgrounds/Clouds_Clouds_Review04Wide.png",
+    "sha256": "703d211d8db291cef94ed29e2b9d770194d6ca3d04bb31c91834b6caf0608dfc",
+    "size": 5153
+  },
+  {
+    "path": "gfx/packs/Classic/backgrounds/Desert_Desert_Review11Wide.png",
+    "sha256": "43ccb61a22ecfb87b3de482cc22f4b731a4a8f061a26406d638ad665ff9557d1",
+    "size": 4602
+  },
+  {
+    "path": "gfx/packs/Classic/backgrounds/Desert_Pyramids_Review21Wide.png",
+    "sha256": "4daaead1fbd31cfd17eb789a5f699930991b5fd2469601b4a744744e2c0ae2d5",
+    "size": 6893
+  },
+  {
+    "path": "gfx/packs/Classic/backgrounds/Land_CastleWall_Review17Wide.png",
+    "sha256": "95cb3f355930affc64b73d09e594d87302e5ebc0a5bedc224211c01b830731d5",
+    "size": 9250
+  },
+  {
+    "path": "gfx/packs/Classic/backgrounds/Land_Classic_Review01Wide.png",
+    "sha256": "ad3d606c277c0398b1f312bda7d055e0fcdd5f4b659a7da4cf1fa95e42597916",
+    "size": 7764
+  },
+  {
+    "path": "gfx/packs/Classic/backgrounds/Land_Classic_Wide.png",
+    "sha256": "eca140998b35932321dacc7f4cda13495835b5960695b5aab6e565745938c7d4",
+    "size": 117341
+  },
+  {
+    "path": "gfx/packs/Classic/backgrounds/Land_GreenMountains_Review19Wide.png",
+    "sha256": "a2c71d765b1e370ab8708bb944197cab32a0a005b8dc9cd3f1b0cb6c29c4f709",
+    "size": 7646
+  },
+  {
+    "path": "gfx/packs/Classic/backgrounds/Land_InTheTrees2_Review18Wide.png",
+    "sha256": "3e17661b9bbb92eb58e6c5df0d8427bd4d319d15aed951839d05ce54cfc519f8",
+    "size": 12817
+  },
+  {
+    "path": "gfx/packs/Classic/backgrounds/Land_InTheTrees_Review08Wide.png",
+    "sha256": "e16f2ce1ca305b80fa7c54001bba4c3526ad0ce6a4495fe96917970c9d5b857f",
+    "size": 12363
+  },
+  {
+    "path": "gfx/packs/Classic/backgrounds/Platforms_AnOminousWorld_Review10Wide.png",
+    "sha256": "819d90d1ddd5434b11d50f5fc2987f5411defe32a88ad05c00f7af36a9857efe",
+    "size": 6579
+  },
+  {
+    "path": "gfx/packs/Classic/backgrounds/Platforms_CloudsAndWaterfalls_Review13Wide.png",
+    "sha256": "cf6d55a9af83b04638c8315c5de1a6c327f97e92e0a033b2eea5dbd43990c148",
+    "size": 17344
+  },
+  {
+    "path": "gfx/packs/Classic/backgrounds/Platforms_GreenSpottedHills_Review02Wide.png",
+    "sha256": "97bc0034137c93a7f0911388f51bfb477141d838c896e0f94b778e6622b1a59b",
+    "size": 21790
+  },
+  {
+    "path": "gfx/packs/Classic/backgrounds/Platforms_JaggedGreenStones3_Review22Wide.png",
+    "sha256": "7226bfe83e334fc1ea91d1759ac8a3ae067aca7f87fabff6d10bc8920988a323",
+    "size": 6983
+  },
+  {
+    "path": "gfx/packs/Classic/backgrounds/Platforms_JaggedGreenStones_Review06Wide.png",
+    "sha256": "b088a6ff83c375ffb73b2659eeb2ba5ed107028bb20feb8362d77f491ff0541c",
+    "size": 8783
+  },
+  {
+    "path": "gfx/packs/Classic/backgrounds/Platforms_UpInTheTreetop_Review24Wide.png",
+    "sha256": "14e566bd5790eab8e5ef3000cf99147d747f48ed5687770e603b8c1b84b78263",
+    "size": 15855
+  },
+  {
+    "path": "gfx/packs/Classic/backgrounds/Snow_SnowTrees_Review07Wide.png",
+    "sha256": "72f418b28f6b2f92a58cb49f2a7f190e7fe8d769a61b242f42e8cb5bfa4b9efe",
+    "size": 8274
+  },
+  {
+    "path": "gfx/packs/Classic/backgrounds/Underground_BrownRockWall_Review20Wide.png",
+    "sha256": "ba8845fc3cb99d51f56b3ea87dfd421e50d2877834c33ab195eb899386794cd6",
+    "size": 23596
+  },
+  {
+    "path": "gfx/packs/Classic/backgrounds/Underground_Cave_Review05Wide.png",
+    "sha256": "c5864154cec1887ba78a8700788a6d5e657e84741f24b40a580fbd8607b87250",
+    "size": 11589
+  },
+  {
+    "path": "gfx/packs/Classic/backgrounds/Underwater_Underwater_Review23Wide.png",
+    "sha256": "973a9c9d2a4f280af6918f884cac62da870ac8ed4ee579c37cb8aafc6f518214",
+    "size": 18893
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview01/large.png",
+    "sha256": "11b1a928df74fbfa8098209259e097a45aedef6b369f5b632eb6fc35c2a45d09",
+    "size": 15862
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview01/medium.png",
+    "sha256": "c561c650971ed40dfa5b4ccc736fc9dca231e194a8cc45330186527f335f3ac4",
+    "size": 6227
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview01/small.png",
+    "sha256": "893c21511f2bd92da52253389f1a551b26e74c5252bc3f179fce6477d3e5a65c",
+    "size": 2020
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview01/tileset.tls",
+    "sha256": "b81480cf0d4b0afe869e7ade557b84ba245cd6d06cc254862f8abff3a1dff24e",
+    "size": 424
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview02/large.png",
+    "sha256": "58827cd4162e9c6ccdee7676ce8c311916ccd92eb4d1ddcd0cf3acf7be7fca27",
+    "size": 61210
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview02/medium.png",
+    "sha256": "85de08c110ce75653f385fa5e1b8f3dd5cd53cfc233b5dad9369abb3c079d980",
+    "size": 22331
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview02/small.png",
+    "sha256": "fb7a7d0a767a7bb12d25226223ffb62afb26ed7dbdaaa766f08cbc6b0fb178e0",
+    "size": 7270
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview02/tileset.tls",
+    "sha256": "a3a71aeb4e7d04a0ee29a4134d3c0db3088e476b43ec2b68c3242f68dd1af6cd",
+    "size": 424
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview03/large.png",
+    "sha256": "24e6dcccc2cb06db41c92ea48f770c796add1b3e810ed9e9474d9ed1746ede6b",
+    "size": 12851
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview03/medium.png",
+    "sha256": "aa769f9a2d28b0704638109327d23f4b8e270b0161812cf57289bb03ecff78ec",
+    "size": 5583
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview03/small.png",
+    "sha256": "088d2099df98eee784a8448f6510980e8301cd5b73ad683cde640dbacec2ad7e",
+    "size": 2112
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview03/tileset.tls",
+    "sha256": "3a44d18488cf5191f78a0ba118d12abfbc6291240f69ec688ccc4bc4062b1c97",
+    "size": 424
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview04/large.png",
+    "sha256": "645303c401a4c73089d67691bedb0ec4235be408473393824c505adc10958e37",
+    "size": 3369
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview04/medium.png",
+    "sha256": "505e6ba90b3452127b53332aa8c2976050d800db8c02ed15003379e12d5bce42",
+    "size": 1967
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview04/small.png",
+    "sha256": "abd7b38a7472ea7a6bd99f23160e908d65113cd6901efaa0ed9efd23af05f122",
+    "size": 873
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview04/tileset.tls",
+    "sha256": "8a73d738ffc0e30010a56c5d3d56a52dd746da747b363bf5f49639bdccfd36c5",
+    "size": 424
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview05/large.png",
+    "sha256": "4dbe04f63d305ffefd96e09738251bac46d77c99574d67577a0c942d4e59a47d",
+    "size": 14502
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview05/medium.png",
+    "sha256": "b2e88d9bb4b196ff38e16f295b2968a37b5c0ef1e3af968dbc0523a1d7a7ab5d",
+    "size": 6013
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview05/small.png",
+    "sha256": "99eb62698715840598bd33e5e258323017c2b196e7c27e2422c9a455a2d985de",
+    "size": 2330
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview05/tileset.tls",
+    "sha256": "65a287b35ef4c28a8e4909572b28f6a2b04bcbaec9d8851ace89804409ae39df",
+    "size": 424
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview06/large.png",
+    "sha256": "81839bdeeac84ee1781e81e120e3c2a9ecd88cd91753ed676eeaac439454d0d0",
+    "size": 49964
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview06/medium.png",
+    "sha256": "b65683fb562e5a20f81b005548f23b67df6e6c66027a486f1986255b98ab270e",
+    "size": 15446
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview06/small.png",
+    "sha256": "8a16d99a124d21aeaa3d8165eb500ceedad8abe70ad4ddcb9c86634f92a567e5",
+    "size": 4701
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview06/tileset.tls",
+    "sha256": "8741061cccc3ef2277383bdb3475da5e7ab5772984f92d8600daa34dbe850eaf",
+    "size": 424
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview07/large.png",
+    "sha256": "14b902f70bf990c429993c7f84cd9cfd218d773f1c5459a60c04be978023d08b",
+    "size": 21959
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview07/medium.png",
+    "sha256": "8eafc7412016c477d6140495ca8cbca61f22431c343fa47fab9bbb7acb998db8",
+    "size": 8515
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview07/small.png",
+    "sha256": "b0259902e4ecd3861912276478586685841af02058c255ddc90d8fb1648f8d2b",
+    "size": 3015
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview07/tileset.tls",
+    "sha256": "c078f994ceeed830dcd09aa3461d94156b0f8e8cdffa2547645e0e69f4e4146d",
+    "size": 424
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview08/large.png",
+    "sha256": "abac9b55c9fa672b969ea1c7ef15b95c6575e30c00ab47c77af0a358fc777689",
+    "size": 39764
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview08/medium.png",
+    "sha256": "ec88c6cddf1fab4b90117a898ff2f81febf6013918aaa34d21199df61d4a01d9",
+    "size": 15236
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview08/small.png",
+    "sha256": "709166609bbd4988b1238fc5293bd3ca5a760af09de4a2e56d2ab67aea667a21",
+    "size": 4887
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview08/tileset.tls",
+    "sha256": "9e11d5b905c8867ce633e00b7e2d1603bec403bde18ee5507cde778a4ef2e44a",
+    "size": 424
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview09/large.png",
+    "sha256": "69c18af2c2b5ea162394e231f804d3fd27e9a8e849121d2f2854e6bf8bb5b189",
+    "size": 16438
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview09/medium.png",
+    "sha256": "217904e621e5d7328cc8adf4870362d3fa5c4ed8928d6def574e7af824ce31a0",
+    "size": 6717
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview09/small.png",
+    "sha256": "f1176dff4e68594c66f0c6362efe904dbc92eefe3d4f1a65bc9c83dd8fb1bd55",
+    "size": 2596
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview09/tileset.tls",
+    "sha256": "957091eec627f57f7b787a20a60d7d940c82a3651a15c37e1b235673ffb2617f",
+    "size": 424
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview10/large.png",
+    "sha256": "b3a26b486adc42f74cb86f295c478b1826353a084f6e017ba0bfcb3618c7ad1d",
+    "size": 14175
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview10/medium.png",
+    "sha256": "539c0fb3cefcbfbf0def35da8b65a7214742b56bf4ba40c295a56474a2c55725",
+    "size": 5506
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview10/small.png",
+    "sha256": "d3ed24024783a4693006f0452c8cd12a0cf8e98edec79dd0c3a8ab9fdcf3e6df",
+    "size": 2255
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview10/tileset.tls",
+    "sha256": "6a1118b24dd9bb3d5fab949c3e8a7275e89b5501ad010986d84c286a56a5de8a",
+    "size": 424
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview11/large.png",
+    "sha256": "64facb85bcac66f7408398b95ece4ff15bcad92e0a9a2c92daa3c163e6514457",
+    "size": 13081
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview11/medium.png",
+    "sha256": "f725f8a844c35f63b3a9847555d613985ba7a07c76c5152875752e9adc6a6eb5",
+    "size": 5246
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview11/small.png",
+    "sha256": "ceb036e6cef73c6c85f2ddbfd66408956b86543730776e360db6f072c00e94dc",
+    "size": 2102
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview11/tileset.tls",
+    "sha256": "c98fb152beacda4beb2b64f5188c2656bdd3076949192f454e86626e35f1762e",
+    "size": 424
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview13/large.png",
+    "sha256": "160b19751603c1b13d1ffc3f6fdcb38f0d405da02218116d0b3426ab473d05d3",
+    "size": 34085
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview13/medium.png",
+    "sha256": "3682d8e6a0c9278ccac061442173ba9d050ea7580c33403d6aa76a2468d7bc25",
+    "size": 12735
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview13/small.png",
+    "sha256": "5b6f8c29216b3b53ba5aee4a831107dd2e86f749a04e3305c4e8fa1129c6d5ba",
+    "size": 4133
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview13/tileset.tls",
+    "sha256": "4e7778ad43c58c467c1a51cbf9677d761e2a583de0eb0c4af4e7b4f3242bdec4",
+    "size": 424
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview14/large.png",
+    "sha256": "ae53eb8e0ac23323bebb485804980fe4f0a958dbf1e9d6f8eeb400ead455c21c",
+    "size": 29017
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview14/medium.png",
+    "sha256": "772f32340d2bddbf5561e6e6ca3be547ed0f8acad98fb8508df41d77b9f2c445",
+    "size": 11585
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview14/small.png",
+    "sha256": "e0ccf69130c7781af68756832ba61f6516a206ccf492b26fc3bae8a9408cd68c",
+    "size": 4109
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview14/tileset.tls",
+    "sha256": "752ca2d5953cd4326097cc8219ffef007d3e35a25d36436d1babf8cc6756b24c",
+    "size": 424
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview15/large.png",
+    "sha256": "27fe2a7972812af44b6cb787ccde23000afc81a959fa0e38018a34b2153406a4",
+    "size": 23531
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview15/medium.png",
+    "sha256": "5026dd629852ede000ff2a83287e0cc1e41fd2298aca6766bf8c32707ab69ffd",
+    "size": 8943
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview15/small.png",
+    "sha256": "cc0a3e6791d1f8db29f8bfaf5a99daecef4838ba846a2b8aa51f712213b760f3",
+    "size": 3210
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview15/tileset.tls",
+    "sha256": "360fefa36469ed879a96d57fd07f8f4b1f697203e988c7147da2e08aa54e1c51",
+    "size": 424
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview16/large.png",
+    "sha256": "bf78f81ff9715df042ca1108735b54e44c1bfa9e3819c9842527ed67871b7bf8",
+    "size": 21283
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview16/medium.png",
+    "sha256": "36a5d534a794ac39c0f9303bad3856c7d731427b9b9207dee07d92cf4748bc0c",
+    "size": 7747
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview16/small.png",
+    "sha256": "50a0d394c89c4242035e42c5f62de3d859512cc9feaf0cc28b1f79e11fe7f546",
+    "size": 2742
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview16/tileset.tls",
+    "sha256": "7cbf5856740da74bbf635ca3c531c3f744f3cb801bd4d4a80d46f993490735a3",
+    "size": 424
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview17/large.png",
+    "sha256": "78ee5ba9125c485e4cd0b86e9b091444f31c0cccd5b5ebca457b37a576c6b03a",
+    "size": 22256
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview17/medium.png",
+    "sha256": "785b32d801eef8a9cc21faf14c46d962baa08443e28e3ce26fbfc58d89fb81af",
+    "size": 8413
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview17/small.png",
+    "sha256": "2f45c816bdb465bb03530f805038514819f2987e958e19ceedba86005ae17738",
+    "size": 2957
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview17/tileset.tls",
+    "sha256": "4f2cd25c7709c8e495d66b6c24668bdc50bed7b31e68118717e565187dbafdc7",
+    "size": 424
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview18/large.png",
+    "sha256": "c5a8918878a45106736f08862bd10881d97b6f850e9126cd8c9dc519d226784b",
+    "size": 8823
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview18/medium.png",
+    "sha256": "3e254d68e6dfc17479b9452128805b9124f58c7d7058e2ac79c6eb97a6e8148f",
+    "size": 3894
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview18/small.png",
+    "sha256": "232b6fce4e6829da7ece8c14aae94df6476873d86190143bacda21a511917f26",
+    "size": 1550
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview18/tileset.tls",
+    "sha256": "6f9166af55cd354acac7e4039541a9409615c3bd84a7a06e86c4ec9929f35600",
+    "size": 424
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview19/large.png",
+    "sha256": "2da5400dc5fc56adfa1e3fdfd98aa7ba4e2b21f48283191b9b50b9a7b50cc101",
+    "size": 26877
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview19/medium.png",
+    "sha256": "4bd2d535d1b2761d6045ef640ddd16fac2d3b562d0851f86b946aacc8fb3801b",
+    "size": 10126
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview19/small.png",
+    "sha256": "86b60ecd8d974c5c8bdc1a8341e7010406fa00e973818cfc15b9d47288cb1a06",
+    "size": 3588
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview19/tileset.tls",
+    "sha256": "aabb7283f08917562e892c709c031dc9ff9afb9d18e8c6463bc4debd1b18db84",
+    "size": 424
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview20/large.png",
+    "sha256": "f9f0f07909a550521b464b3e601257e64dafc1b0b713f4f29da57acd3fcc1dc5",
+    "size": 39755
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview20/medium.png",
+    "sha256": "da1b34662b6db6e461b6106315af18b29ee200809d985883c89674394edebc58",
+    "size": 15790
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview20/small.png",
+    "sha256": "2a8ba39173691ccb22a9cef4adca53bdb8a369a175e3ce53d79e8c9e6e25ab1a",
+    "size": 5403
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview20/tileset.tls",
+    "sha256": "e5c9a6535210e2ccd7a8f4e171bd8d4ed51e8299e7e0ac5b90a3845f6a7d52b9",
+    "size": 424
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview21/large.png",
+    "sha256": "5ccd68cf930772c9d452bf92102ba07c343589845d84aefa5c71f0080b0048a6",
+    "size": 23002
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview21/medium.png",
+    "sha256": "aeae63018773d663ccfe7f6c13ca8c19f64625bc6c276a1328f8ddafe61f1b3c",
+    "size": 8816
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview21/small.png",
+    "sha256": "f68e88cd2ab3ef2b4a0dac558aace2f957c13ac67ee0395e146897f37d28e3f1",
+    "size": 2963
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview21/tileset.tls",
+    "sha256": "5edcc8af025b922ed63e657ec975028cf734fb5a4a71472e317a0a9b892b6a27",
+    "size": 424
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview22/large.png",
+    "sha256": "1817f6ed511589f4857cb3908fad973f02f40067f70e0f153c60069ca0ce4b9e",
+    "size": 45385
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview22/medium.png",
+    "sha256": "0214fc67c277015ed5a07d308a8a5a0d71c0793901104403b4c195f2da661bcc",
+    "size": 16750
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview22/small.png",
+    "sha256": "84cfa3014f24377476c3858ed539192406abf7101d72129cc6b0b959df2113db",
+    "size": 5872
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview22/tileset.tls",
+    "sha256": "4c943a9b04bb5c94bb359dc24fca71be2b00c6bc665e37a88d2bb224cce9da2d",
+    "size": 424
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview23/large.png",
+    "sha256": "d7bc1a81bcab0cb052a615c154d18589aaa8f74442823904c13b1c281942493b",
+    "size": 50947
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview23/medium.png",
+    "sha256": "126974689b978cad767f8a201bdfcd35bfddf5c2b06acaac547f227e7709ab5c",
+    "size": 20346
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview23/small.png",
+    "sha256": "7c70f7e8b58c10ba6fd800ded2dbc0a58f74b7cbe11df4f0d8ca0d3b6273fa43",
+    "size": 7463
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview23/tileset.tls",
+    "sha256": "36f98e64838159763cc6246275471b88978a1e5c946185a950184c8fb63294e3",
+    "size": 424
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview24/large.png",
+    "sha256": "c21675426f09785b443c7d7639e8ceb355b0d9fa4c82208a534f96d79ecf90d5",
+    "size": 61340
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview24/medium.png",
+    "sha256": "9575c06b2ee13fcc3337222d49400903a925a511e72f6acc34eb93a22c88d647",
+    "size": 21785
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview24/small.png",
+    "sha256": "39fea5225edb32d0ca4a79955e10ff8ac453c5ac611f2d131c15db5a7f1abbe5",
+    "size": 7035
+  },
+  {
+    "path": "gfx/packs/Classic/tilesets/WideReview24/tileset.tls",
+    "sha256": "e18632ea44ab01d59e67d4642b3f7d73357bf3b59732ceb102eccc694e3c06d1",
+    "size": 424
+  },
+  {
+    "path": "maps/0smw Wide.map",
+    "sha256": "6e51c461d8a477a5daef7d64753bfc76f5420c011eb47ca7f13b2a93bcc9ce1a",
+    "size": 16648
+  },
+  {
+    "path": "maps/4matsy_Block! Block! Wide.map",
+    "sha256": "6cff272475812182840f70585c08c71b65c5e499d39199e9168ee397e78b1e2e",
+    "size": 16495
+  },
+  {
+    "path": "maps/4matsy_Heinous Heights Wide.map",
+    "sha256": "8bd15e69d19fe90e4f6e88cf98387a3c7c7d1a478dd555210dc66e346f638c6e",
+    "size": 17592
+  },
+  {
+    "path": "maps/4matsy_Ninja Gaiden 1 - 1-1 Wide.map",
+    "sha256": "a03e1ef20fe7991dc0713dfc60207ede2c39d2aa178c15c9594239eb9b40563b",
+    "size": 16890
+  },
+  {
+    "path": "maps/GG_The hotter the better Wide.map",
+    "sha256": "987ba5bb768d40955729d64474f429629bb0f1e8b23bf91fc76e86f8d7e0bfee",
+    "size": 17266
+  },
+  {
+    "path": "maps/Link901_Watery Day Wide.map",
+    "sha256": "980d207158523ea838519c088ac6dacdd6c18cfa5cb49b71d8952cb21170a0b4",
+    "size": 20398
+  },
+  {
+    "path": "maps/Sgraff_Haunted Temple Wide.map",
+    "sha256": "82fe6d2a5021bb704612438e7c7b3d641c816825013f61202d38142497238e64",
+    "size": 18265
+  },
+  {
+    "path": "maps/Tanuki_Jungle Bridge Wide.map",
+    "sha256": "060260a0f827cc528178552473a044886f1def787ca07f2858d0f770a26bc69a",
+    "size": 16378
+  },
+  {
+    "path": "maps/Xijar_Boo is Back Wide.map",
+    "sha256": "87c50d9a5a26f08e0b35926c486ace1305bafda694504493e849ad70f246ec46",
+    "size": 18021
+  },
+  {
+    "path": "maps/Xijar_Death Island Wide.map",
+    "sha256": "c2909bac3e376dd71936c357c38dd97f5aae0a9cbf945aa8f8485d0d5db54901",
+    "size": 16397
+  },
+  {
+    "path": "maps/Xijar_Greden Wide.map",
+    "sha256": "3393df77fa139c8d079cf544e664099c8c059e07169155d1322f0998b695dffe",
+    "size": 17658
+  },
+  {
+    "path": "maps/Xijar_Wonder Winterland Wide.map",
+    "sha256": "899855c5f53c30e590445e9c4b6f69e537a69cf4567ff2d9acb85aa19ea70670",
+    "size": 19970
+  },
+  {
+    "path": "maps/bcatcher_field day Wide.map",
+    "sha256": "63a6cbfc83950dcc0743cbbb5fc8d45cdf3ec32a96e8f4640a632eb184c2366f",
+    "size": 19606
+  },
+  {
+    "path": "maps/bcatcher_yoshi island Wide.map",
+    "sha256": "0950817aa72e1362dec28b625f1abea0084af8b7e8f66726d10b4992272eb3d1",
+    "size": 17578
+  },
+  {
+    "path": "maps/hazey_Lava Island Wide.map",
+    "sha256": "eeb74ad081fc9970b3956050cac69f2224f637b422ad884c836018a91518c444",
+    "size": 16734
+  },
+  {
+    "path": "maps/tubesteak_dkjungle Wide.map",
+    "sha256": "813cb0854042fe8a35ff2181eed7c2cf428a7793979ea984661669230985cab6",
+    "size": 16324
+  },
+  {
+    "path": "maps/tubesteak_mountain waterfall Wide.map",
+    "sha256": "fd382f6538b74e6d135965a7375895709ab6199dd9765b70bc9dcfbb977b83c1",
+    "size": 17566
+  },
+  {
+    "path": "maps/tubesteak_ssbmjunglejapes Wide.map",
+    "sha256": "77a05e1f4da2748860f21caee463d3ff318a5029d53ddf185a1f4ff3286f5d37",
+    "size": 16940
+  },
+  {
+    "path": "maps/two52_chainlink Wide.map",
+    "sha256": "8638eeefe200163349c821ba8732ef6ab094ca8e51b9040072e602ee5c578215",
+    "size": 18735
+  },
+  {
+    "path": "maps/two52_the pit Wide.map",
+    "sha256": "b73e242d105358233ac187f1c3c1decbf770a7df8635cf13c72d595eb25a9c31",
+    "size": 17872
+  },
+  {
+    "path": "maps/ventuz_bounce2lava Wide.map",
+    "sha256": "66e574903173ca7fc0fcb2e1c599651b90899f9c7ba63aabab94ff531b5a2d33",
+    "size": 18137
+  },
+  {
+    "path": "maps/ym7_Sky Garden Wide.map",
+    "sha256": "1bb3f39e5bb5dae522d7295ce36a0ffa7404021369c7d46a6fba13af18bcf94f",
+    "size": 16774
+  },
+  {
+    "path": "maps/ym7_castor wilds Wide.map",
+    "sha256": "763bef76bb737be81d4715a4ae6551000f73ce6d2385a8254f22308eed93d120",
+    "size": 17285
+  },
+  {
+    "path": "maps/ym7_jungle Wide.map",
+    "sha256": "6d40aaae1c06e50f7ea8d39965d8a92ccd6e7044525ef605a4f2cd218d28eee1",
+    "size": 16286
+  }
+]

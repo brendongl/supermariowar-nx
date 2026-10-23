@@ -38,7 +38,7 @@ public:
     void read_raw(void*, size_t);
 
 private:
-    const char* m_path = nullptr;
+    std::string m_path; // Own the name: filesystem::path overload passes a temporary string.
     FILE* fp = nullptr;
 
     void fread_or_exception(void*, size_t, size_t);

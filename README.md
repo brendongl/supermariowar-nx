@@ -13,6 +13,18 @@ A native Nintendo Switch port of [Super Mario War](https://github.com/mmatyas/su
 
 This repository follows the upstream game. The Switch-specific code lives in `platform/switch/`, `cmake/PlatformSwitch.cmake` and `src/smw/platform/switch/`, and the fixes that also apply to other platforms are kept small so they can go upstream.
 
+## Widescreen development build
+
+The `eight-players` branch includes 23 approved converted stages plus **0smw Wide**.
+With 2–4 enabled players, the stage picker and Quick Game use the original maps;
+with 5–8, they use only the 24 widescreen maps. Slots 5–8 are CPUs; controller input
+still supports four people. Tours, worlds and minigames remain limited to four
+players because their scripted maps have not been widened.
+
+The maps and selection logic are shared with PC builds. This pack has passed PC
+sanitizer gameplay checks; the current Switch NRO builds, but console validation
+is still pending. Authoring and validation details: [widescreen pack](tools/widescreen/README.md).
+
 ## Installing
 
 You need a Switch running custom firmware (Atmosphère). Download the files from the [latest release](../../releases/latest).

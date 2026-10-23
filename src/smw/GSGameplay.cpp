@@ -1,4 +1,7 @@
 #include "GSGameplay.h"
+#if defined(SMW_AUTOTEST)
+#include <SDL3_image/SDL_image.h>
+#endif
 
 #include "eyecandy.h"
 #include "FileList.h"
@@ -322,6 +325,10 @@ void GameplayState::createPlayers()
         game_values.bulletbilltimer[iPlayer] = 0;
         game_values.bulletbillspawntimer[iPlayer] = 0;
     }
+#if defined(SMW_AUTOTEST)
+    if (g_fAutoTest)
+        printf("[match] arena-width=%d players=%zu teams=%d\n", MAPWIDTH, players.size(), score_cnt);
+#endif
 }
 
 void GameplayState::initScoreDisplayPosition()
@@ -1304,6 +1311,19 @@ void GameplayState::drawEverything(short iCountDownState, short iScoreTextOffset
     drawScreenFade();
     drawPlayerSwap();
     drawScreenShakeBackground();
+#if defined(SMW_AUTOTEST)
+    // Bounded snapshots for headless visual regression, only when explicitly requested.
+    static const char* captureDir = SDL_getenv("SMW_CAPTURE_DIR");
+    static unsigned captureFrame = 0;
+    if (g_fAutoTest && captureDir) {
+        ++captureFrame;
+        if (captureFrame == 120 || captureFrame == 600 || captureFrame == 1800) {
+            const std::string file = std::string(captureDir) + "/frame-" + std::to_string(captureFrame) + ".png";
+            if (!IMG_SavePNG(screen, file.c_str()))
+                fprintf(stderr, "[capture] failed: %s\n", SDL_GetError());
+        }
+    }
+#endif
 }
 
 void drawExitPauseDialog()
@@ -1977,7 +1997,7 @@ bool autotestPlayerStuck(const CPlayer& player, short tx, short ty, const char* 
     static Uint64 last_report[MAX_PLAYERS] {};
     const short id = player.getGlobalID();
     const Uint64 now = SDL_GetTicks();
-    if (id >= 0 && id < 4 && now - last_report[id] > 10000) {
+    if (id >= 0 && id < MAX_PLAYERS && now - last_report[id] > 10000) {
         last_report[id] = now;
         printf("[autotest][warning] player %d %s inside a solid tile: pos (%d, %d) vel (%.2f, %.2f) tile (%d, %d) flags=%d block=%d on %s\n",
             id, where, player.leftX(), player.topY(), player.getVelX(), player.getVelY(), tx, ty, g_map->map(tx, ty),

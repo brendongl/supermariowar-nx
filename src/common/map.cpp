@@ -19,6 +19,9 @@
 #include <SDL3_image/SDL_image.h>
 
 #include <cmath>
+#include <fstream>
+#include <sstream>
+#include <stdexcept>
 #include <iostream>
 using std::cout;
 using std::endl;
@@ -1320,9 +1323,9 @@ void CMap::saveMap(const std::string& file)
     */
 }
 
-gfxSprite CMap::createThumbnailSurface(bool fUseClassicPack)
+gfxSprite CMap::createThumbnailSurface(bool fUseClassicPack, bool nativeWidth)
 {
-    gfxSprite sThumbnail = gfxSprite::blank(160, 120);
+    gfxSprite sThumbnail = gfxSprite::blank(MAPWIDTH * 8, 120);
 
     std::string localSzBackgroundFile;
     std::string path;
@@ -1344,8 +1347,8 @@ gfxSprite CMap::createThumbnailSurface(bool fUseClassicPack)
     }
     {
         gfxSprite sBackground = ImageLoader(path).withoutColorKey().create();
-        SDL_Rect srcRectBackground = {0, 0, App::screenWidth, App::screenHeight};
-        SDL_Rect dstRectBackground = {0, 0, 160, 120};
+        SDL_Rect srcRectBackground = {0, 0, MAPWIDTH * TILESIZE, 480};
+        SDL_Rect dstRectBackground = {0, 0, MAPWIDTH * 8, 120};
         sBackground.drawStretch(srcRectBackground, sThumbnail.getSurface(), dstRectBackground);
     }
 
@@ -1357,6 +1360,15 @@ gfxSprite CMap::createThumbnailSurface(bool fUseClassicPack)
     preDrawPreviewForeground(sThumbnail, true);
     preDrawPreviewWarps(sThumbnail, true);
 
+    if (!nativeWidth && MAPWIDTH != MAPWIDTH_NORMAL) {
+        auto fitted = gfxSprite::blank(160, 120, std::nullopt);
+        SDL_FillSurfaceRect(fitted.getSurface(), nullptr, SDL_MapSurfaceRGB(fitted.getSurface(), 0, 0, 0));
+        const int height = 160 * 15 / MAPWIDTH;
+        const SDL_Rect src = {0, 0, MAPWIDTH * 8, 120};
+        const SDL_Rect dst = {0, (120 - height) / 2, 160, height};
+        sThumbnail.drawStretch(src, fitted.getSurface(), dst);
+        return fitted;
+    }
     return sThumbnail;
 }
 
@@ -2561,5 +2573,61 @@ void CMap::copyColumn(short srcX, short dstX, short firstRow, short lastRow, sho
         objectdata[dstX][dj] = objectdata[srcX][j];
         for (short t = 0; t < NUMSPAWNAREATYPES; t++)
             nospawn[t][dstX][dj] = nospawn[t][srcX][j];
+    }
+}
+
+
+void CMap::authorWideSides(const std::string& tileset, const std::string& edits)
+{
+    if (MAPWIDTH != 27)
+        throw std::runtime_error("authorWideSides requires a 27-column map");
+    const auto id = g_tilesetmanager->indexFromName(tileset);
+    if (id >= g_tilesetmanager->count() || id > 127)
+        throw std::runtime_error("Missing or unrepresentable authoring tileset: " + tileset);
+    auto* atlas = g_tilesetmanager->tileset(id);
+    atlas->ensureLoaded();
+    if (atlas->width() != 7 || atlas->height() != MAPHEIGHT)
+        throw std::runtime_error("Side atlas must be 7x15 tiles");
+    for (short x = 0; x < MAPWIDTH; ++x) {
+        if (x >= 3 && x < 23) continue;
+        const short col = x < 3 ? x : x - 20;
+        for (short y = 0; y < MAPHEIGHT; ++y) {
+            mapdata[x][y][0] = {static_cast<short>(id), col, y};
+            mapdatatop[x][y] = atlas->tileType(col, y);
+        }
+    }
+    std::ifstream file(edits);
+    if (!file) throw std::runtime_error("Cannot open edits: " + edits);
+    std::string line;
+    auto valid = [](int x, int y) { return x >= 0 && x < MAPWIDTH && y >= 0 && y < MAPHEIGHT; };
+    while (std::getline(file, line)) {
+        if (line.empty() || line[0] == '#') continue;
+        std::istringstream in(line);
+        std::string op;
+        int x, y, a, b;
+        if (!(in >> op >> x >> y >> a >> b) || !valid(x, y))
+            throw std::runtime_error("Malformed cell edit: " + line);
+        if (op == "object") {
+            // Copy the original block's settings, not its graphics or collision.
+            if (!valid(a, b) || objectdata[a][b].iType < 0)
+                throw std::runtime_error("Invalid block source: " + line);
+            objectdata[x][y] = objectdata[a][b];
+            mapdatatop[x][y] = TileType::NonSolid;
+        } else if (op == "block") {
+            // Non-powerup blocks need no probability table. Powerups must copy a source.
+            if (a < 0 || a > 6 || a == 1)
+                throw std::runtime_error("Unsupported new block: " + line);
+            objectdata[x][y] = {};
+            objectdata[x][y].iType = a;
+            mapdatatop[x][y] = TileType::NonSolid;
+        } else if (op == "copy") {
+            if (!valid(a, b)) throw std::runtime_error("Invalid copy source: " + line);
+            copyColumn(a, x, b, b, y);
+        } else if (op == "collision") {
+            if (a < 0 || a > 19) throw std::runtime_error("Invalid collision: " + line);
+            mapdatatop[x][y] = static_cast<TileType>(a);
+        } else {
+            throw std::runtime_error("Unknown cell edit: " + line);
+        }
     }
 }

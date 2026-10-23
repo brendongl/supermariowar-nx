@@ -147,3 +147,11 @@ MatchType UI_MatchSelectionMenu::GetSelectedMatchType() const
 {
     return miMatchSelectionField->currentValue();
 }
+
+void UI_MatchSelectionMenu::SetWidePlayers(bool wide)
+{
+    miMatchSelectionField->hideItem(MatchType::Tour, wide);
+    miMatchSelectionField->hideItem(MatchType::World, wide);
+    miMatchSelectionField->hideItem(MatchType::MiniGame, wide);
+    SelectionChanged();
+}

@@ -54,6 +54,7 @@ MI_MapPreview::MI_MapPreview(gfxSprite * nspr, short x, short y, short width, sh
 
 void MI_MapPreview::Update()
 {
+    if (wideThumbnail) return;
     //Update hazards
     noncolcontainer.update();
 
@@ -78,6 +79,10 @@ void MI_MapPreview::Draw()
 
     rectDst.x = iMapBoxX + 16;
 
+    if (wideThumbnail) {
+        wideThumbnail.drawStretch({0, 0, 160, 120}, blitdest, rectDst);
+        return;
+    }
     surfaceMapBackground.draw(blitdest, rectDst);
 
     g_map->drawPlatforms(rectDst.x, rectDst.y, 0);
@@ -121,6 +126,11 @@ void MI_MapPreview::LoadCurrentMap()
 void MI_MapPreview::LoadMap(const std::string& szMapPath)
 {
     g_map->loadMap(szMapPath, read_type_preview);
+    wideThumbnail = gfxSprite();
+    if (MAPWIDTH != MAPWIDTH_NORMAL) {
+        wideThumbnail = g_map->createThumbnailSurface(false);
+        return;
+    }
     smallDelay(); //Sleeps to help the music from skipping
 
     LoadCurrentMapBackground();

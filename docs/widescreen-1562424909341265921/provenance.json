@@ -1,0 +1,229 @@
+[
+  {
+    "stage": 1,
+    "output": "maps/4matsy_Block! Block! Wide.map",
+    "source_sha256": "077cbf94973fcce2b657dd072069c607004660c02c43eee23f581cfed645af85",
+    "approved_sha256": "e8742c5878adf49f190dc121ee54b9216709baf6cdc3b257cb5657c379345d1a",
+    "collision_cells": 20,
+    "live_side_blocks": 1,
+    "center_edits": []
+  },
+  {
+    "stage": 2,
+    "output": "maps/tubesteak_mountain waterfall Wide.map",
+    "source_sha256": "b04a6844cad97b6280aa68b31d243dd7fc7e384e0b1f58cd121a4dc6ba6864e0",
+    "approved_sha256": "fb0643bef2c14339ce8507efccb55dde098b6febff4831b90bbce23b4d7a7117",
+    "collision_cells": 27,
+    "live_side_blocks": 2,
+    "center_edits": []
+  },
+  {
+    "stage": 3,
+    "output": "maps/ventuz_bounce2lava Wide.map",
+    "source_sha256": "91ee3585e43ad63acaba29a852698de3618e6f3343c6806a72b13acdd8ca8ab9",
+    "approved_sha256": "a1f97466092adfec59784d714359aca288748b06e156c9e207d404b982af34a2",
+    "collision_cells": 17,
+    "live_side_blocks": 0,
+    "center_edits": [
+      [
+        7,
+        10,
+        8,
+        10
+      ],
+      [
+        18,
+        10,
+        17,
+        10
+      ]
+    ]
+  },
+  {
+    "stage": 4,
+    "output": "maps/ym7_Sky Garden Wide.map",
+    "source_sha256": "fa865ab7928ea7f2eb80fceb11b6ea63328a9c37b73d7426ad7060b4bff7b1d4",
+    "approved_sha256": "1009d01ea1a6ae36748496a1d2bd2a84618add30d94972c7af9e489c246ebf60",
+    "collision_cells": 19,
+    "live_side_blocks": 0,
+    "center_edits": []
+  },
+  {
+    "stage": 5,
+    "output": "maps/two52_the pit Wide.map",
+    "source_sha256": "008082b88710f2d3f193d7f18ebbf838087c1d8bb9179ead5f4c618cd8251987",
+    "approved_sha256": "27adae1dc8da13337d7968d23472064087e806112b0e74efee55e751563404a8",
+    "collision_cells": 22,
+    "live_side_blocks": 10,
+    "center_edits": []
+  },
+  {
+    "stage": 6,
+    "output": "maps/Xijar_Greden Wide.map",
+    "source_sha256": "99e09914c5af55bf1cd9f35d871084bf2bd1e152b4a29785987ff41359c3773f",
+    "approved_sha256": "fb17092cf9d5c11dac5192780815afa770b82effaa13ed5b4c3a3103e26dd7ef",
+    "collision_cells": 19,
+    "live_side_blocks": 1,
+    "center_edits": []
+  },
+  {
+    "stage": 7,
+    "output": "maps/Xijar_Wonder Winterland Wide.map",
+    "source_sha256": "b3df6592d5e0bfdf2f18177644a85a9bc7ade006ae697809b96606c9cb9a1b79",
+    "approved_sha256": "ea7f8b271afb051b4ca719b65b6fb43c06d4d3306e8f5e10929eb9e065a8f11c",
+    "collision_cells": 22,
+    "live_side_blocks": 2,
+    "center_edits": []
+  },
+  {
+    "stage": 8,
+    "output": "maps/ym7_castor wilds Wide.map",
+    "source_sha256": "6ed78f34a5aa5b6c16edab2174b30b4adf3df85f391c1ce688da2c9a137dd66a",
+    "approved_sha256": "53469549b7c46440650977ae57d31f9c6002503f256e2b1d7faada0d5f53a7d4",
+    "collision_cells": 13,
+    "live_side_blocks": 1,
+    "center_edits": []
+  },
+  {
+    "stage": 9,
+    "output": "maps/bcatcher_yoshi island Wide.map",
+    "source_sha256": "96742bbc0368ebe4f5e16777ad6aa1264507442b033d19af202634e632d260ab",
+    "approved_sha256": "911b5aedb8a9589ebdcfbeace7e4b743993b7a8cdd5ee67d33f3e18e97a08f4e",
+    "collision_cells": 12,
+    "live_side_blocks": 3,
+    "center_edits": [
+      [
+        3,
+        12,
+        12,
+        12
+      ]
+    ]
+  },
+  {
+    "stage": 10,
+    "output": "maps/Sgraff_Haunted Temple Wide.map",
+    "source_sha256": "3d7193e531a82e65ff654d626f532948322d1f09cdddd83cae8eeb3c46c93181",
+    "approved_sha256": "14993dd66c5112f0e6123a25386c60a5b5c2a75fcbcbff98880201cc5153c172",
+    "collision_cells": 18,
+    "live_side_blocks": 0,
+    "center_edits": []
+  },
+  {
+    "stage": 11,
+    "output": "maps/Xijar_Death Island Wide.map",
+    "source_sha256": "1150032fe0897985ca707abdc085874e567a0b71ea92fcd997a98d4d3f6f859e",
+    "approved_sha256": "a285dbdf316ce487c74663f424f2fc151c87a477fddb07fb7ded66c10c2a29c8",
+    "collision_cells": 12,
+    "live_side_blocks": 3,
+    "center_edits": []
+  },
+  {
+    "stage": 13,
+    "output": "maps/4matsy_Heinous Heights Wide.map",
+    "source_sha256": "66653c1fa9b742e156e7074e339cd6815899cf9dce37852db4b539f07fce5935",
+    "approved_sha256": "c859b71e6f25d80dfb9812ed411b68118b0a6a1cea8534c39302ebf85aa78b8e",
+    "collision_cells": 10,
+    "live_side_blocks": 5,
+    "center_edits": []
+  },
+  {
+    "stage": 14,
+    "output": "maps/two52_chainlink Wide.map",
+    "source_sha256": "f114121bc74b14e7da3529b4ed42f8f9fbd6eee36c71f066e72ef765dbeeacf9",
+    "approved_sha256": "19ea63202a04cd0dd654ada30efcc6a8355c9211feb1ee9174539faddb1ccb5c",
+    "collision_cells": 10,
+    "live_side_blocks": 1,
+    "center_edits": []
+  },
+  {
+    "stage": 15,
+    "output": "maps/4matsy_Ninja Gaiden 1 - 1-1 Wide.map",
+    "source_sha256": "32d00e2b37b44cbc64076b30e9f7344cd040c07659d436f581ce803492880fa9",
+    "approved_sha256": "65d507c30dd6a2de1018df135cead883113558210e8c95bc79e3dd6e933310ef",
+    "collision_cells": 14,
+    "live_side_blocks": 1,
+    "center_edits": []
+  },
+  {
+    "stage": 16,
+    "output": "maps/Xijar_Boo is Back Wide.map",
+    "source_sha256": "dfd8c3898550d67b4576d43f19d7f7886e323927f9a3c9385347bac40ede8757",
+    "approved_sha256": "0b24d3485b46224181d8247a7b94431dc10c3f6babb68dea34e1f91fd33f8113",
+    "collision_cells": 18,
+    "live_side_blocks": 0,
+    "center_edits": []
+  },
+  {
+    "stage": 17,
+    "output": "maps/bcatcher_field day Wide.map",
+    "source_sha256": "7b0c8b1d4e88c7a8ed95c2779baad83d2eb194a103ba279a3dd3a8c2178ea6dc",
+    "approved_sha256": "e2569ce94dcd2fd695274cda20141764c7e1c58765ef5707bd3d5fcbcbde1714",
+    "collision_cells": 11,
+    "live_side_blocks": 1,
+    "center_edits": []
+  },
+  {
+    "stage": 18,
+    "output": "maps/tubesteak_ssbmjunglejapes Wide.map",
+    "source_sha256": "2fe3c044bd69db0d57d9f200148757e93b45b8863f67951c37a4ad260f4bb806",
+    "approved_sha256": "6bf5460ec0a643062ae7a1ea5780d2f521d166ab8506c39b614165ab107ea89a",
+    "collision_cells": 7,
+    "live_side_blocks": 0,
+    "center_edits": []
+  },
+  {
+    "stage": 19,
+    "output": "maps/tubesteak_dkjungle Wide.map",
+    "source_sha256": "367725f3782858bb7868a235a616e1bfaca5135f1f2082eccd039c34ee6cb902",
+    "approved_sha256": "edfdf83eab7bcede9fe9cbd4880eb34ff17eb60225d9f693205f99464c6b46b8",
+    "collision_cells": 14,
+    "live_side_blocks": 0,
+    "center_edits": []
+  },
+  {
+    "stage": 20,
+    "output": "maps/hazey_Lava Island Wide.map",
+    "source_sha256": "b6d7e131f51fc148e7fa908680b61172d21303cb2e93facae30ed2c87366e054",
+    "approved_sha256": "f1eb64a42a0ba7ef55aa9d3077ce1f7f385ad873c5d418be3bd540644def79ea",
+    "collision_cells": 21,
+    "live_side_blocks": 0,
+    "center_edits": []
+  },
+  {
+    "stage": 21,
+    "output": "maps/GG_The hotter the better Wide.map",
+    "source_sha256": "d26f6f17e07b6acf3fc5b8dda59da432bb3847dd52c7583fd7bc5d269108caff",
+    "approved_sha256": "0d47aa949169e92b188661f9f73ec6b9cb2912926aad6cf5d6edbd708a64cd02",
+    "collision_cells": 7,
+    "live_side_blocks": 0,
+    "center_edits": []
+  },
+  {
+    "stage": 22,
+    "output": "maps/Tanuki_Jungle Bridge Wide.map",
+    "source_sha256": "f8a479a179ed88d34bad4e040d1b94bc9406891e60ea576b4b66310dda6f0951",
+    "approved_sha256": "8e1d6dfd49568301c9febe142525176bb6996f83c2001d9af3881ad7df65b908",
+    "collision_cells": 50,
+    "live_side_blocks": 1,
+    "center_edits": []
+  },
+  {
+    "stage": 23,
+    "output": "maps/Link901_Watery Day Wide.map",
+    "source_sha256": "70b10493553fbf88ac17d321b485afbf3b9a96f8a27c4155b26a2812b467cfc3",
+    "approved_sha256": "53cc8eb04ad9861a83043726a6016a7bedac8d0d1695a9cc79a6ccd71c6fc543",
+    "collision_cells": 23,
+    "live_side_blocks": 2,
+    "center_edits": []
+  },
+  {
+    "stage": 24,
+    "output": "maps/ym7_jungle Wide.map",
+    "source_sha256": "763ab58d8b7e40dd7a7653b9c94e9a840e68eae73d3e4c4a32c9f8fd6630500b",
+    "approved_sha256": "ce93f5d52393da920846add2028cb1499fe9aeeeeab34a77f3e8cd5ad7ebfe0e",
+    "collision_cells": 25,
+    "live_side_blocks": 0,
+    "center_edits": []
+  }
+]

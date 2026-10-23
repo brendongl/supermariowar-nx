@@ -2469,6 +2469,22 @@ void CPlayer::mapcolldet_moveUpward(short txl, short txc, short txr,
     //Player squeezed around the block, ice or death on top
     //or if the player is invincible and hits death or death on bottom
     int unalignedTileType = g_map->map(unAlignedBlockX, ty);
+    // A solid neighbour is not an escape route when the aligned ceiling is
+    // lethal. Squeezing around that neighbour (especially across the wrap seam)
+    // would place the player inside the lethal tile instead of resolving the hit.
+    const bool alignedFatal = (alignedTileType & tile_flag_super_or_player_death_bottom) ||
+        ((alignedTileType & tile_flag_death_on_bottom) && !isInvincible() && !isShielded() && !shyguy);
+    if (alignedFatal) {
+        const bool force = (alignedTileType & tile_flag_super_or_player_death_bottom) != 0;
+        if (PlayerKillType::NonKill != KillPlayerMapHazard(force, KillStyle::Environment, false) || !isready())
+            return;
+        // Greed and similar modes can turn a hit into a penalty and leave the
+        // player alive. Resolve the solid ceiling even when the hit is nonfatal.
+        setYf((ty + 1) * TILESIZE + 0.2f);
+        fOldY = fy - 1.0f;
+        vely = std::abs(vely) * BOUNCESTRENGTH;
+        return;
+    }
     if ((unalignedTileType & tile_flag_solid) && !(unalignedTileType & tile_flag_super_or_player_death_bottom) &&
             (!(unalignedTileType & tile_flag_death_on_bottom) || isInvincible() || isShielded() || shyguy)) {
         setXf(unAlignedBlockFX);
@@ -2481,8 +2497,11 @@ void CPlayer::mapcolldet_moveUpward(short txl, short txc, short txr,
                               ((alignedTileType & tile_flag_super_or_player_death_bottom) &&  !(unalignedTileType & tile_flag_solid)) ||
                               ((alignedTileType & tile_flag_solid) && !(unalignedTileType & tile_flag_super_or_player_death_bottom));
 
-        if (PlayerKillType::NonKill != KillPlayerMapHazard(fRespawnPlayer, KillStyle::Environment, false))
+        if (PlayerKillType::NonKill != KillPlayerMapHazard(fRespawnPlayer, KillStyle::Environment, false) || !isready())
             return;
+        setYf((ty + 1) * TILESIZE + 0.2f);
+        fOldY = fy - 1.0f;
+        vely = std::abs(vely) * BOUNCESTRENGTH;
     } else {
         setYf(fPrecalculatedY);
         vely += GRAVITATION;

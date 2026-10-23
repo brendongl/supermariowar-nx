@@ -1,0 +1,67 @@
+# Approved widescreen stage pack
+
+23 approved conversions, plus the existing 0smw Wide. Candidate 12, Rat Race,
+was dropped. `stages.json` records the source names and approved review revision;
+`approved/` preserves those images. The screenshots are references, not map files.
+
+## Runtime behavior
+
+- 2–4 enabled players: 290 original maps, 20 by 15 tiles.
+- 5–8 enabled players: 24 converted maps, 27 by 15 tiles (864 by 480).
+- Both manual selection/random and Quick Game obey the same width restriction.
+- Slots 5–8 are CPU-only, with random characters and separate teams. Up to four
+  humans remain supported. Scripted tours/worlds/minigames require <=4 players.
+- `platform/widescreen/data` is installed on desktop and merged into Switch RomFS.
+  The upstream `data` submodule is unchanged.
+
+## Authoring
+
+The approved image centers began at pixel 112, a half-tile offset. Playable maps
+shift the center to column 3 (pixel 96). Source center tiles, collisions, objects,
+warps, hazards and map settings remain serialized game data. Side art is a custom
+seven-column atlas; `layouts.py` explicitly defines its collision and live block
+placements. Question/music/throw/donut blocks use engine objects, with their
+painted duplicates removed. The requested center edits in candidates 3 and 9 are
+copied from actual source tiles. Moving-platform maps were excluded.
+
+1. Build the Linux test image from `platform/switch/test/linux/Dockerfile` and
+   configure `build-linux-asan` with `SMW_AUTOTEST=ON` (see existing soak script).
+2. Run `python3 tools/widescreen/build_assets.py` (requires Pillow). It prepares
+   atlases, backgrounds, `build-wide-author/manifest.txt`, edit files, provenance,
+   and a merged `build-wide-author/data` directory.
+3. Start the test binary in the Docker repository mount `/src`, with
+   `--datadir /src/build-wide-author/data`, `SMW_AUTHOR=/src/build-wide-author/manifest.txt`,
+   offscreen SDL video and dummy audio. Use an isolated HOME with an empty
+   `.local/share/supermariowar/autotest` file to skip the splash screen.
+   The author hook loads, widens, serializes and fully reloads every map.
+4. Run `python3 tools/widescreen/verify_maps.py`. It independently parses binary
+   maps and checks all 6,900 original center cells, requested edits, live side
+   blocks, shifted items and hazard counts.
+5. Copy only the 23 generated `* Wide.map` files named in `stages.json` from
+   `build-wide-author/data/maps/` to `platform/widescreen/data/maps/`.
+6. Rebuild desktop and Switch binaries; the maps are now packaged with both.
+
+Regeneration is deterministic from the approved images and layout file; it does
+not call an image-generation API. The atlas is intentionally static except for
+objects explicitly promoted to engine blocks.
+
+## Verification
+
+`SMW_CHECK_MAP_POOLS=1` on the test binary checks every browser entry and 100
+manual/Quick Game random selections at player counts 2, 4, 5, 8, 4, 8.
+`python3 tools/widescreen/soak_pack.py 45` runs bounded eight-CPU tests on all 23
+maps, with three independent processes and fresh HOME directories. Results include
+binary hashes, actual arena width/player/team counts, frames, overlap warnings,
+and sanitizer reports. Optional stage IDs follow the duration.
+
+`SMW_TEST_MODE=Greed` selects that mode in test builds. For original-map regression,
+set `SMW_TEST_PLAYERS=4 SMW_TEST_ORIGINAL=1`. These hooks do not affect normal play.
+
+2026-10-23 results: all maps loaded and rendered, full sweep 22/23 initially passed;
+The Pit exposed a pre-existing ceiling-spike collision bug when Greed made a hit
+nonfatal. After correcting that resolution, its targeted 90-second eight-CPU
+retest passed four matches with no overlap/sanitizer warnings. Three original maps
+also passed four-player regressions. 61 unit tests / 185 assertions pass, including
+legacy four-slot settings and invalid-array rollback. Normal PC and Switch builds
+succeed. Physical Switch/controller testing is pending; the reserved console was
+busy and the isolated emulator aborted before loading the game.

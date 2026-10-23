@@ -142,13 +142,18 @@ void from_toml(T& value, const toml::value& t)
         for (std::size_t i = 0; i < length; i++)
             from_toml(value[i], arr[i]);
     } else if constexpr (is_std_array<T>::value) {
-        // Shorter arrays are accepted so settings saved with fewer player slots still load;
-        // the remaining elements keep their defaults.
+        // Accept the old four-player settings as well as the full eight slots,
+        // but do not silently apply truncated or partly invalid arrays.
         const toml::array& arr = t.as_array();
-        if (arr.size() > value.size())
-            throw std::runtime_error("array size mismatch: expected at most " + std::to_string(value.size()) + " elements");
+        constexpr bool playerArray = std::is_same_v<T, decltype(Bridge::skins)> ||
+            std::is_same_v<T, decltype(Bridge::player_slots)>;
+        const bool legacyPlayers = playerArray && arr.size() == 4 && value.size() == MAX_PLAYERS;
+        if (arr.size() != value.size() && !legacyPlayers)
+            throw std::runtime_error("array size mismatch: expected " + std::to_string(value.size()) + " elements");
+        T parsed = value;
         for (std::size_t i = 0; i < arr.size(); i++)
-            from_toml(value[i], arr[i]);
+            from_toml(parsed[i], arr[i]);
+        value = std::move(parsed);
     } else if constexpr (has_named_struct<T>::value) {
         from_toml_table(value, t);
     } else {

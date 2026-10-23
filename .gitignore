@@ -5,3 +5,6 @@ build*/
 .build.log
 .deps-build.log
 .linux-*.log
+
+__pycache__/
+*.pyc

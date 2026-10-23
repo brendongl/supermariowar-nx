@@ -15,6 +15,7 @@ public:
     UI_MatchSelectionMenu();
 
     void SelectionChanged();
+    void SetWidePlayers(bool wide);
     void WorldMapChanged();
     void ActivateMinigameField();
     Minigame GetMinigame() const;

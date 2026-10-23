@@ -98,15 +98,25 @@ endif()
 #
 if(NINTENDO_SWITCH)
 	set(SMW_ROMFS_DIR "${CMAKE_BINARY_DIR}/romfs")
+	set(SMW_ROMFS_STAMP "${CMAKE_BINARY_DIR}/smw-romfs.stamp")
 	file(MAKE_DIRECTORY "${SMW_ROMFS_DIR}")
 	add_custom_target(smw_romfs
+		BYPRODUCTS "${SMW_ROMFS_STAMP}"
 		COMMAND ${CMAKE_COMMAND} -E rm -rf "${SMW_ROMFS_DIR}/data"
 		COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/data" "${SMW_ROMFS_DIR}/data"
 		COMMAND ${CMAKE_COMMAND} -E rm -rf "${SMW_ROMFS_DIR}/data/.git" "${SMW_ROMFS_DIR}/data/maps/ZZleveleditor.map"
 		# Extra content shipped with this port (e.g. the Sip n Play Dice Guy skin)
 		COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/platform/switch/data" "${SMW_ROMFS_DIR}/data"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/platform/widescreen/data" "${SMW_ROMFS_DIR}/data"
+		COMMAND ${CMAKE_COMMAND} -E touch "${SMW_ROMFS_STAMP}"
 		COMMENT "Staging game data into RomFS"
 		VERBATIM
+	)
+	# Pass a devkitPro asset target so changing only images/maps repacks the NRO.
+	# A raw ROMFS directory gives nx_create_nro no file dependencies.
+	set_target_properties(smw_romfs PROPERTIES
+		DKP_ASSET_FOLDER "${SMW_ROMFS_DIR}"
+		DKP_ASSET_FILES "${SMW_ROMFS_STAMP}"
 	)
 	nx_generate_nacp(OUTPUT smw.nacp
 		NAME "${SMW_SWITCH_TITLE}"
@@ -116,7 +126,7 @@ if(NINTENDO_SWITCH)
 	nx_create_nro(smw
 		NACP smw.nacp
 		ICON "${PROJECT_SOURCE_DIR}/platform/switch/icon.jpg"
-		ROMFS "${SMW_ROMFS_DIR}"
+		ROMFS smw_romfs
 	)
 	add_dependencies(smw_nro smw_romfs)
 endif()

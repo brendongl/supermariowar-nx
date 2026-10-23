@@ -1,6 +1,7 @@
 #include "MapList.h"
 
 #include "FileList.h"
+#include "FileIO.h"
 #include "GameValues.h"
 #include "linfunc.h"
 #include "map.h"
@@ -39,6 +40,17 @@ MapListNode::MapListNode(std::string fullName)
 {
     pfFilters.resize(NUM_AUTO_FILTERS + filterslist->count(), false);
     filename = std::move(fullName);
+    try {
+        BinaryFile header(filename, "rb");
+        if (!header.is_open()) { fValid = false; return; }
+        int version[4];
+        for (int& v : version) v = header.read_i32();
+        if (version[0] == 1 && version[1] == 8 && version[2] == 1)
+            width = static_cast<short>(header.read_i32());
+    } catch (const std::exception& error) {
+        fValid = false;
+        fprintf(stderr, "[maps] Invalid header: %s\n", error.what());
+    }
 }
 
 ///////////// MapList ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -294,30 +306,43 @@ void MapList::next(bool fUseFilters)
 
 void MapList::random(bool fUseFilters)
 {
-    int iShuffle = 0;
-    if (fUseFilters) {
-        if (iFilteredMapCount < 2)
-            return;
-
-        iShuffle = RANDOM_INT(iFilteredMapCount - 1);
-    } else {
-        iShuffle = RANDOM_INT(maps.size() - 1);
+    std::vector<decltype(current)> candidates;
+    for (auto it = maps.begin(); it != maps.end(); ++it) {
+        if (it->second.fValid && WidthAllowed(it->second) &&
+            (!fUseFilters || it->second.fInCurrentFilterSet))
+            candidates.push_back(it);
     }
+    if (candidates.empty()) return;
+    current = outercurrent = candidates[RANDOM_INT(candidates.size())];
+}
 
-    for (int i = 0; i <= iShuffle; i++)
-        next(fUseFilters);
+bool MapList::WidthAllowed(const MapListNode& node) const
+{
+    return requiredWidth == 0 || node.width == requiredWidth;
+}
+
+void MapList::SetPlayerCount(short players)
+{
+    requiredWidth = players > 4 ? 27 : MAPWIDTH_NORMAL;
+    ApplyFilters(game_values.pfFilters);
+    if (iFilteredMapCount == 0) {
+        // A remembered tag filter may have no match in the other width pool.
+        // Clear optional tags, never the mandatory width restriction.
+        std::fill(game_values.pfFilters.begin(), game_values.pfFilters.end(), false);
+        ApplyFilters(game_values.pfFilters);
+    }
+    if (iFilteredMapCount == 0)
+        throw std::runtime_error("No maps available for this player count");
 }
 
 std::string MapList::randomFilename() const
 {
-    auto rnd = maps.cbegin();
-
-    short iRand = RANDOM_INT(maps.size());
-
-    for (short iMap = 0; iMap < iRand; iMap++)
-        rnd++;
-
-    return (*rnd).second.filename;
+    std::vector<const MapListNode*> candidates;
+    for (const auto& [name, node] : maps)
+        if (node.fValid && WidthAllowed(node)) candidates.push_back(&node);
+    if (candidates.empty())
+        throw std::runtime_error("No compatible random maps");
+    return candidates[RANDOM_INT(candidates.size())]->filename;
 }
 
 
@@ -372,9 +397,10 @@ void MapList::ReadFilters()
     if (mfp) {
         while (fgets(buffer, 256, mfp)) {
             char * pszMapName = strtok(buffer, ",\n");
-            MapListNode& node = maps.find(pszMapName)->second;
-
-            if (maps.find(pszMapName) != maps.end()) {
+            if (!pszMapName) continue;
+            auto found = maps.find(pszMapName);
+            if (found != maps.end()) {
+                MapListNode& node = found->second;
                 bool fErrorReading = false;
                 for (size_t iFilter = 0; iFilter < NUM_AUTO_FILTERS; iFilter++) {
                     char * psz = strtok(NULL, ",\n");
@@ -396,7 +422,7 @@ void MapList::ReadFilters()
     }
 
     while (current != maps.end()) {
-        if (!current->second.fReadFromCache) {
+        if (current->second.fValid && !current->second.fReadFromCache) {
             MapListNode& mln = current->second;
             g_map->loadMap(mln.filename, read_type_summary);
             std::copy(g_map->fAutoFilter.cbegin(), g_map->fAutoFilter.cend(), mln.pfFilters.begin());
@@ -493,7 +519,7 @@ void MapList::ApplyFilters(const std::vector<bool>& pfFilters)
     iFilteredMapCount = 0;
     short iTotalCount = 0;
     while (itr != lim) {
-        bool fMatched = true;
+        bool fMatched = itr->second.fValid && WidthAllowed(itr->second);
         for (size_t iFilter = 0; iFilter < pfFilters.size(); iFilter++) {
             if (pfFilters[iFilter]) {
                 if (!(*itr).second.pfFilters[iFilter]) {
