@@ -188,8 +188,8 @@ void PlayerWarpStatus::chooseWarpExit(CPlayer& player)
             warpcounter = PW + PWOFFSET;
             warpplane = (exit->warpx << 5) + TILESIZE;
 
-            if (iCol + 1 >= 20)
-                iCol -= 20;
+            if (iCol + 1 >= MAPWIDTH)
+                iCol -= MAPWIDTH;
 
             block = g_map->block(iCol + 1, iRow);
 
@@ -219,7 +219,7 @@ void PlayerWarpStatus::chooseWarpExit(CPlayer& player)
             warpplane = (exit->warpx << 5);
 
             if (iCol - 1 < 0)
-                iCol += 20;
+                iCol += MAPWIDTH;
 
             block = g_map->block(iCol - 1, iRow);
 

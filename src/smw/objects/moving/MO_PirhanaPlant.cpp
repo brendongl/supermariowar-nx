@@ -298,7 +298,7 @@ void MO_PirhanaPlant::SetNewTimer()
     // Face the green fireball plant in a random direction
     if (iType == 0) {
         // Only point flower towards directions that make sense
-        if ((ix >> 5) == 19)
+        if ((ix >> 5) == MAPWIDTH - 1)
             iFrame = RANDOM_INT(2);
         else if (ix == 0)
             iFrame = (RANDOM_INT(2)) + 2;

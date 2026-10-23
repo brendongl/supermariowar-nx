@@ -1,5 +1,7 @@
 #include "gfxSprite.h"
 
+#include "Game.h"
+
 #include "gfx.h"
 
 #include <SDL3_image/SDL_image.h>
@@ -82,6 +84,14 @@ void blitSurface(SDL_Surface* src, const SDL_Rect* srcArea, SDL_Surface* dst, SD
 } // namespace
 
 
+namespace {
+// Sprites wrap around the play area, which is wider on widescreen maps
+int playWrap(int wrap)
+{
+    return wrap == App::menuWidth ? App::screenWidth : wrap;
+}
+} // namespace
+
 gfxSprite::gfxSprite(SdlSurfacePtr image, std::optional<int> wrap)
     : m_picture(std::move(image))
     , m_wrap_x(wrap)
@@ -117,11 +127,12 @@ void gfxSprite::blit(const SDL_Rect* srcRect, SDL_Surface* dst, Vec2i dstPos) co
     blitSurface(m_picture.get(), srcRect, dst, &dstRect);
 
     if (m_wrap_x) {
-        if (dstRect.x + getWidth() >= *m_wrap_x) {
-            dstRect = { dstPos.x - *m_wrap_x, dstPos.y, 0, 0 };  // NOTE: SDL2 modifies the dst rect
+        const int wrapX = playWrap(*m_wrap_x);
+        if (dstRect.x + getWidth() >= wrapX) {
+            dstRect = { dstPos.x - wrapX, dstPos.y, 0, 0 };  // NOTE: SDL2 modifies the dst rect
             blitSurface(m_picture.get(), srcRect, dst, &dstRect);
         } else if (dstRect.x < 0) {
-            dstRect = { dstPos.x + *m_wrap_x, dstPos.y, 0, 0 };  // NOTE: SDL2 modifies the dst rect
+            dstRect = { dstPos.x + wrapX, dstPos.y, 0, 0 };  // NOTE: SDL2 modifies the dst rect
             blitSurface(m_picture.get(), srcRect, dst, &dstRect);
         }
     }
@@ -141,10 +152,11 @@ void gfxSprite::draw(int x, int y, const SDL_Rect& srcRect, ClipEdge clipEdge, i
     blitSurface(m_picture.get(), &adjustedSrcRect, blitdest, &adjustedDstRect);
 
     if (m_wrap_x) {
-        if (x + srcRect.w >= *m_wrap_x) {
+        const int wrapX = playWrap(*m_wrap_x);
+        if (x + srcRect.w >= wrapX) {
             adjustedSrcRect = srcRect;
             adjustedDstRect = dstRect;
-            adjustedDstRect.x -= *m_wrap_x;
+            adjustedDstRect.x -= wrapX;
 
             if (gfx_adjusthiddenrects(adjustedSrcRect, adjustedDstRect, clipEdge, clipTreshold))
                 return;
@@ -153,7 +165,7 @@ void gfxSprite::draw(int x, int y, const SDL_Rect& srcRect, ClipEdge clipEdge, i
         } else if (x < 0) {
             adjustedSrcRect = srcRect;
             adjustedDstRect = dstRect;
-            adjustedDstRect.x += *m_wrap_x;
+            adjustedDstRect.x += wrapX;
 
             if (gfx_adjusthiddenrects(adjustedSrcRect, adjustedDstRect, clipEdge, clipTreshold))
                 return;

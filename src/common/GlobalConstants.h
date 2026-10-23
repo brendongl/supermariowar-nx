@@ -78,7 +78,12 @@
 #define CRUNCHMAX       32
 
 
-#define MAPWIDTH        20          //width of the map
+// Maps are 20 tiles wide (640 px) or, for widescreen maps, 27 (864 px). MAPWIDTH is
+// the width of the loaded map; arrays that hold map tiles use MAPWIDTH_MAX.
+#define MAPWIDTH_NORMAL 20
+#define MAPWIDTH_MAX    27
+extern short g_iMapWidth;
+#define MAPWIDTH        g_iMapWidth //width of the loaded map
 #define MAPHEIGHT       15          //height of the map
 #define MAPLAYERS       4           //number of layers the map has
 #define TILESIZE        32          //size of the tiles, should be dynamically read

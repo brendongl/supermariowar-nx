@@ -417,10 +417,12 @@ void CResourceManager::loadAllGraphics()
     loadWorldGraphics();
     loadGameGraphics();
 
-    spr_backmap[0] = builder("gfx/packs/backgrounds/Land_Classic.png").withoutColorKey().create();
-    spr_backmap[1] = builder("gfx/packs/backgrounds/Land_Classic.png").withoutColorKey().create();
-    spr_frontmap[0] = builder("gfx/packs/backgrounds/Land_Classic.png").withoutColorKey().create();
-    spr_frontmap[1] = builder("gfx/packs/backgrounds/Land_Classic.png").withoutColorKey().create();
+    // Wide enough for widescreen maps; the map is drawn into them before each game
+    for (gfxSprite* layer : {&spr_backmap[0], &spr_backmap[1], &spr_frontmap[0], &spr_frontmap[1]})
+        *layer = gfxSprite::blank(App::maxScreenWidth, App::screenHeight);
+    // RLE keeps blitting these full-screen layers cheap (see the blend note below)
+    for (gfxSprite* layer : {&spr_backmap[0], &spr_backmap[1], &spr_frontmap[0], &spr_frontmap[1]})
+        SDL_SetSurfaceRLE(layer->getSurface(), true);
     // The predrawn map layers are opaque apart from the magenta colour key. With blending
     // on, SDL3 RLE-encodes ARGB surfaces by alpha and ignores the colour key, so the
     // magenta showed through. Without blending SDL uses colour-key RLE instead.

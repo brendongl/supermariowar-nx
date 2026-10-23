@@ -12,6 +12,8 @@
 #include "ResourceManager.h"
 #include "TilesetManager.h"
 #include "Version.h"
+
+#include <algorithm>
 #include "map/MapReader.h"
 
 #include <SDL3_image/SDL_image.h>
@@ -45,6 +47,8 @@ extern CResourceManager* rm;
 extern GraphicsList* gamegraphicspacklist;
 
 //[Direction][Frame]
+short g_iMapWidth = MAPWIDTH_NORMAL;
+
 SDL_Rect g_rFlameRects[4][4] = { { {0, 0, 96, 32}, {0, 32, 96, 32}, {0, 64, 96, 32}, {0, 96, 96, 32} },
     { {96, 0, 96, 32}, {96, 32, 96, 32}, {96, 64, 96, 32}, {96, 96, 96, 32} },
     { {0, 128, 32, 96}, {32, 128, 32, 96}, {64, 128, 32, 96}, {96, 128, 32, 96} },
@@ -582,6 +586,15 @@ void CMap::loadMap(const std::string& file, ReadType iReadType)
     version.patch = mapfile.read_i32();
     version.build = mapfile.read_i32();
 
+    // Widescreen maps (1.8.1.0) store their width in tiles right after the version;
+    // the rest is the 1.8 format with that many columns
+    if (version.major == 1 && version.minor == 8 && version.patch == 1) {
+        g_iMapWidth = std::clamp<short>(static_cast<short>(mapfile.read_i32()), MAPWIDTH_NORMAL, MAPWIDTH_MAX);
+        version = Version {1, 8, 0, 4};
+    } else {
+        g_iMapWidth = MAPWIDTH_NORMAL;
+    }
+
     if (iReadType != read_type_summary) {
         cout << "loading map " << file;
 
@@ -709,17 +722,26 @@ void CMap::saveMap(const std::string& file)
     //(this will allow the map loader to identify if the map needs conversion)
     // For compatibility, let's use the final 1.8 version until
     // there's no actual change in the map format.
-    mapfile.write_i32(1); //Major
-    mapfile.write_i32(8); //Minor
-    mapfile.write_i32(0); //Micro
-    mapfile.write_i32(4); //Build
+    if (MAPWIDTH != MAPWIDTH_NORMAL) {
+        // Widescreen map: version 1.8.1.0, then the width in tiles, then the 1.8 format
+        mapfile.write_i32(1);
+        mapfile.write_i32(8);
+        mapfile.write_i32(1);
+        mapfile.write_i32(0);
+        mapfile.write_i32(MAPWIDTH);
+    } else {
+        mapfile.write_i32(1); //Major
+        mapfile.write_i32(8); //Minor
+        mapfile.write_i32(0); //Micro
+        mapfile.write_i32(4); //Build
+    }
     // mapfile.write_i32(g_iVersion[0]); //Major
     // mapfile.write_i32(g_iVersion[1]); //Minor
     // mapfile.write_i32(g_iVersion[2]); //Micro
     // mapfile.write_i32(g_iVersion[3]); //Build
 
     //Calculate warp zones
-    bool usedtile[MAPWIDTH][MAPHEIGHT];
+    bool usedtile[MAPWIDTH_MAX][MAPHEIGHT];
     for (j = 0; j < MAPHEIGHT; j++)
         for (i = 0; i < MAPWIDTH; i++)
             usedtile[i][j] = false;
@@ -1349,7 +1371,7 @@ void CMap::saveThumbnail(const std::string &sFile, bool fUseClassicPack)
 
 void CMap::calculatespawnareas(short iType, bool fUseTempBlocks, bool fIgnoreDeath)
 {
-    bool usedtile[MAPWIDTH][MAPHEIGHT];
+    bool usedtile[MAPWIDTH_MAX][MAPHEIGHT];
     short i, j;
 
     for (j = 0; j < MAPHEIGHT; j++)
@@ -2466,5 +2488,78 @@ void CMap::optimize()
                 }
             }
         }
+    }
+}
+
+bool CMap::widen(short newWidth, short offset)
+{
+    if (!platforms.empty()) {
+        printf("[widen] map has moving platforms, which can't be moved yet\n");
+        return false;
+    }
+    if (newWidth > MAPWIDTH_MAX || offset < 0 || MAPWIDTH + offset > newWidth)
+        return false;
+
+    const short oldWidth = MAPWIDTH;
+    for (short i = newWidth - 1; i >= 0; i--) {
+        const short src = i - offset;
+        for (short j = 0; j < MAPHEIGHT; j++) {
+            if (src >= 0 && src < oldWidth) {
+                for (short k = 0; k < MAPLAYERS; k++)
+                    mapdata[i][j][k] = mapdata[src][j][k];
+                mapdatatop[i][j] = mapdatatop[src][j];
+                objectdata[i][j] = objectdata[src][j];
+                warpdata[i][j] = warpdata[src][j];
+                for (short t = 0; t < NUMSPAWNAREATYPES; t++)
+                    nospawn[t][i][j] = nospawn[t][src][j];
+            } else {
+                for (short k = 0; k < MAPLAYERS; k++) {
+                    mapdata[i][j][k].iID = TILESETNONE;
+                    mapdata[i][j][k].iCol = 0;
+                    mapdata[i][j][k].iRow = 0;
+                }
+                mapdatatop[i][j] = TileType::NonSolid;
+                objectdata[i][j].iType = -1;
+                objectdata[i][j].fHidden = false;
+                warpdata[i][j].direction = WARP_UNDEFINED;
+                warpdata[i][j].connection = -1;
+                warpdata[i][j].id = -1;
+                for (short t = 0; t < NUMSPAWNAREATYPES; t++)
+                    nospawn[t][i][j] = false;
+            }
+        }
+    }
+
+    const short px = offset * TILESIZE;
+    for (MapItem& item : mapitems)
+        item.ix += offset;
+    for (MapHazard& hazard : maphazards)
+        hazard.ix += offset * 2;  // hazards use half tiles
+    for (short w = 0; w < numwarpexits; w++) {
+        warpexits[w].x += px;
+        warpexits[w].lockx += px;
+        warpexits[w].warpx += offset;
+    }
+    for (short g = 0; g < iNumRaceGoals; g++)
+        racegoallocations[g].x += px;
+    for (short f = 0; f < iNumFlagBases; f++)
+        flagbaselocations[f].x += px;
+
+    g_iMapWidth = newWidth;
+    return true;
+}
+
+void CMap::copyColumn(short srcX, short dstX, short firstRow, short lastRow, short dstRow)
+{
+    for (short j = firstRow; j <= lastRow; j++) {
+        const short dj = dstRow + (j - firstRow);
+        if (j < 0 || j >= MAPHEIGHT || dj < 0 || dj >= MAPHEIGHT)
+            continue;
+        for (short k = 0; k < MAPLAYERS; k++)
+            mapdata[dstX][dj][k] = mapdata[srcX][j][k];
+        mapdatatop[dstX][dj] = mapdatatop[srcX][j];
+        objectdata[dstX][dj] = objectdata[srcX][j];
+        for (short t = 0; t < NUMSPAWNAREATYPES; t++)
+            nospawn[t][dstX][dj] = nospawn[t][srcX][j];
     }
 }

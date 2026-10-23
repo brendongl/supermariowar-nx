@@ -8,7 +8,10 @@ void ensureSettingsDir();
 
 class App {
 public:
-    static constexpr int screenWidth = 640;
+    /// Width of the play area: 640, or 864 while a widescreen map is being played
+    static inline int screenWidth = 640;
+    static constexpr int menuWidth = 640;
+    static constexpr int maxScreenWidth = 864;
     static constexpr int screenHeight = 480;
     static constexpr int menuTransparency = 72;
 

@@ -115,9 +115,9 @@ int				draw_offset_x = 0;  //x and y offset for drawing maps smaller than screen
 int				draw_offset_y = 0;
 
 int				state;
-bool			selectedtiles[MAPWIDTH][MAPHEIGHT];
-bool			moveselectedtiles[MAPWIDTH][MAPHEIGHT];
-WorldMapTile	copiedtiles[MAPWIDTH][MAPHEIGHT];
+bool			selectedtiles[MAPWIDTH_MAX][MAPHEIGHT];
+bool			moveselectedtiles[MAPWIDTH_MAX][MAPHEIGHT];
+WorldMapTile	copiedtiles[MAPWIDTH_MAX][MAPHEIGHT];
 
 int				mouse_x, mouse_y;
 

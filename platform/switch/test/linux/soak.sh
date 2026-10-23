@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Headless auto-test soak of the host build under AddressSanitizer + UBSan.
 #   platform/switch/test/linux/soak.sh [seconds] [output-dir]
-# Env: SMW_SIDE_PANELS=1 for the Switch layout, SMW_AUTOTEST_LINES for extra autotest options.
+# Env: SMW_SIDE_PANELS=1 for the Switch layout, SMW_AUTOTEST_LINES for extra autotest options,
+# SMW_DATADIR=<dir under the repo> to use another data directory (e.g. data merged with platform/switch/data).
 # Exits non-zero if a sanitizer reported anything or no match finished.
 set -uo pipefail
 cd "$(dirname "$0")/../../../.."
@@ -27,7 +28,7 @@ docker run --rm -u "$(id -u):$(id -g)" -e HOME=/home/t \
     -e SDL_VIDEO_DRIVER=offscreen -e SDL_AUDIO_DRIVER=dummy \
     -e ASAN_OPTIONS=detect_leaks=0 -e UBSAN_OPTIONS=print_stacktrace=1 ${SMW_SIDE_PANELS:+-e SMW_SIDE_PANELS=1} \
     -v "$OUT/home":/home/t -v "$PWD":/src -w /src $IMAGE \
-    timeout "$SECS" build-linux-asan/smw --datadir /src/data > "$OUT/smw.log" 2>&1
+    timeout "$SECS" build-linux-asan/smw --datadir "/src/${SMW_DATADIR:-data}" > "$OUT/smw.log" 2>&1
 
 matches=$(grep -c '\[match\] #' "$OUT/smw.log")
 ubsan=$(grep -c 'runtime error' "$OUT/smw.log")

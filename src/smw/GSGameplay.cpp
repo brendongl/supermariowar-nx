@@ -2589,7 +2589,7 @@ void GameplayState::update()
 
 #if defined(_DEBUG) || defined(SMW_AUTOTEST)
     if (g_fAutoTest)
-        rm->menu_font_small.drawRightJustified(635, 5, "Auto");
+        rm->menu_font_small.drawRightJustified(App::screenWidth - 5, 5, "Auto");
 #endif
 
 }

@@ -156,9 +156,9 @@ int				move_drag_offset_x = 0;
 int				move_drag_offset_y = 0;
 
 int				state;
-bool			selectedtiles[MAPWIDTH][MAPHEIGHT];
-bool			moveselectedtiles[MAPWIDTH][MAPHEIGHT];
-EditorMapTile	copiedtiles[MAPWIDTH][MAPHEIGHT];
+bool			selectedtiles[MAPWIDTH_MAX][MAPHEIGHT];
+bool			moveselectedtiles[MAPWIDTH_MAX][MAPHEIGHT];
+EditorMapTile	copiedtiles[MAPWIDTH_MAX][MAPHEIGHT];
 int				copiedlayer;
 
 //// Global stuff that the map editor doesn't need, but has references to

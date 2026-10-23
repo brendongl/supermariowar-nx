@@ -27,7 +27,7 @@
 class MapPlatform
 {
 	public:
-		short tiles[MAPWIDTH][MAPHEIGHT];
+		short tiles[MAPWIDTH_MAX][MAPHEIGHT];
 		SDL_Rect rIcon[2];
 		short iVelocity;
 		short iStartX;

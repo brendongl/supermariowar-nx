@@ -76,16 +76,16 @@ void MO_SpinAttack::update()
         short iRight = (ix + collisionWidth) / TILESIZE;
 
         if (iLeft < 0)
-            iLeft += 20;
+            iLeft += MAPWIDTH;
 
-        if (iLeft >= 20)
-            iLeft -= 20;
+        if (iLeft >= MAPWIDTH)
+            iLeft -= MAPWIDTH;
 
         if (iRight < 0)
-            iRight += 20;
+            iRight += MAPWIDTH;
 
-        if (iRight >= 20)
-            iRight -= 20;
+        if (iRight >= MAPWIDTH)
+            iRight -= MAPWIDTH;
 
         IO_Block* topleftblock = NULL;
         IO_Block* toprightblock = NULL;

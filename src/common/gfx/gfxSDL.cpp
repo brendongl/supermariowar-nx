@@ -1,6 +1,7 @@
 #include "gfxSDL.h"
 
 #include "gfx.h"
+#include "Game.h"
 
 #include "path.h"
 
@@ -137,8 +138,9 @@ bool GraphicsSDL::init(bool fullscreen)
     initSdl();
     sdl_window = createWindow(fullscreen);
     sdl_renderer = createRenderer(sdl_window);
-    sdl_screen_surface = createScreenSurface();
-    sdl_screen_texture = createScreenTexture(sdl_renderer);
+    // Wide enough for widescreen maps; 640 px games use the left part
+    sdl_screen_surface = createScreenSurface(App::maxScreenWidth);
+    sdl_screen_texture = createScreenTexture(sdl_renderer, App::maxScreenWidth);
 
     if (wantSidePanels()) {
         sdl_left_surface = createScreenSurface(SidePanels::LeftWidth);
@@ -163,9 +165,14 @@ bool GraphicsSDL::init(bool fullscreen)
     return true;
 }
 
+bool GraphicsSDL::sidePanelsEnabled() const
+{
+    return sidePanelsAvailable() && App::screenWidth <= GFX_SCREEN_W;
+}
+
 void GraphicsSDL::setPanelBackgrounds(SDL_Surface* left, SDL_Surface* right)
 {
-    if (!sidePanelsEnabled())
+    if (!sidePanelsAvailable())
         return;
 
     if (left) {
@@ -207,6 +214,16 @@ void GraphicsSDL::setTitle(const char* title) const
 void GraphicsSDL::flipScreen() const
 {
     SDL_UpdateTexture(sdl_screen_texture, nullptr, sdl_screen_surface->pixels, sdl_screen_surface->pitch);
+
+    // The play area is 640 px, or 864 px on a widescreen map (no side panels then)
+    const int playWidth = App::screenWidth;
+    const int wantWidth = playWidth > GFX_SCREEN_W ? playWidth : logicalWidth();
+    if (wantWidth != presented_width) {
+        SDL_SetRenderLogicalPresentation(sdl_renderer, wantWidth, GFX_SCREEN_H, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+        presented_width = wantWidth;
+    }
+    const SDL_FRect src {0, 0, static_cast<float>(playWidth), GFX_SCREEN_H};
+
     SDL_RenderClear(sdl_renderer);
     if (sidePanelsEnabled()) {
         SDL_UpdateTexture(sdl_left_texture, nullptr, sdl_left_surface->pixels, sdl_left_surface->pitch);
@@ -214,12 +231,12 @@ void GraphicsSDL::flipScreen() const
         const SDL_FRect game {SidePanels::LeftWidth, 0, GFX_SCREEN_W, GFX_SCREEN_H};
         const SDL_FRect right {SidePanels::LeftWidth + GFX_SCREEN_W, 0, SidePanels::RightWidth, GFX_SCREEN_H};
         SDL_RenderTexture(sdl_renderer, sdl_left_texture, nullptr, &left);
-        SDL_RenderTexture(sdl_renderer, sdl_screen_texture, nullptr, &game);
+        SDL_RenderTexture(sdl_renderer, sdl_screen_texture, &src, &game);
         SDL_RenderTexture(sdl_renderer, sdl_right_texture, nullptr, &right);
         // The HUD is drawn again next frame, on a clean background
         SDL_BlitSurface(sdl_left_background, nullptr, sdl_left_surface, nullptr);
     } else {
-        SDL_RenderTexture(sdl_renderer, sdl_screen_texture, nullptr, nullptr);
+        SDL_RenderTexture(sdl_renderer, sdl_screen_texture, &src, nullptr);
     }
     SDL_RenderPresent(sdl_renderer);
 }

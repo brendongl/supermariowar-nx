@@ -213,7 +213,7 @@ SDL_Surface* gfx_leftpanel() {
 }
 
 void gfx_loadsidepanels(const std::filesystem::path& left, const std::filesystem::path& right) {
-    if (!gfx.sidePanelsEnabled())
+    if (!gfx.sidePanelsAvailable())
         return;
     SDL_Surface* l = IMG_Load(left.string().c_str());
     SDL_Surface* r = IMG_Load(right.string().c_str());

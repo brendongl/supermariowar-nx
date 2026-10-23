@@ -172,6 +172,13 @@ class CMap
 
 		void loadMap(const std::string& file, ReadType iReadType);
 		void saveMap(const std::string& file);
+		/// Dev tool: makes the loaded map newWidth tiles wide, moving its content
+		/// offset tiles to the right. New columns are empty. Returns false if the map
+		/// has moving platforms, which it can't move.
+		bool widen(short newWidth, short offset);
+		/// Dev tool: copies rows firstRow..lastRow of tile column srcX (all layers,
+		/// block, top type, no-spawn flags) to column dstX, starting at row dstRow.
+		void copyColumn(short srcX, short dstX, short firstRow, short lastRow, short dstRow);
 
 		gfxSprite createThumbnailSurface(bool fUseClassicPack);
 		void saveThumbnail(const std::string &file, bool fUseClassicPack);
@@ -279,11 +286,11 @@ class CMap
 		void SetTileGap(short i, short j);
 		void calculatespawnareas(short iType, bool fUseTempBlocks, bool fIgnoreDeath);
 
-		TilesetTile	mapdata[MAPWIDTH][MAPHEIGHT][MAPLAYERS];
-		TileType		mapdatatop[MAPWIDTH][MAPHEIGHT];
-		MapBlock	objectdata[MAPWIDTH][MAPHEIGHT];
-		IO_Block*   blockdata[MAPWIDTH][MAPHEIGHT];
-		bool		nospawn[NUMSPAWNAREATYPES][MAPWIDTH][MAPHEIGHT];
+		TilesetTile	mapdata[MAPWIDTH_MAX][MAPHEIGHT][MAPLAYERS];
+		TileType		mapdatatop[MAPWIDTH_MAX][MAPHEIGHT];
+		MapBlock	objectdata[MAPWIDTH_MAX][MAPHEIGHT];
+		IO_Block*   blockdata[MAPWIDTH_MAX][MAPHEIGHT];
+		bool		nospawn[NUMSPAWNAREATYPES][MAPWIDTH_MAX][MAPHEIGHT];
 
 		std::vector<AnimatedTile*> animatedtiles;
 
@@ -297,7 +304,7 @@ class CMap
 		short		numspawnareas[NUMSPAWNAREATYPES];
 		short		totalspawnsize[NUMSPAWNAREATYPES];
 
-		Warp        warpdata[MAPWIDTH][MAPHEIGHT];
+		Warp        warpdata[MAPWIDTH_MAX][MAPHEIGHT];
 		short		numwarpexits = 0; //number of warp exits
 		WarpExit	warpexits[MAXWARPS];
 		short		warplocktimer[10];

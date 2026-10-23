@@ -1,4 +1,6 @@
 #include "player.h"
+#include <algorithm>
+#include <climits>
 
 #include "eyecandy.h"
 #include "GameValues.h"
@@ -1788,8 +1790,37 @@ bool CPlayer::FindSpawnPoint()
     //}
     //else
     //{
-    // Maps have team spawn areas for the first 4 teams only (types 1-4); others spawn anywhere
-    bool fRet = g_map->findspawnpoint(teamID < 4 ? teamID + 1 : 0, &ix, &iy, PW, PH, false);
+    // Maps have team spawn areas for the first 4 teams only (types 1-4); others spawn anywhere.
+    // With up to 8 players, try a few spots and keep the first one well away from everyone
+    // else (or the furthest one found), so players don't appear on top of each other.
+    const short spawnType = teamID < 4 ? teamID + 1 : 0;
+    constexpr int kMinSpawnDistance = 96;
+    constexpr int kSpawnAttempts = 20;
+    bool fRet = false;
+    int bestDistance = -1;
+    short bestX = 0, bestY = 0;
+    for (int attempt = 0; attempt < kSpawnAttempts; attempt++) {
+        short x = 0, y = 0;
+        const bool found = g_map->findspawnpoint(spawnType, &x, &y, PW, PH, false);
+        int nearest = INT_MAX;
+        for (const CPlayer* other : players) {
+            if (other == this || other->isdead())
+                continue;
+            const int dx = std::abs(other->ix - x);
+            const int dy = std::abs(other->iy - y);
+            nearest = std::min(nearest, std::max(dx, dy));
+        }
+        if (nearest > bestDistance) {
+            bestDistance = nearest;
+            bestX = x;
+            bestY = y;
+            fRet = found;
+        }
+        if (nearest >= kMinSpawnDistance)
+            break;
+    }
+    ix = bestX;
+    iy = bestY;
     //}
 
     fx = (float)ix;
@@ -2234,9 +2265,9 @@ void CPlayer::mapcolldet_moveHorizontally(short direction)
 
     //Just in case tx out of bounds and flipsidesifneeded wasn't called
     if (tx < 0)
-        tx += 20;
-    else if (tx > 19)
-        tx -= 20;
+        tx += MAPWIDTH;
+    else if (tx >= MAPWIDTH)
+        tx -= MAPWIDTH;
 
     IO_Block * topblock = g_map->block(tx, ty);
     IO_Block * bottomblock = g_map->block(tx, ty2);
@@ -2773,12 +2804,12 @@ void CPlayer::flipsidesifneeded()
     //Use ix here to avoid rounding issues (can crash if tile_x_right evals to over the right side of screen)
     if (ix < 0 || fx < 0.0f) {
         //This avoids rounding errors
-        setXf(fx + 640);
-        fOldX += 640;
+        setXf(fx + App::screenWidth);
+        fOldX += App::screenWidth;
         //printf("Flipped Left\n");
-    } else if (ix >= 640 || fx >= 640) {
-        setXf(fx - 640);
-        fOldX -= 640;
+    } else if (ix >= App::screenWidth || fx >= App::screenWidth) {
+        setXf(fx - App::screenWidth);
+        fOldX -= App::screenWidth;
         //printf("Flipped Right\n");
     }
 }

@@ -171,6 +171,45 @@ bool MenuState::init()
     szCurrentMapName = mGameSettingsMenu->miMapField->GetMapName();
 
 #if defined(SMW_AUTOTEST)
+    // Dev tool for widescreen maps:
+    //   SMW_WIDEN="in.map;out.map;<width>;<offset>[;dst=src[@r0-r1[:t]],...[;background.png]]"
+    // loads in.map, widens it to <width> tiles with the old content moved <offset>
+    // tiles right, copies the listed tile columns into the new space, saves out.map
+    // and quits. Paths are relative to the data directory.
+    if (const char* spec = SDL_getenv("SMW_WIDEN")) {
+        std::vector<std::string> parts;
+        std::string cur;
+        for (const char* c = spec; ; c++) {
+            if (*c == ';' || *c == 0) { parts.push_back(cur); cur.clear(); if (!*c) break; }
+            else cur += *c;
+        }
+        if (parts.size() >= 4) {
+            g_map->loadMap(convertPath(parts[0]), read_type_full);
+            if (g_map->widen(static_cast<short>(atoi(parts[2].c_str())), static_cast<short>(atoi(parts[3].c_str())))) {
+                if (parts.size() >= 5) {
+                    std::string pair;
+                    std::string list = parts[4] + ",";
+                    for (char c : list) {
+                        if (c != ',') { pair += c; continue; }
+                        // "dst=src" copies a whole column; "dst=src@r0-r1" or
+                        // "dst=src@r0-r1:t" copies rows r0..r1 to rows starting at t
+                        // (source columns are in the widened map's coordinates)
+                        int dst = 0, src = 0, r0 = 0, r1 = MAPHEIGHT - 1, t = -1;
+                        const int n = sscanf(pair.c_str(), "%d=%d@%d-%d:%d", &dst, &src, &r0, &r1, &t);
+                        if (n >= 2)
+                            g_map->copyColumn(static_cast<short>(src), static_cast<short>(dst), static_cast<short>(r0), static_cast<short>(r1), static_cast<short>(t < 0 ? r0 : t));
+                        pair.clear();
+                    }
+                }
+                if (parts.size() >= 6 && !parts[5].empty())
+                    g_map->szBackgroundFile = parts[5];  // e.g. a widened background image
+                g_map->saveMap(convertPath(parts[1]));
+                printf("[widen] wrote %s (%d tiles wide, %zu parts, background %s)\n", parts[1].c_str(), MAPWIDTH, parts.size(), g_map->szBackgroundFile.c_str());
+            }
+        }
+        exit(0);
+    }
+
     // Unattended soak test: an "autotest" file in the settings directory makes four CPU
     // players run random menus, modes and maps until the game is closed.
     if (FileExists(GetHomeDirectory() + "autotest")) {
@@ -226,6 +265,7 @@ bool MenuState::init()
 
 void MenuState::onEnterState()
 {
+    App::screenWidth = App::menuWidth;
     iUnlockMinigameOptionIndex = 0;
 
     iTournamentAIStep = 0;
@@ -1460,6 +1500,8 @@ void MenuState::update()
             game_values.appstate = AppState::Game;
             printf("  GS_GAME\n");
 
+            // The play area follows the map: 864 px for widescreen maps
+            App::screenWidth = MAPWIDTH * TILESIZE;
             g_map->predrawbackground(rm->spr_background, rm->spr_backmap[0]);
             g_map->predrawforeground(rm->spr_frontmap[0]);
 
