@@ -1,7 +1,7 @@
 # Conversation 1562424909341265921 — current checkpoint
 
-Repo /home/brendongl/projects/supermariowar-nx, eight-players; feature commit
-1e432607 and exit-fix commit 59c079e6.
+Repo /home/brendongl/projects/supermariowar-nx, eight-players; wide-pack commit
+1e432607, exit-fix commit 59c079e6 and UI/Quick Start commit 5593e6ff.
 23 approved conversions (+0smw Wide=24), Rat Race excluded. No public push/release.
 Pre-existing servers.toml remains untracked and untouched. No helpers.
 
