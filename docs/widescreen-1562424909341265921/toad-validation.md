@@ -2,6 +2,7 @@
 
 User explicitly requested testing on idle Toad in conversation 1562424909341265921.
 Quiet lease 8af5c9d8-d6ba-40a4-a3c9-e9ef07b97308 was acquired and released.
+Exit-fix validation used quiet lease 9d66ab7d-86cd-46f8-b616-f23e05fc3133.
 Firmware 22.5.0, sys-autopilot 1.5.0; controls were injected through its virtual
 controller. No physical multi-controller pairing test was performed.
 
@@ -19,11 +20,13 @@ controller. No physical multi-controller pairing test was performed.
   with four players. Thus the 4→5→8→4 transition works on hardware.
 - Remote movement/jump/menu/exit-match inputs were exercised.
 
-## Failed / unresolved
+## Exit failure and resolution
 
-Leaving the application with B from the menu displayed Horizon's software-closed
-error. A subsequent startup appeared, so this may involve the forwarder/reload
-path, but that cause is not established.
+Leaving the application with B from the menu originally displayed Horizon's
+software-closed error. NTON's nx-hbloader source confirmed the cause: when an NRO
+returns with an empty next-load path, the forwarder rereads its embedded path and
+launches the same NRO again. Mesa/EGL cannot initialize a second time in this
+process, producing the null Data Abort below.
 
 The preview crash report is 01792752844_017397c52c004000.log: result 2168-0002,
 Data Abort at null. Exact-build symbolization gives:
@@ -33,28 +36,46 @@ Data Abort at null. Exact-build symbolization gives:
     -> SDL_EGL_LoadLibrary -> SDL_GL_LoadLibrary
     -> SDL_CreateWindowWithProperties -> GraphicsSDL::init -> main_game
 
-The original pre-test NRO was restored and its SHA256 independently verified:
+The original pre-test NRO reproduced the same failure. Its SHA256 was:
 d8e8432069695ca03f62f9c8264e720052bc1a7fd2a79faa1b6b11d0bbd0ebdc.
-The same visible exit error reproduced with that build; its new report is
+Its crash report is
 01792753316_017397c52c004000.log, also 2168-0002 / null Data Abort. Therefore
-this failure is not confined to the widescreen conversion. The older ELF has
-not been symbolized; identical root cause is not claimed.
+the exit failure predates the widescreen conversion.
 
-Retrieved logs contained startup output only, so no hardware FPS claim is made.
-Raw logs/reports and original binary backup remain in build-toad-test.mUDoYr.
+Three attempted fixes stopped the relaunch crash but still produced Horizon's
+software-closed message: direct `svcExitProcess()`, `appletExit()` followed by the
+syscall, and full `__appExit()` followed by the syscall. None generated a new
+Atmosphere crash report; direct process termination itself was being classified
+as abnormal.
+
+The passing fix follows official libnx and Homebrew Menu behavior for a forwarded
+NRO: set `__nx_applet_exit_mode = 1` during normal platform cleanup, then return
+normally so libnx performs the application self-exit handshake. Candidate NRO
+SHA256 `421cce9bb1807d3d1f4d5f1dc3b66b5573e738c7a883043722ed8c7aaf03668b`
+passed three launch -> splash -> main-menu -> B-exit cycles. Each returned directly
+to HOME without an error screen or NRO relaunch, and the crash-report directory
+remained unchanged.
+
+An additional eight-player autoplay smoke test selected Jungle Bridge Wide; the
+live log recorded `arena-width=27 players=8 teams=8`. A final normal launch and
+B-exit after that test also returned cleanly to HOME.
+
+No sustained frame-timing run was performed, so no hardware FPS claim is made.
+Raw logs/reports and original binary backup remain in build-toad-test.mUDoYr;
+exit-fix evidence is in build-exit-test.Xf0kPw.
 
 ## Cleanup
 
-Original NRO restored at /switch/supermariowar/smw.nro; temporary restore NRO and
-all test-created options.toml, controls.sdl2.bin and servers.toml removed. No such
+Original NRO restored at /switch/supermariowar/smw.nro; temporary autotest and all
+test-created options.toml, controls.sdl2.bin and servers.toml removed. No such
 settings files existed before the test. HOME was visually verified with no game
-playing. Virtual controller cleared and detached (status confirmed false), lease
-released. No reboot, firmware/sysmodule changes, or public release.
+playing. Virtual controller cleared and detached (status confirmed false). No
+reboot, firmware/sysmodule changes, or public release.
 
 The first two overwrite attempts failed while the game had restarted and remained
 open; the existing file stayed intact, confirmed by hash. Closing via HOME/X/A
 allowed restoration. Toad 1.5.0 does not support /files/move, /process/list or
 /crash-reports; use directory listing for reports and do not repeat these calls.
 
-Next: investigate the exit/reload failure separately before release. Game Lab #4
-remains open. No active helpers, processes, follow-ups or console leases remain.
+Final exit evidence is in build-exit-test.Xf0kPw. Game Lab #4 remains open until
+the widescreen feature is released.

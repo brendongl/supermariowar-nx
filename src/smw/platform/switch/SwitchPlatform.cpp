@@ -12,6 +12,8 @@
 
 namespace fs = std::filesystem;
 
+extern "C" u32 __nx_applet_exit_mode;
+
 namespace {
 void redirectLogs()
 {
@@ -78,5 +80,8 @@ void exit()
     appletSetMediaPlaybackState(false);
     std::fflush(stdout);
     romfsExit();
+    // The NTON forwarder reloads its embedded NRO when an NRO returns normally.
+    // Ask libnx's standard cleanup to self-exit the application instead.
+    __nx_applet_exit_mode = 1;
 }
 } // namespace switch_platform
