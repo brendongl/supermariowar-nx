@@ -163,7 +163,7 @@ extern short g_iMapWidth;
 #define NUMFRENZYCARDS      19
 
 #define MAX_PLAYERS 8
-#define MAX_INPUT_PLAYERS 4  // controller configs saved to disk
+#define MAX_INPUT_PLAYERS 8  // one physical controller slot per player
 
 
 #endif // GLOBALCONSTANTS_H

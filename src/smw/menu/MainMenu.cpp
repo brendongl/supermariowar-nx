@@ -11,18 +11,19 @@ extern CResourceManager* rm;
 UI_MainMenu::UI_MainMenu()
     : UI_Menu()
 {
-    miSMWTitle = new MI_Image(&rm->menu_smw, 320 - ((short)rm->menu_smw.getWidth() >> 1), 30, 0, 0, 372, 140, 1, 1, 0);
-    miSMWVersion = new MI_Image(&rm->menu_version, 628 - rm->menu_version.getWidth(), 10,
+    SetPlayerOneOnly();
+    miSMWTitle = new MI_Image(&rm->menu_smw, 432 - ((short)rm->menu_smw.getWidth() >> 1), 18, 0, 0, 372, 140, 1, 1, 0);
+    miSMWVersion = new MI_Image(&rm->menu_version, 852 - rm->menu_version.getWidth(), 10,
         0, 0, rm->menu_version.getWidth(), rm->menu_version.getHeight(), 1, 1, 0);
     // miSMWVersionText = new MI_Text("Beta 2", 630, 45, 0, 2, 2);
 
-    miMainStartButton = new MI_Button(&rm->spr_selectfield, 120, 210, "Start", 310);
+    miMainStartButton = new MI_Button(&rm->spr_selectfield, 180, 296, "START", 330);
     miMainStartButton->SetCode(MENU_CODE_TO_MATCH_SELECTION_MENU);
 
-    miQuickGameButton = new MI_Button(&rm->spr_selectfield, 440, 210, "Go!", 80);
+    miQuickGameButton = new MI_Button(&rm->spr_selectfield, 520, 296, "QUICK", 164);
     miQuickGameButton->SetCode(MENU_CODE_QUICK_GAME_START);
 
-    miPlayerSelect = new MI_PlayerSelect(&rm->menu_player_select, 40, 250, "Players", 560, 140);
+    miPlayerSelect = new MI_PlayerSelect(&rm->menu_player_select, 20, 174, "Players", 824, 0);
 
 // disable Multiplayer button for web builds
 #if defined(NETWORK_DISABLED) && !defined(__EMSCRIPTEN__)
@@ -34,11 +35,11 @@ UI_MainMenu::UI_MainMenu()
     miOptionsButton = new MI_Button(&rm->spr_selectfield, 120, 362, "Options", 400);
     miControlsButton = new MI_Button(&rm->spr_selectfield, 120, 402, "Controls", 400);
 #else
-    miMultiplayerButton = new MI_Button(&rm->spr_selectfield, 120, 322, "Multiplayer", 400);
+    miMultiplayerButton = new MI_Button(&rm->spr_selectfield, 232, 340, "Multiplayer", 400);
     miMultiplayerButton->SetCode(MENU_CODE_TO_NET_SERVERS_MENU);
 
-    miOptionsButton = new MI_Button(&rm->spr_selectfield, 120, 362, "Options", 200);
-    miControlsButton = new MI_Button(&rm->spr_selectfield, 320, 362, "Controls", 200);
+    miOptionsButton = new MI_Button(&rm->spr_selectfield, 232, 380, "Options", 200);
+    miControlsButton = new MI_Button(&rm->spr_selectfield, 432, 380, "Controls", 200);
 #endif
     miOptionsButton->SetCode(MENU_CODE_TO_OPTIONS_MENU);
     miControlsButton->SetCode(MENU_CODE_TO_CONTROLS_MENU);
@@ -46,7 +47,7 @@ UI_MainMenu::UI_MainMenu()
 #ifdef __EMSCRIPTEN__
     miExitButton = NULL;
 #else
-    miExitButton = new MI_Button(&rm->spr_selectfield, 120, miMultiplayerButton ? 402 : 362, "Exit", 640 * 0.625f);
+    miExitButton = new MI_Button(&rm->spr_selectfield, 232, miMultiplayerButton ? 420 : 380, "Exit", 400);
     miExitButton->SetCode(MENU_CODE_EXIT_APPLICATION);
 #endif
 

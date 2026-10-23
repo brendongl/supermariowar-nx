@@ -52,6 +52,9 @@ public:
     void SetAllowExit(bool allowExit) {
         fAllowExitButton = allowExit;
     }
+    void SetPlayerOneOnly(bool playerOneOnly = true) {
+        fPlayerOneOnly = playerOneOnly;
+    }
 
     MenuCodeEnum MouseClick(short iMouseX, short iMouseY);
 
@@ -77,6 +80,7 @@ protected:
 
     short iControllingTeam = -1;
     bool fAllowExitButton = true;
+    bool fPlayerOneOnly = false;
 };
 
 #endif // UIMENU_H

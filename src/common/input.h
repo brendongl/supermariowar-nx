@@ -75,6 +75,13 @@ struct COutputControl {
 		CKeyState keys[NUM_KEYS];
 	};
 
+    // Direct shoulder-button actions used by the local fighter picker. They are
+    // intentionally outside the configurable eight legacy actions.
+    CKeyState menu_skin_prev{};
+    CKeyState menu_skin_next{};
+    CKeyState menu_color_prev{};
+    CKeyState menu_color_next{};
+
     void copyFrom(const COutputControl& other) {
         for (uint8_t k = 0; k < NUM_KEYS; k++) {
             keys[k] = other.keys[k];

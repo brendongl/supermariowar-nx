@@ -548,7 +548,8 @@ void MenuState::onEnterState()
 
 void MenuState::update()
 {
-    const bool modernWideMenu = mCurrentMenu == mTeamSelectMenu.get()
+    const bool modernWideMenu = mCurrentMenu == mMainMenu.get()
+        || mCurrentMenu == mTeamSelectMenu.get()
         || mCurrentMenu == mGameSettingsMenu.get()
         || mCurrentMenu == mPlayChoiceMenu.get()
         || mCurrentMenu == mQuickRevealMenu.get();
@@ -720,9 +721,7 @@ void MenuState::update()
 
     bool fGenerateMapThumbs = false;
     if (AppState::Menu == game_values.appstate) {
-        MenuCodeEnum code = mCurrentMenu == mQuickRevealMenu.get() && mQuickRevealMenu->Finished()
-            ? MENU_CODE_START_GAME
-            : mCurrentMenu->SendInput(&game_values.playerInput);
+        MenuCodeEnum code = mCurrentMenu->SendInput(&game_values.playerInput);
 
         // Shortcut to game start
         if (netplay.active) {
@@ -783,7 +782,8 @@ void MenuState::update()
         } else if (MENU_CODE_BACK_TO_OPTIONS_MENU == code) {
             mCurrentMenu = mOptionsMenu.get();
         } else if (MENU_CODE_TO_NET_SERVERS_MENU == code) {
-            for (short p = MAX_INPUT_PLAYERS; p < MAX_PLAYERS; ++p) game_values.playercontrol[p] = 0;
+            // Net protocol remains four-player; local play supports all eight.
+            for (short p = 4; p < MAX_PLAYERS; ++p) game_values.playercontrol[p] = 0;
             maplist->SetPlayerCount(4);
             mCurrentMenu = mNetServersMenu.get();
             mCurrentMenu->ResetMenu();
@@ -1112,6 +1112,10 @@ void MenuState::update()
 
             game_values.music = game_values.musicvolume > 0;
         } else if (MENU_CODE_START_GAME == code) {
+#if defined(SMW_AUTOTEST)
+            if (SDL_getenv("SMW_EIGHT_INPUT_TEST"))
+                printf("[eight-input] complete\n");
+#endif
             StartGame();
         } else if (MENU_CODE_EXIT_TOURNAMENT_YES == code || MENU_CODE_EXIT_TOURNAMENT_NO == code) {
             mGameSettingsMenu->CloseExitDialog();
@@ -1469,7 +1473,8 @@ void MenuState::update()
     //--------------- draw everything ----------------------
 
     // A transition can change the active menu after the width was selected above.
-    const bool drawModernWideMenu = mCurrentMenu == mTeamSelectMenu.get()
+    const bool drawModernWideMenu = mCurrentMenu == mMainMenu.get()
+        || mCurrentMenu == mTeamSelectMenu.get()
         || mCurrentMenu == mGameSettingsMenu.get()
         || mCurrentMenu == mPlayChoiceMenu.get()
         || mCurrentMenu == mQuickRevealMenu.get();
@@ -1970,8 +1975,73 @@ void MenuState::AutotestStep()
     const char* captureMode = SDL_getenv("SMW_CAPTURE_MENUS");
     const bool captureMenus = captureMode != nullptr;
     const bool uiNavTest = SDL_getenv("SMW_UI_NAV_TEST") != nullptr;
+    const bool eightInputTest = SDL_getenv("SMW_EIGHT_INPUT_TEST") != nullptr;
     static bool customChoiceMoved = false;
     static int uiNavStage = 0;
+    static int eightStage = 0;
+    static int revealWaits = 0;
+    static short oldSkin = -1;
+    static short oldColor = -1;
+    if (eightInputTest) {
+        auto fail = [](const char* reason) {
+            fprintf(stderr, "[eight-input][failure] %s\n", reason);
+            std::exit(2);
+        };
+        if (mCurrentMenu == mMainMenu.get()) {
+            if (eightStage == 0) {
+                for (short player = 0; player < MAX_PLAYERS; ++player)
+                    game_values.playercontrol[player] = 1;
+                game_values.playerInput.outputControls[1].menu_select.fPressed = true;
+                eightStage = 1;
+            } else if (eightStage == 1) {
+                game_values.playerInput.outputControls[0].menu_select.fPressed = true;
+                eightStage = 2;
+            } else {
+                fail("returned to main menu before starting the match");
+            }
+        } else if (mCurrentMenu == mTeamSelectMenu.get()) {
+            if (eightStage == 1)
+                fail("player 2 controlled the player-1-only setup menu");
+            if (eightStage == 2) {
+                oldSkin = game_values.skinids[7];
+                oldColor = game_values.colorids[7];
+                game_values.playerInput.outputControls[7].menu_skin_next.fPressed = true;
+                game_values.playerInput.outputControls[7].menu_color_next.fPressed = true;
+                eightStage = 3;
+            } else if (eightStage == 3) {
+                if (game_values.skinids[7] == oldSkin || game_values.colorids[7] == oldColor)
+                    fail("player 8 shoulder fighter/color controls did not change");
+                for (short player = 0; player < MAX_PLAYERS; ++player)
+                    game_values.playerInput.outputControls[player].menu_select.fPressed = true;
+                eightStage = 4;
+            } else if (eightStage == 4) {
+                game_values.playerInput.outputControls[0].menu_select.fPressed = true;
+                eightStage = 5;
+            }
+        } else if (mCurrentMenu == mPlayChoiceMenu.get()) {
+            if (eightStage == 5) {
+                game_values.playerInput.outputControls[1].menu_select.fPressed = true;
+                eightStage = 6;
+            } else if (eightStage == 6) {
+                game_values.playerInput.outputControls[0].menu_select.fPressed = true;
+                eightStage = 7;
+            }
+        } else if (mCurrentMenu == mQuickRevealMenu.get()) {
+            if (eightStage == 6)
+                fail("player 2 controlled the player-1-only quick menu");
+            if (eightStage == 7 && ++revealWaits >= 12) {
+                game_values.playerInput.outputControls[1].menu_select.fPressed = true;
+                eightStage = 8;
+            } else if (eightStage == 8) {
+                printf("[eight-input] player-2 quick input ignored\n");
+                game_values.playerInput.outputControls[0].menu_select.fPressed = true;
+                eightStage = 9;
+            }
+        } else if (eightStage < 9) {
+            fail("unexpected menu transition");
+        }
+        return;
+    }
     if (uiNavTest) {
         if (mCurrentMenu == mMainMenu.get()) {
             if (uiNavStage == 7) {
@@ -1980,6 +2050,7 @@ void MenuState::AutotestStep()
             }
             for (short player = 0; player < g_autotestPlayers; ++player)
                 game_values.playercontrol[player] = 2;
+            game_values.playercontrol[0] = 1;
             keys.menu_select.fPressed = true;
         } else if (mCurrentMenu == mTeamSelectMenu.get()) {
             for (short player = 0; player < g_autotestPlayers; ++player)
@@ -2015,6 +2086,7 @@ void MenuState::AutotestStep()
     if (mCurrentMenu == mMainMenu.get()) {
         for (short iPlayer = 0; iPlayer < g_autotestPlayers; iPlayer++)
             game_values.playercontrol[iPlayer] = 2;
+        game_values.playercontrol[0] = 1;
         if (captureMenus)
             keys.menu_select.fPressed = true;
         else if (mCurrentMenu->currentFocus() == mMainMenu->quickGameButton())

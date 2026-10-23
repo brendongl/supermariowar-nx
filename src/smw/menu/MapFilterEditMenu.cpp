@@ -6,6 +6,7 @@
 UI_MapFilterEditMenu::UI_MapFilterEditMenu()
     : UI_Menu()
 {
+    SetPlayerOneOnly();
     miMapBrowser = new MI_MapBrowser();
     miMapBrowser->SetAutoModify(true);
 

@@ -77,6 +77,7 @@ public:
 UI_GameSettingsMenu::UI_GameSettingsMenu()
     : UI_Menu()
 {
+    SetPlayerOneOnly();
     auto* modernFrame = new MI_ModernGameSettingsFrame();
 
     miSettingsStartButton = new MI_Button(&rm->spr_selectfield, 690, 407, "Start", 150);

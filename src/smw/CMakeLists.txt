@@ -105,7 +105,7 @@ if(NINTENDO_SWITCH)
 		COMMAND ${CMAKE_COMMAND} -E rm -rf "${SMW_ROMFS_DIR}/data"
 		COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/data" "${SMW_ROMFS_DIR}/data"
 		COMMAND ${CMAKE_COMMAND} -E rm -rf "${SMW_ROMFS_DIR}/data/.git" "${SMW_ROMFS_DIR}/data/maps/ZZleveleditor.map"
-		# Extra content shipped with this port (e.g. the Sip n Play Dice Guy skin)
+		# Extra content shipped with this port (e.g. the Sip n Play Rollie skin)
 		COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/platform/switch/data" "${SMW_ROMFS_DIR}/data"
 		COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/platform/widescreen/data" "${SMW_ROMFS_DIR}/data"
 		COMMAND ${CMAKE_COMMAND} -E touch "${SMW_ROMFS_STAMP}"

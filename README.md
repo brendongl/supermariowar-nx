@@ -2,13 +2,13 @@
 
 A native Nintendo Switch port of [Super Mario War](https://github.com/mmatyas/supermariowar), the fan-made multiplayer Super Mario Bros. deathmatch game. It runs as an **NRO** from the Homebrew Menu, with an optional forwarder **NSP** that gives it its own HOME menu icon.
 
-![Four players as Dice Guy on Ice Shelf, running on a Switch](docs/switch/screenshot-ice-shelf.jpg)
+![Four players as Rollie on Ice Shelf, running on a Switch](docs/switch/screenshot-ice-shelf.jpg)
 
-- Up to **4 players** on one console: Joy-Con pairs, single sideways Joy-Cons, Pro Controllers or handheld mode, in any mix
+- Up to **8 players** on one console: Joy-Con pairs, single sideways Joy-Cons, Pro Controllers or handheld mode, in any mix
 - All 22 game modes, tournaments, tours, world maps and the bundled maps, skins, music and sound packs
 - 60 fps, rendered at the console's output resolution (720p handheld, 1080p docked) with the 640x480 game scaled pixel-sharp
 - Fills the 16:9 screen with side panels: the score boxes, lives and stored items move to a panel on the left, so the whole arena is free
-- Extra character: **Dice Guy**, the mascot of [Sip n Play](https://sipnplay.cafe), a board game cafe in Saigon
+- Extra character: **Rollie**, the mascot of [Sip n Play](https://sipnplay.cafe), a board game cafe in Saigon
 - Settings, screenshots and map caches are saved on the SD card in `sdmc:/switch/supermariowar/`
 
 This repository follows the upstream game. The Switch-specific code lives in `platform/switch/`, `cmake/PlatformSwitch.cmake` and `src/smw/platform/switch/`, and the fixes that also apply to other platforms are kept small so they can go upstream.
@@ -82,7 +82,7 @@ Upstream moved to SDL 3, and devkitPro currently ships only SDL 2 packages for t
 
 ## Testing
 
-`SMW_AUTOTEST` (on by default for Switch builds) compiles in an unattended soak test. Create an empty file named `autotest` in `sdmc:/switch/supermariowar/` and launch the game: four CPU players play random Quick Games (random mode, goal, settings and map) until you close it. Every match, warning and a heartbeat (frame rate, plus milliseconds spent updating/drawing and presenting) go to `sdmc:/switch/supermariowar/smw.log`. Optional lines in the file: `fast` turns off the frame limiter, `map=<file name without .map>` plays only that map (for comparing performance between builds), `skin=<name>` gives every player that character (e.g. `skin=Dice Guy`), and `players=<2-8>` sets the number of CPU players (more than 4 each get their own team and a random character). Delete the file to play normally.
+`SMW_AUTOTEST` (on by default for Switch builds) compiles in an unattended soak test. Create an empty file named `autotest` in `sdmc:/switch/supermariowar/` and launch the game: four CPU players play random Quick Games (random mode, goal, settings and map) until you close it. Every match, warning and a heartbeat (frame rate, plus milliseconds spent updating/drawing and presenting) go to `sdmc:/switch/supermariowar/smw.log`. Optional lines in the file: `fast` turns off the frame limiter, `map=<file name without .map>` plays only that map (for comparing performance between builds), `skin=<name>` gives every player that character (e.g. `skin=Rollie`), and `players=<2-8>` sets the number of CPU players (more than 4 each get their own team and a random character). Delete the file to play normally.
 
 The same tree also builds on Linux with AddressSanitizer and UndefinedBehaviorSanitizer for fast headless soaks. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -102,4 +102,4 @@ The Switch port is provided under the same terms as the upstream game. This is a
 
 ---
 
-<sub>This Switch port was vibe-coded by the owner of [Sip n Play](https://sipnplay.cafe), a board game and video game cafe in Ho Chi Minh City (Saigon), Vietnam. If you're ever in town, come visit and say hi to Dice Guy!</sub>
+<sub>This Switch port was vibe-coded by the owner of [Sip n Play](https://sipnplay.cafe), a board game and video game cafe in Ho Chi Minh City (Saigon), Vietnam. If you're ever in town, come visit and say hi to Rollie!</sub>

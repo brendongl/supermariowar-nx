@@ -15,7 +15,6 @@ class UI_QuickRevealMenu : public UI_Menu {
 public:
     UI_QuickRevealMenu();
     void ResetReveal(CGameMode* mode, const char* mapName);
-    bool Finished() const;
 
 private:
     class RevealControl;

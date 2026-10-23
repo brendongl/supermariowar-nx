@@ -83,6 +83,14 @@ void UI_Menu::Draw()
 
 MenuCodeEnum UI_Menu::SendInput(CPlayerInput* playerInput)
 {
+    CPlayerInput filteredInput;
+    if (fPlayerOneOnly) {
+        filteredInput = *playerInput;
+        for (short player = 1; player < MAX_PLAYERS; ++player)
+            filteredInput.outputControls[player] = {};
+        playerInput = &filteredInput;
+    }
+
     if (fModifyingItem) {
         MenuCodeEnum ret = m_currentFocus->SendInput(playerInput);
 
@@ -98,7 +106,8 @@ MenuCodeEnum UI_Menu::SendInput(CPlayerInput* playerInput)
         return ret;
     }
 
-    for (short iPlayer = 0; iPlayer < 4; iPlayer++) {
+    const short playerLimit = fPlayerOneOnly ? 1 : MAX_INPUT_PLAYERS;
+    for (short iPlayer = 0; iPlayer < playerLimit; iPlayer++) {
         // Only allow the controlling team to control the menu (if there is one)
         if (iControllingTeam != -1) {
             // Pay attention to other player's exit button pushes so we can exit when AI is controlling

@@ -11,7 +11,7 @@ from PIL import Image
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")
 OUT = os.path.join(ROOT, "platform", "switch", "data", "gfx", "sidepanels")
 FONT = os.path.join(ROOT, "data", "gfx", "packs", "Classic", "fonts", "font_small.png")
-DICE_GUY = os.path.join(ROOT, "platform", "switch", "data", "gfx", "skins", "SipNPlay_Dice Guy.png")
+ROLLIE = os.path.join(ROOT, "platform", "switch", "data", "gfx", "skins", "SipNPlay_Rollie.png")
 
 BG = (28, 32, 56)
 BRICK = (36, 42, 72)
@@ -100,7 +100,7 @@ def die(im, x0, y0, pips):
 def main():
     os.makedirs(OUT, exist_ok=True)
     glyphs = load_font()
-    guy = Image.open(DICE_GUY).convert("RGB")
+    guy = Image.open(ROLLIE).convert("RGB")
 
     left = bricks(160, 480)
     divider(left, 158)

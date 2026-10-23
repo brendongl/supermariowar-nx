@@ -33,11 +33,8 @@ int switchAlias(int button, short iGameState)
 {
     if (button >= 16 && button <= 19)
         return button - 4;
-    if (button >= 7 && button <= 9)
+    if (iGameState == 0 && button >= 7 && button <= 9)
         return 6;
-    // Preserve L as an alternate for the menu's X action.
-    if (iGameState == 1 && button == 6)
-        return 2;
     if (iGameState == 0) {
         if (button == 1) return 0;
         if (button == 2) return 3;
@@ -91,6 +88,10 @@ void CPlayerInput::ClearPressedKeys(short iGameState)
         for (int iKey = 0; iKey < NUM_KEYS; iKey++) {
             outputControl->keys[iKey].fPressed = false;
         }
+        outputControl->menu_skin_prev.fPressed = false;
+        outputControl->menu_skin_next.fPressed = false;
+        outputControl->menu_color_prev.fPressed = false;
+        outputControl->menu_color_next.fPressed = false;
     }
 
     iPressedKey = 0;
@@ -119,7 +120,11 @@ void CPlayerInput::ResetKeys()
         for (int iKey = 0; iKey < NUM_KEYS; iKey++) {
 			outputControls[iPlayer].keys[iKey].fPressed = false;
 			outputControls[iPlayer].keys[iKey].fDown = false;
-		}
+        }
+		outputControls[iPlayer].menu_skin_prev = {};
+		outputControls[iPlayer].menu_skin_next = {};
+		outputControls[iPlayer].menu_color_prev = {};
+		outputControls[iPlayer].menu_color_next = {};
 	}
 
 	iPressedKey = 0;
@@ -282,6 +287,18 @@ void CPlayerInput::Update(SDL_Event event, short iGameState)
 				if (iDeviceID != joystickIndexFromID(event.jbutton.which))
 					continue;
 
+#ifdef __SWITCH__
+                if (iGameState == 1 && event.jbutton.button >= 6 && event.jbutton.button <= 9) {
+                    CKeyState* shoulder = event.jbutton.button == 6 ? &outputControl->menu_skin_prev
+                        : event.jbutton.button == 7 ? &outputControl->menu_skin_next
+                        : event.jbutton.button == 8 ? &outputControl->menu_color_prev
+                        : &outputControl->menu_color_next;
+                    if (!shoulder->fDown) shoulder->fPressed = true;
+                    shoulder->fDown = true;
+                    continue;
+                }
+#endif
+
                 for (int iKey = 0; iKey < NUM_KEYS && !fFound; iKey++) {
                     if (joyButtonMatches(inputControl->keys[iKey], event.jbutton.button, iGameState)) {
 						fFound = true;
@@ -299,6 +316,17 @@ void CPlayerInput::Update(SDL_Event event, short iGameState)
             } else if (SDL_EVENT_JOYSTICK_BUTTON_UP == event.type) {
 				if (iDeviceID != joystickIndexFromID(event.jbutton.which))
 					continue;
+
+#ifdef __SWITCH__
+                if (iGameState == 1 && event.jbutton.button >= 6 && event.jbutton.button <= 9) {
+                    CKeyState* shoulder = event.jbutton.button == 6 ? &outputControl->menu_skin_prev
+                        : event.jbutton.button == 7 ? &outputControl->menu_skin_next
+                        : event.jbutton.button == 8 ? &outputControl->menu_color_prev
+                        : &outputControl->menu_color_next;
+                    shoulder->fDown = false;
+                    continue;
+                }
+#endif
 
                 for (int iKey = 0; iKey < NUM_KEYS && !fFound; iKey++) {
                     if (joyButtonMatches(inputControl->keys[iKey], event.jbutton.button, iGameState)) {

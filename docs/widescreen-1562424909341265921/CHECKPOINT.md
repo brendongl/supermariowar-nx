@@ -206,3 +206,48 @@ authorized for this project test only; no blanket cafe fleet permission exists.
   controller test. Lease `56ade542-8acf-4d00-8759-659a413468e1` was completed.
 - Remaining evidence: Brendon's physical-controller result. No active helpers,
   test processes or console leases. No public push/release.
+
+## Eight physical-controller UI gate — 2026-10-23
+
+- Expanded local input from four to eight controller slots. On Switch, controller
+  slot N now remains mapped to player N for all eight human players; network play
+  is still explicitly capped at four.
+- Replaced the legacy player type strip with eight PLAYER / CPU / NONE cards.
+  Only controller 1 can edit this roster, and the roster always retains at least
+  two active slots and one human.
+- Fighter select now limits choice to 16 recognizable characters. L/R changes
+  fighter, ZL/ZR changes colour, Y randomizes within the curated list, and every
+  human controller owns its own card. Dice Guy was renamed Rollie in the asset,
+  docs and UI; Rollie's name has a large gold treatment.
+- Player Setup, match/series setup, stage browser, mode options, Play Choice and
+  Quick Reveal are Player-1-only. Quick Reveal has no timer or automatic start
+  path; it remains until P1 presses A.
+- Deterministic eight-human ASan/UBSan navigation passed: P2 input was rejected
+  on protected menus; P8 changed fighter and colour through shoulder actions;
+  all eight players readied; the reveal waited at least 240 frames; P2 A was
+  ignored; P1 A started a 27-wide match with 8 players and 8 teams. No sanitizer
+  finding. Evidence: build-eight-flow.5Fm2ic and its menu/gameplay captures.
+- Visual review passed for Player Setup, all-eight fighter cards, highlighted
+  ROLLIE treatment and the non-countdown Quick Reveal.
+- Two earlier test invocations failed only because their fresh data staging
+  omitted or misaddressed `platform/widescreen/data`; both stopped with `Empty
+  map directory` / `No maps available for this player count`. These were harness
+  setup failures, not game failures or missing sanitizer evidence.
+- Files changed: README.md; Rollie skin rename; switch side-panel generator;
+  GameValues/input/uimenu; GSMenu; Main/Match/Game/Mode/MapFilter/PlayChoice
+  menus; MI_PlayerSelect and MI_TeamSelect; this checkpoint. `servers.toml`
+  remains pre-existing, untracked and untouched.
+- Active work: normal PC build and unit suite. Missing evidence, not failures:
+  Switch Release build and physical eight-controller validation on Toad.
+- Next: finish unit tests, build a fresh Switch NRO, deploy it to authorized Toad
+  through switchctl, and leave normal controller play enabled for Brendon.
+## Final Switch build gate — 2026-10-23
+
+- Verified: fresh Release `smw_nro` build completed successfully in `build-switch-eight.i6QEdz`.
+- Artifact: `src/smw/smw.nro`, 64,775,803 bytes, SHA-256 `e19c825310dbbd969e66c046444041a0010a4aeb918a15d705607b78058260cc`.
+- Verified: RomFS contains `SipNPlay_Rollie.png`, excludes the old Dice Guy filename, and the exact Rollie PNG payload is embedded in the NRO.
+- Verified: `git diff --check` passes. Existing PC evidence remains 61/61 CTest, deterministic eight-human ASAN/UBSAN flow, and eight-CPU ASAN/UBSAN soak.
+- Remaining evidence: install this exact NRO on Toad and physically validate eight paired controllers. This is missing hardware evidence, not a failed test.
+- Files changed: the eight-controller/UI files listed in the preceding gate; `servers.toml` remains untouched and untracked.
+- Active helpers: none. Active build jobs: none.
+- Next action: reserve Toad, close the old build safely, install and hash-verify this NRO, clear automation/control overrides, launch normally, and leave it ready for Brendon.

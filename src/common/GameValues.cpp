@@ -11,6 +11,7 @@
 #include "sfx.h"
 
 #include <toml.hpp>
+#include <algorithm>
 #include <stdio.h>
 #include <stdexcept>
 
@@ -150,6 +151,7 @@ short defaultPowerupSetting(size_t presetIdx, size_t powerupIdx)
 void CGameValues::init()
 {
     //set standard game values
+    std::fill(std::begin(playercontrol), std::end(playercontrol), 0);
     playercontrol[0]  = 1;
     playercontrol[1]  = 1;
     showfps       = false;
@@ -266,7 +268,9 @@ void CGameValues::init()
 
             for (short iInputState = 0; iInputState < 2; iInputState++) { //for game/menu
                 for (short iKey = 0; iKey < NUM_KEYS; iKey++) {
-                    inputConfiguration[iPlayer][iInputType].inputGameControls[iInputState].keys[iKey] = controlkeys[iInputType][iInputState][iPlayer % MAX_INPUT_PLAYERS][iKey];
+                    // Keyboard has four legacy layouts; every joystick uses the
+                    // same physical-button layout and its own device index.
+                    inputConfiguration[iPlayer][iInputType].inputGameControls[iInputState].keys[iKey] = controlkeys[iInputType][iInputState][iPlayer % 4][iKey];
                 }
             }
         }

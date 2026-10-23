@@ -66,6 +66,7 @@ const char* description(GameModeType mode)
 
 UI_PlayChoiceMenu::UI_PlayChoiceMenu()
 {
+    SetPlayerOneOnly();
     AddNonControl(new ChoiceFrame());
     auto* quick = new MI_Button(&rm->spr_selectfield, 24, 344, "LET'S GO!", 436);
     quick->SetCode(MENU_CODE_QUICK_REVEAL);
@@ -82,12 +83,10 @@ UI_PlayChoiceMenu::UI_PlayChoiceMenu()
 
 MenuCodeEnum UI_PlayChoiceMenu::SendInput(CPlayerInput* input)
 {
-    for (short p = 0; p < MAX_INPUT_PLAYERS; ++p) {
-        if (input->outputControls[p].menu_random.fPressed)
-            return MENU_CODE_QUICK_REVEAL;
-        if (input->outputControls[p].menu_scrollfast.fPressed)
-            return MENU_CODE_TO_GAME_SETUP_MENU;
-    }
+    if (input->outputControls[0].menu_random.fPressed)
+        return MENU_CODE_QUICK_REVEAL;
+    if (input->outputControls[0].menu_scrollfast.fPressed)
+        return MENU_CODE_TO_GAME_SETUP_MENU;
     return UI_Menu::SendInput(input);
 }
 
@@ -98,12 +97,10 @@ public:
     void reset(CGameMode* newMode, const char* newMapName) {
         mode = newMode;
         mapName = newMapName;
-        timer = 0;
         thumbnail = g_map->createThumbnailSurface(false, true);
     }
 
-    void Update() override { if (timer < 180) ++timer; }
-    bool finished() const { return timer >= 180; }
+    void Update() override {}
 
     void Draw() override {
         ModernMenu::header("TONIGHT'S MATCH");
@@ -118,18 +115,15 @@ public:
         rm->menu_mode_large.draw(652, 112, {mode->gamemode * 32, 0, 32, 32});
         rm->menu_font_large.drawCentered(668, 170, mode->GetModeName());
         rm->menu_font_small.drawChopCentered(668, 214, 270, description(mode->gamemode));
-        const int count = std::max(1, 3 - timer / 60);
-        ModernMenu::strip(686, 350, 128, 20, 192, 0, 24);
-        rm->menu_font_small.drawCentered(750, 352, ("STARTING IN " + std::to_string(count)).c_str());
-        ModernMenu::footer("A Start now    Y Re-roll    B Back");
+        ModernMenu::strip(654, 350, 160, 20, 192, 0, 24);
+        rm->menu_font_small.drawCentered(734, 352, "PRESS A TO START");
+        ModernMenu::footer("P1: A Start    Y Re-roll    B Back");
     }
 
     MenuCodeEnum SendInput(CPlayerInput* input) override {
-        for (short p = 0; p < MAX_INPUT_PLAYERS; ++p) {
-            if (input->outputControls[p].menu_select.fPressed) return MENU_CODE_START_GAME;
-            if (input->outputControls[p].menu_random.fPressed) return MENU_CODE_QUICK_REROLL;
-            if (input->outputControls[p].menu_cancel.fPressed) return MENU_CODE_BACK_TO_PLAY_CHOICE;
-        }
+        if (input->outputControls[0].menu_select.fPressed) return MENU_CODE_START_GAME;
+        if (input->outputControls[0].menu_random.fPressed) return MENU_CODE_QUICK_REROLL;
+        if (input->outputControls[0].menu_cancel.fPressed) return MENU_CODE_BACK_TO_PLAY_CHOICE;
         return MENU_CODE_NONE;
     }
 
@@ -137,11 +131,11 @@ private:
     CGameMode* mode = nullptr;
     std::string mapName;
     gfxSprite thumbnail;
-    int timer = 0;
 };
 
 UI_QuickRevealMenu::UI_QuickRevealMenu()
 {
+    SetPlayerOneOnly();
     reveal = new RevealControl();
     reveal->SetAutoModify(true);
     AddControl(reveal, nullptr, nullptr, nullptr, nullptr);
@@ -153,9 +147,4 @@ void UI_QuickRevealMenu::ResetReveal(CGameMode* mode, const char* mapName)
 {
     reveal->reset(mode, mapName);
     ResetMenu();
-}
-
-bool UI_QuickRevealMenu::Finished() const
-{
-    return reveal->finished();
 }

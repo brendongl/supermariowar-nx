@@ -16,6 +16,9 @@ extern CResourceManager* rm;
 UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     : UI_Menu()
 {
+    for (UI_Menu& menu : mModeSettingsMenu)
+        menu.SetPlayerOneOnly();
+    mBossSettingsMenu.SetPlayerOneOnly();
 
     //***********************
     // Classic Mode Settings
