@@ -1,6 +1,7 @@
 # Conversation 1562424909341265921 — current checkpoint
 
-Repo /home/brendongl/projects/supermariowar-nx, eight-players; feature commit1e432607.
+Repo /home/brendongl/projects/supermariowar-nx, eight-players; feature commit
+1e432607 and exit-fix commit 59c079e6.
 23 approved conversions (+0smw Wide=24), Rat Race excluded. No public push/release.
 Pre-existing servers.toml remains untracked and untouched. No helpers.
 
@@ -61,8 +62,8 @@ passes. Evidence: `build-exit-test.Xf0kPw` and `toad-validation.md`.
 
 Original Toad NRO restored and hash verified d8e8432069695ca03f62f9c8264e720052bc1a7fd2a79faa1b6b11d0bbd0ebdc.
 HOME idle visually verified. Test-created settings and temp NRO removed; virtual
-controller cleared/detached. Active lease 9d66ab7d-86cd-46f8-b616-f23e05fc3133
-must be released after the final commit/checkpoint. No active helpers or processes.
+controller cleared/detached. Lease 9d66ab7d-86cd-46f8-b616-f23e05fc3133 was
+completed. No active helpers, processes, leases, or follow-ups.
 Game Lab #4 remains open.
 Raw evidence/backup: build-toad-test.mUDoYr. Current preview artifact remains local
 in build-wide-delivery.dbUO9l, not installed on Toad. Final preview NRO hash
@@ -70,7 +71,6 @@ in build-wide-delivery.dbUO9l, not installed on Toad. Final preview NRO hash
 
 ## Next action
 
-Commit the exit fix and validation records, release the active Toad lease, and
-report the verified result. No public push/release is authorized. Physical
+Report the verified result. No public push/release is authorized. Physical
 four-controller pairing remains missing evidence, not a failed test. Toad was
 authorized for this test only; no blanket cafe fleet permission exists.
