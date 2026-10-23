@@ -52,10 +52,10 @@ recorded below.
 Round 4 PASSED. The final fix sets libnx `__nx_applet_exit_mode = 1` during normal
 Switch cleanup and returns normally. Candidate NRO SHA256
 `421cce9bb1807d3d1f4d5f1dc3b66b5573e738c7a883043722ed8c7aaf03668b`
-passed three launch/splash/main-menu/B-exit cycles on Toad, each returning directly
+passed two launch/splash/main-menu/B-exit cycles on Toad, each returning directly
 to HOME with no error and no new crash report. An eight-player Jungle Bridge Wide
 smoke test logged `arena-width=27 players=8 teams=8`; the next normal exit also
-passed. Rebuilt PC suite passes 61 tests / 185 assertions. Switch Release build
+passed, making three passing exit cycles total. Rebuilt PC suite passes 61 tests / 185 assertions. Switch Release build
 passes. Evidence: `build-exit-test.Xf0kPw` and `toad-validation.md`.
 
 ## Cleanup confirmed

@@ -52,13 +52,14 @@ The passing fix follows official libnx and Homebrew Menu behavior for a forwarde
 NRO: set `__nx_applet_exit_mode = 1` during normal platform cleanup, then return
 normally so libnx performs the application self-exit handshake. Candidate NRO
 SHA256 `421cce9bb1807d3d1f4d5f1dc3b66b5573e738c7a883043722ed8c7aaf03668b`
-passed three launch -> splash -> main-menu -> B-exit cycles. Each returned directly
+passed two launch -> splash -> main-menu -> B-exit cycles. Each returned directly
 to HOME without an error screen or NRO relaunch, and the crash-report directory
 remained unchanged.
 
 An additional eight-player autoplay smoke test selected Jungle Bridge Wide; the
 live log recorded `arena-width=27 players=8 teams=8`. A final normal launch and
-B-exit after that test also returned cleanly to HOME.
+B-exit after that test also returned cleanly to HOME, for three passing exit cycles
+in total.
 
 No sustained frame-timing run was performed, so no hardware FPS claim is made.
 Raw logs/reports and original binary backup remain in build-toad-test.mUDoYr;
