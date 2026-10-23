@@ -192,3 +192,17 @@ authorized for this project test only; no blanket cafe fleet permission exists.
   hardware frame timing.
 - No helpers, active test processes, or console leases. Next: commit the UI
   changes, and do not push or release.
+
+## User controller-test deployment — 2026-10-23
+
+- At Brendon's request, installed final NRO
+  `dece0fdc44761db5573d72039d39f68af9feb8a33a62f40f6d12d951a4494d89`
+  on Toad and verified the on-console hash.
+- Confirmed the game directory has no `autotest`, `options.toml` or injected
+  `controls.sdl2.bin`; normal human-controller play is active.
+- Launched successfully to the new Welcome screen. Cleared/detached the virtual
+  controller (`controllerAttached:false`) so it cannot occupy a player slot.
+- Candidate is intentionally left installed and running for Brendon's physical
+  controller test. Lease `56ade542-8acf-4d00-8759-659a413468e1` was completed.
+- Remaining evidence: Brendon's physical-controller result. No active helpers,
+  test processes or console leases. No public push/release.
