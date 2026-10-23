@@ -63,5 +63,9 @@ nonfatal. After correcting that resolution, its targeted 90-second eight-CPU
 retest passed four matches with no overlap/sanitizer warnings. Three original maps
 also passed four-player regressions. 61 unit tests / 185 assertions pass, including
 legacy four-slot settings and invalid-array rollback. Normal PC and Switch builds
-succeed. Physical Switch/controller testing is pending; the reserved console was
-busy and the isolated emulator aborted before loading the game.
+succeed. The initial Fox test was blocked by a reservation and the isolated emulator
+aborted before loading the game; Toad follow-up results are recorded below.
+
+Hardware follow-up: Toad passed manual 4→5→8→4 selection and gameplay checks.
+Application exit failed on both preview and original builds; original restored.
+See `docs/widescreen-1562424909341265921/toad-validation.md` for scope and evidence.

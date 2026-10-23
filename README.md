@@ -22,8 +22,9 @@ still supports four people. Tours, worlds and minigames remain limited to four
 players because their scripted maps have not been widened.
 
 The maps and selection logic are shared with PC builds. This pack has passed PC
-sanitizer gameplay checks; the current Switch NRO builds, but console validation
-is still pending. Authoring and validation details: [widescreen pack](tools/widescreen/README.md).
+sanitizer gameplay checks and a Toad hardware smoke test at 4, 5 and 8 players.
+Application exit still produces an error on both this preview and Toad’s original
+build; that issue remains unresolved. Authoring and validation details: [widescreen pack](tools/widescreen/README.md).
 
 ## Installing
 

@@ -473,7 +473,14 @@
   ],
   "switch_nro_sha256": "3a78897f2ce90786fa7350a98600f1fb9f0d3fb1b8b8221477f0d4a573879e3a",
   "embedded_shared_assets_verified": 140,
-  "physical_switch": "Pending: Fox occupied. Own queued reservation cancelled; no console touched.",
+  "physical_switch": "Toad: 4/5/8/4 selection and gameplay smoke test passed with virtual controller; application exit failed on both preview and original build. See toad-validation.md.",
   "emulator": "Blocked before game launch: std::logic_error basic_string construction from null in isolated Eden profile.",
-  "public_release": "Not published"
+  "public_release": "Not published",
+  "toad": {
+    "gameplay_selection": "pass",
+    "physical_multiple_controllers": "not tested",
+    "application_exit": "failed on both builds",
+    "fps": "not measured",
+    "rollback": "original NRO hash verified; HOME idle, virtual controller detached, lease released"
+  }
 }

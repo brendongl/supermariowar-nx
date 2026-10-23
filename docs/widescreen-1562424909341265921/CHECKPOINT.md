@@ -1,11 +1,10 @@
-# Conversation 1562424909341265921 — approved widescreen maps
+# Conversation 1562424909341265921 — current checkpoint
 
-User approved final 23 stage pictures (24 candidates minus Rat Race) and said “im happy lets go”.
-Scope: convert to playable maps; original maps only at <=4 players, approved wide maps only at >4.
-Repo: /home/brendongl/projects/supermariowar-nx, branch eight-players; baseline e9206ecb.
-Pre-existing untracked servers.toml is untouched. No helpers used. No device touched or public push/release.
+Repo /home/brendongl/projects/supermariowar-nx, eight-players; feature commit1e432607.
+23 approved conversions (+0smw Wide=24), Rat Race excluded. No public push/release.
+Pre-existing servers.toml remains untracked and untouched. No helpers.
 
-## Completed gates
+## Completed PC/build gates
 
 - Preserved approved v2/v3/v4 references, names and revisions in tools/widescreen.
 - Authored 23 binary 27x15 maps using engine serializer. 0smw Wide now shares the same overlay: 24 wide maps total.
@@ -18,22 +17,31 @@ Pre-existing untracked servers.toml is untouched. No helpers used. No device tou
 - 61 unit tests / 185 assertions pass. Fixed discovered FileIO dangling filename and transactional legacy four-slot TOML parsing.
 - Normal PC build and Switch NRO build succeed. Fixed NRO asset dependency so image/map-only changes actually repack RomFS. Verified all 140 shared asset files occur byte-for-byte in the final NRO.
 
-## Changed files
 
-Shared overlay platform/widescreen/data; author tools/references under tools/widescreen;
-map authoring/thumbnail/selection, player/team/match menus, collision resolution, FileIO/TOML,
-CMake packaging, tests, README, this evidence directory. Upstream data submodule unchanged.
+## Hardware gate — latest
 
-## Missing evidence / blocked gates
+User authorized Toad explicitly. Test details/evidence: toad-validation.md.
+PASS: exact NRO hash on console; manual 4→5→8→4 transition, original/wide map
+selection and live 4/5/8-player gameplay. Two eight-player wide maps exercised.
+Remote virtual-controller input tested; physical four-controller pairing NOT tested.
+FAIL: application exit shows software-closed error on BOTH preview and original
+pre-test NRO. Null Data Abort; preview symbols point to GPU initialization in
+main_game. Forwarder/reload involvement suspected, not established. No FPS evidence.
 
-- Physical Switch/controller validation remains pending: Fox occupied by another reservation. Own queued job d9790d02-e93b-4b08-bcb5-bb05af05ade3 cancelled cleanly; do not heartbeat or use it.
-- Isolated Eden build-wide-eden.UMYqPj aborted before loading the NRO with std::logic_error (basic_string null). This is an unavailable emulator gate, not a failed game test. Private Xvfb stopped. Do not repeatedly probe the same emulator failure.
-- No hardware performance claims for this pack. Game Lab todo #4 remains open for validation.
+## Cleanup confirmed
 
-## Evidence and next action
+Original Toad NRO restored and hash verified d8e8432069695ca03f62f9c8264e720052bc1a7fd2a79faa1b6b11d0bbd0ebdc.
+HOME idle visually verified. Test-created settings and temp NRO removed; virtual
+controller cleared/detached, lease8af5c9d8-d6ba-40a4-a3c9-e9ef07b97308 completed.
+No active helpers, processes, leases or follow-ups. Game Lab #4 remains open.
+Raw evidence/backup: build-toad-test.mUDoYr. Current preview artifact remains local
+in build-wide-delivery.dbUO9l, not installed on Toad. Final preview NRO hash
+3a78897f2ce90786fa7350a98600f1fb9f0d3fb1b8b8221477f0d4a573879e3a.
 
-validation.json retains full results including the original failure and subsequent successful retest.
-pack-manifest.json identifies the exact embedded assets; provenance.json records source/reference hashes.
-Final binary: build-switch/src/smw/smw.nro; delivery ZIP under build-wide-delivery.*.
-No active processes/helpers or leases required by this task remain.
-Next: obtain a new Fox reservation when available, install/test the final NRO via switchctl, confirm manual player selection, 4->5->8->4 map lists and gameplay, then release lease. Bowser/cafe consoles require separate authorization. Do not push or publicly release until asked.
+## Next action
+
+Investigate/reproduce the existing application-exit/reload failure before release.
+Do not conflate this failure with the passing map conversion tests. Obtain a new
+lease before device actions; Toad was authorized for this test, no blanket cafe
+fleet permission. Isolated Eden startup gate previously blocked; do not repeat
+unavailable probes. Toad1.5.0 lacks /files/move, /process/list, /crash-reports.
