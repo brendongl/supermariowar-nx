@@ -83,7 +83,7 @@ extern short currentgamemode;
 extern CMap* g_map;
 
 extern std::vector<CPlayer*> players;
-extern CScore* score[4];
+extern CScore* score[MAX_PLAYERS];
 extern short score_cnt;
 
 extern MapList *maplist;
@@ -111,7 +111,7 @@ short GameplayState::g_iPowerupToIcon[8] = {80, 176, 272, 304, 336, 368, 384, 40
 
 GameplayState::GameplayState()
 {
-    for (short p = 0; p < 4; p++) {
+    for (short p = 0; p < MAX_PLAYERS; p++) {
         respawnCount[p] = 0;
         respawnanimationtimer[p] = 0;
         respawnanimationframe[p] = 0;
@@ -289,7 +289,7 @@ short GetModeIconIndexFromMode(short iMode)
 void GameplayState::createPlayers()
 {
     //Create players for this game
-    for (short iPlayer = 0; iPlayer < 4; iPlayer++) {
+    for (short iPlayer = 0; iPlayer < MAX_PLAYERS; iPlayer++) {
         respawnCount[iPlayer] = 0;
 
         if (game_values.singleplayermode == -1 || game_values.singleplayermode == iPlayer) {
@@ -338,7 +338,7 @@ void GameplayState::initScoreDisplayPosition()
             // Stacked in the left panel, centred, one team per row
             const short boxWidth = 56 + 34 * game_values.teamcounts[i];
             score[i]->x = (SidePanels::LeftWidth - boxWidth) / 2;
-            score[i]->y = 70 + i * 92;
+            score[i]->y = score_cnt > 4 ? 50 + i * 48 : 70 + i * 92;
         } else if (game_values.scoreboardstyle == ScoreboardStyle::Top || game_values.scoreboardstyle == ScoreboardStyle::Bottom) {
             score[i]->x = ((App::screenWidth - totalspace) >> 1);
 
@@ -506,14 +506,14 @@ short CountAliveTeams(short * lastteam)
 {
     short findlastteam = 0;
 
-    bool teamalive[4] = {false, false, false, false};
+    bool teamalive[MAX_PLAYERS] = {};
     for (CPlayer* player : players) {
         if (!player->isdead())
             teamalive[player->teamID] = true;
     }
 
     short numteams = 0;
-    for (short k = 0; k < 4; k++) {
+    for (short k = 0; k < MAX_PLAYERS; k++) {
         if (teamalive[k]) {
             findlastteam = k;
             numteams++;
@@ -668,7 +668,7 @@ void shakeScreen()
 
     //Kill players touching the ground (or in air for MOd blocks)
     short iNumKillPlayers = 0;
-    CPlayer * pKillPlayers[4];
+    CPlayer * pKillPlayers[MAX_PLAYERS];
 
     CPlayer * killer1 = GetPlayerFromGlobalID(game_values.flags.screenshakeplayerid);
 
@@ -919,7 +919,7 @@ void handleObj2ObjCollisions()
     }
 }
 
-void GameplayState::drawScoreboard(short iScoreTextOffset[4])
+void GameplayState::drawScoreboard(short iScoreTextOffset[MAX_PLAYERS])
 {
     // During play the boxes go to the left side panel; the end-of-game scoreboard
     // slides into the playfield as usual
@@ -930,7 +930,7 @@ void GameplayState::drawScoreboard(short iScoreTextOffset[4])
     blitdest = previousTarget;
 }
 
-void GameplayState::drawScoreboardTo(short iScoreTextOffset[4])
+void GameplayState::drawScoreboardTo(short iScoreTextOffset[MAX_PLAYERS])
 {
     g_iWinningPlayer = -1;
 
@@ -1290,7 +1290,7 @@ void GameplayState::drawOutOfScreenIndicators()
         player->drawOutOfScreenIndicators();
 }
 
-void GameplayState::drawEverything(short iCountDownState, short iScoreTextOffset[4])
+void GameplayState::drawEverything(short iCountDownState, short iScoreTextOffset[MAX_PLAYERS])
 {
     drawBackLayer();
     drawMiddleLayer();
@@ -1815,7 +1815,7 @@ void updateScreenShake()
 // updates the bullet bills spawned by a powerup
 void updateBulletBillPowerup()
 {
-    for (short iPlayer = 0; iPlayer < 4; iPlayer++) {
+    for (short iPlayer = 0; iPlayer < MAX_PLAYERS; iPlayer++) {
         if (game_values.bulletbilltimer[iPlayer] > 0) {
             game_values.bulletbilltimer[iPlayer]--;
 
@@ -1974,7 +1974,7 @@ bool autotestPlayerStuck(const CPlayer& player, short tx, short ty, const char* 
     g_fAutoTest = false;
     return true;
 #else
-    static Uint64 last_report[4] {};
+    static Uint64 last_report[MAX_PLAYERS] {};
     const short id = player.getGlobalID();
     const Uint64 now = SDL_GetTicks();
     if (id >= 0 && id < 4 && now - last_report[id] > 10000) {
@@ -2667,7 +2667,7 @@ bool SwapPlayers(short iUsingPlayerID)
 
     short iIncrement = RANDOM_INT (iNumAvailablePlayers - 1);
 
-    MysteryMushroomTempPlayer spots[4];
+    MysteryMushroomTempPlayer spots[MAX_PLAYERS];
     for (size_t iPlayer = 0; iPlayer < players.size(); iPlayer++) {
         CPlayer* player  = players[iPlayer];
 

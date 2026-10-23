@@ -39,12 +39,12 @@ public:
         bool operator==(const LoadedSpriteInfo&) const = default;
     };
 
-	std::array<SpriteStrip, 4> spr_player;	//all player sprites
-	std::array<SpriteStrip, 4> spr_shyguy;
-	std::array<SpriteStrip, 4> spr_chocobo;
-	std::array<SpriteStrip, 4> spr_bobomb;
+	std::array<SpriteStrip, MAX_PLAYERS> spr_player;	//all player sprites
+	std::array<SpriteStrip, MAX_PLAYERS> spr_shyguy;
+	std::array<SpriteStrip, MAX_PLAYERS> spr_chocobo;
+	std::array<SpriteStrip, MAX_PLAYERS> spr_bobomb;
 
-        std::array<LoadedSpriteInfo, 4> loaded_player_sprites;
+        std::array<LoadedSpriteInfo, MAX_PLAYERS> loaded_player_sprites;
 
 	gfxSprite		spr_clouds;
 	gfxSprite		spr_ghosts;

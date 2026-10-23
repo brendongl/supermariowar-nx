@@ -1788,7 +1788,8 @@ bool CPlayer::FindSpawnPoint()
     //}
     //else
     //{
-    bool fRet = g_map->findspawnpoint(teamID + 1, &ix, &iy, PW, PH, false);
+    // Maps have team spawn areas for the first 4 teams only (types 1-4); others spawn anywhere
+    bool fRet = g_map->findspawnpoint(teamID < 4 ? teamID + 1 : 0, &ix, &iy, PW, PH, false);
     //}
 
     fx = (float)ix;

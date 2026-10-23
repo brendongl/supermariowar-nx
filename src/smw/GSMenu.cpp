@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "GSMenu.h"
 
 #include "FileList.h"
@@ -79,6 +80,7 @@ extern void SetGameModeSettingsFromMenu();
 // Short name of the map the current match runs on, for logs
 std::string g_matchMapName;
 std::string g_autotestMap;
+short g_autotestPlayers = 4;  // "players=N" in the autotest file, up to MAX_PLAYERS
 extern void LoadMapObjects(bool fPreview);
 extern void UpdateScoreBoard();
 extern short LookupTeamID(short id);
@@ -89,7 +91,7 @@ extern void LoadCurrentMapBackground();
 
 extern CMap* g_map;
 
-extern CScore *score[4];
+extern CScore *score[MAX_PLAYERS];
 extern short score_cnt;
 
 extern CGameMode * gamemodes[GAMEMODE_LAST];
@@ -187,11 +189,18 @@ bool MenuState::init()
                 } else if (strncmp(line, "map=", 4) == 0) {
                     g_autotestMap = line + 4;
                     printf("[autotest] only map %s\n", g_autotestMap.c_str());
+                } else if (strncmp(line, "players=", 8) == 0) {
+                    // More than 4 CPU players, each on its own team (the team select
+                    // screen only handles 4, so the teams are set up when the game starts)
+                    g_autotestPlayers = std::clamp<short>(static_cast<short>(atoi(line + 8)), 2, MAX_PLAYERS);
+                    for (short iPlayer = 4; iPlayer < g_autotestPlayers; iPlayer++)
+                        game_values.randomskin[iPlayer] = true;
+                    printf("[autotest] %d players\n", g_autotestPlayers);
                 } else if (strncmp(line, "skin=", 5) == 0) {
                     // Every player uses this skin (name as shown in the menus)
                     for (size_t i = 0; i < skinlist->count(); i++) {
                         if (skinlist->at(i).name == line + 5) {
-                            for (short iPlayer = 0; iPlayer < 4; iPlayer++) {
+                            for (short iPlayer = 0; iPlayer < MAX_PLAYERS; iPlayer++) {
                                 game_values.skinids[iPlayer] = static_cast<short>(i);
                                 game_values.randomskin[iPlayer] = false;
                             }
@@ -202,7 +211,7 @@ bool MenuState::init()
             }
             fclose(fp);
         }
-        for (short iPlayer = 0; iPlayer < 4; iPlayer++)
+        for (short iPlayer = 0; iPlayer < g_autotestPlayers; iPlayer++)
             game_values.playercontrol[iPlayer] = 2;
         LoadScript("scripts/StartMenuAutomation.txt");
     }
@@ -296,7 +305,7 @@ void MenuState::onEnterState()
 
             case TournamentControlStyle::GameLoser: { //Losing Team
                 short iNumInPlace = 0;
-                short iInPlace[4];
+                short iInPlace[MAX_PLAYERS];
                 short iLowestPlace = 0;
                 for (short iScore = 0; iScore < score_cnt; iScore++) {
                     if (score[iScore]->place == iLowestPlace) {
@@ -314,7 +323,7 @@ void MenuState::onEnterState()
 
             case TournamentControlStyle::LeadingTeams: { //Tournament Ahead Teams
                 short iNumInPlace = 0;
-                short iInPlace[4];
+                short iInPlace[MAX_PLAYERS];
                 short iMostWins = 0;
                 for (short iTeam = 0; iTeam < score_cnt; iTeam++) {
                     if (game_values.tournament_scores[iTeam].wins == iMostWins) {
@@ -332,7 +341,7 @@ void MenuState::onEnterState()
 
             case TournamentControlStyle::TrailingTeams: { //Tournament Behind Teams
                 short iNumInPlace = 0;
-                short iInPlace[4] = {0,0,0,0};
+                short iInPlace[MAX_PLAYERS] = {};
                 short iLeastWins = 20; //Most possible wins are 10
 
                 for (short iTeam = 0; iTeam < score_cnt; iTeam++) {
@@ -356,7 +365,7 @@ void MenuState::onEnterState()
 
             case TournamentControlStyle::RandomLoser: { //Random Losing Team
                 short iNumInPlace = 0;
-                short iInPlace[4] = {0, 0, 0, 0};
+                short iInPlace[MAX_PLAYERS] = {};
                 short iWinner = 0;
 
                 for (short iTeam = 0; iTeam < score_cnt; iTeam++) {
@@ -690,6 +699,17 @@ void MenuState::update()
             printf("MENU_CODE_TO_GAME_SETUP_MENU\n");
             //Moves teams to the first arrays in the list and counts the number of teams
             score_cnt = mTeamSelectMenu->GetTeamCount();
+#if defined(SMW_AUTOTEST)
+            if (g_fAutoTest && g_autotestPlayers > 4) {
+                for (short iPlayer = 0; iPlayer < g_autotestPlayers; iPlayer++) {
+                    game_values.playercontrol[iPlayer] = 2;
+                    game_values.teamids[iPlayer][0] = iPlayer;
+                    game_values.teamcounts[iPlayer] = 1;
+                    game_values.colorids[iPlayer] = iPlayer;
+                }
+                score_cnt = g_autotestPlayers;
+            }
+#endif
             iDisplayError = DISPLAY_ERROR_NONE;
             iDisplayErrorTimer = 0;
             bool fErrorReadingTourFile = false;
@@ -779,7 +799,7 @@ void MenuState::update()
                         g_worldmap.SetInitialPowerups();
 
                         //If a player had a stored powerup from another game, add it to their inventory
-                        for (short iPlayer = 0; iPlayer < 4; iPlayer++) {
+                        for (short iPlayer = 0; iPlayer < MAX_PLAYERS; iPlayer++) {
                             if (game_values.storedpowerups[iPlayer] != -1) {
                                 short iTeamId = LookupTeamID(iPlayer);
                                 if (game_values.worldpowerupcount[iTeamId] < 32)
@@ -807,7 +827,7 @@ void MenuState::update()
                     game_values.tournamentwinner = -1;
 
                     //Setup wins counters for tournament/tour
-                    for (int k = 0; k < 4; k++) {
+                    for (int k = 0; k < MAX_PLAYERS; k++) {
                         game_values.tournament_scores[k].wins = 0;
                         game_values.tournament_scores[k].total = 0;
                     }
@@ -957,7 +977,7 @@ void MenuState::update()
 
             if (MENU_CODE_EXIT_WORLD_YES == code) {
                 //Clear out any stored items a player might have
-                for (short iPlayer = 0; iPlayer < 4; iPlayer++)
+                for (short iPlayer = 0; iPlayer < MAX_PLAYERS; iPlayer++)
                     game_values.storedpowerups[iPlayer] = -1;
 
                 ResetTournamentBackToMainMenu();
@@ -1084,7 +1104,7 @@ void MenuState::update()
 
             StartGame();
         } else if (MENU_CODE_RESET_STORED_POWERUPS == code) {
-            for (short iPlayer = 0; iPlayer < 4; iPlayer++)
+            for (short iPlayer = 0; iPlayer < MAX_PLAYERS; iPlayer++)
                 game_values.storedpowerups[iPlayer] = -1;
         } else if (MENU_CODE_MAP_CHANGED == code) {
             if (mCurrentMenu == mNetNewRoomSettingsMenu.get()) {
@@ -1594,7 +1614,7 @@ void MenuState::StartGame()
 
     //Load skins for players
     printf("Loading player skins...\n");
-    for (int k = 0; k < 4; k++) {
+    for (int k = 0; k < MAX_PLAYERS; k++) {
         if (game_values.playercontrol[k] > 0) {
             if (netplay.active) {
                 if (k == netplay.remotePlayerNumber) { // local player uses local skin
@@ -1770,7 +1790,7 @@ void MenuState::AutotestStep()
 
     COutputControl& keys = game_values.playerInput.outputControls[0];
     if (mCurrentMenu == mMainMenu.get()) {
-        for (short iPlayer = 0; iPlayer < 4; iPlayer++)
+        for (short iPlayer = 0; iPlayer < g_autotestPlayers; iPlayer++)
             game_values.playercontrol[iPlayer] = 2;
         if (mCurrentMenu->currentFocus() == mMainMenu->quickGameButton())
             keys.menu_select.fPressed = true;

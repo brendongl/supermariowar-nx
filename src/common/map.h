@@ -317,7 +317,7 @@ class CMap
 
 		Point       racegoallocations[MAXRACEGOALS];
 
-		Point       flagbaselocations[4];
+		Point       flagbaselocations[MAX_PLAYERS];
 
 		short		iTileAnimationTimer = 0;
 		short		iTileAnimationFrame = 0;

@@ -246,7 +246,7 @@ void CGameValues::init()
     //networkhost   = false;
     //gamehost      = false;
 
-    for (short iPlayer = 0; iPlayer < 4; iPlayer++) {
+    for (short iPlayer = 0; iPlayer < MAX_PLAYERS; iPlayer++) {
         storedpowerups[iPlayer] = -1;
         gamepowerups[iPlayer] = -1;
         teamids[iPlayer][0] = iPlayer;
@@ -266,7 +266,7 @@ void CGameValues::init()
 
             for (short iInputState = 0; iInputState < 2; iInputState++) { //for game/menu
                 for (short iKey = 0; iKey < NUM_KEYS; iKey++) {
-                    inputConfiguration[iPlayer][iInputType].inputGameControls[iInputState].keys[iKey] = controlkeys[iInputType][iInputState][iPlayer][iKey];
+                    inputConfiguration[iPlayer][iInputType].inputGameControls[iInputState].keys[iKey] = controlkeys[iInputType][iInputState][iPlayer % MAX_INPUT_PLAYERS][iKey];
                 }
             }
         }
@@ -301,7 +301,7 @@ void CGameValues::resetGameplaySettings()
 void CGameValues::resetSecretCounters()
 {
     //Reset Secret Counters
-    for (short iPlayer = 0; iPlayer < 4; iPlayer++)
+    for (short iPlayer = 0; iPlayer < MAX_PLAYERS; iPlayer++)
         unlocksecret1part1[iPlayer] = false;
 
     unlocksecret1part2 = 0;
@@ -476,10 +476,11 @@ void CGameConfig::ReadInputConfig() {
         //TODO: Need to test what happens when you unplug some controllers from the xbox
         //and then start up (device index will probably point to a gamepad that isn't in the list)
         //and this will cause a crash
-        controls.read_raw(inputConfiguration, sizeof(CInputPlayerControl) * 8);
+        // The file holds the first MAX_INPUT_PLAYERS players (keyboard + joystick each)
+        controls.read_raw(inputConfiguration, sizeof(CInputPlayerControl) * MAX_INPUT_PLAYERS * 2);
 
         //setup player input controls for game
-        for (short iPlayer = 0; iPlayer < MAX_PLAYERS; iPlayer++) {
+        for (short iPlayer = 0; iPlayer < MAX_INPUT_PLAYERS; iPlayer++) {
             short iDevice = controls.read_i16();
 
             if (iDevice >= joystickcount)
@@ -503,9 +504,9 @@ void CGameConfig::WriteInputConfig() const {
         if (!controls.is_open())
             throw std::runtime_error("Could not open " + controls_path);
 
-        controls.write_raw(inputConfiguration, sizeof(CInputPlayerControl) * 8);
+        controls.write_raw(inputConfiguration, sizeof(CInputPlayerControl) * MAX_INPUT_PLAYERS * 2);
 
-        for (int iPlayer = 0; iPlayer < MAX_PLAYERS; iPlayer++)
+        for (int iPlayer = 0; iPlayer < MAX_INPUT_PLAYERS; iPlayer++)
             controls.write_i16(playerInput.inputControls[iPlayer]->iDevice);
     }
     catch (std::exception const& error)

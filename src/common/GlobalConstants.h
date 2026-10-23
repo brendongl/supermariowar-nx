@@ -157,7 +157,8 @@
 #define NUMSURVIVALENEMIES  3
 #define NUMFRENZYCARDS      19
 
-#define MAX_PLAYERS 4
+#define MAX_PLAYERS 8
+#define MAX_INPUT_PLAYERS 4  // controller configs saved to disk
 
 
 #endif // GLOBALCONSTANTS_H

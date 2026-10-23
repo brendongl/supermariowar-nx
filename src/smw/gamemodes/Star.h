@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GlobalConstants.h"
 #include "TimeLimit.h"
 #include "GameplayStyles.h"
 
@@ -40,8 +41,8 @@ class CGM_Star : public CGM_TimeLimit
     private:
         void SetupMode();
 
-        CO_Star * starItem[3];
-        CPlayer * starPlayer[3];
+        CO_Star * starItem[MAX_PLAYERS - 1];
+        CPlayer * starPlayer[MAX_PLAYERS - 1];
         StarStyle iCurrentModeType;
         bool fDisplayTimer;
 };

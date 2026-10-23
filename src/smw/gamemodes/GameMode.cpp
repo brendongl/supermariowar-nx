@@ -13,7 +13,7 @@
 #include "WorldTourStop.h"
 #include "objects/powerup/PU_TreasureChestBonus.h"
 
-extern CScore *score[4];
+extern CScore *score[MAX_PLAYERS];
 extern short score_cnt;
 
 extern CObjectContainer objectcontainer[3];
@@ -56,7 +56,7 @@ void SetupScoreBoard(bool fOrderMatters)
 {
     short i, j;
 
-    bool doneWithScore[4] = {false, false, false, false};
+    bool doneWithScore[MAX_PLAYERS] = {};
 
     short oldmax = -1;
     short max = -1;
@@ -167,7 +167,8 @@ bool RemoveTeam(short teamid)
     //Announce that a team was removed
     if (game_values.deadteamnotice && game_values.flags.teamdeadcounter < score_cnt - 1) {
         eyecandy[2].emplace<EC_Announcement>(&rm->game_font_large, &rm->spr_announcementicons, "Team Removed!", iAnnouncementColor, 90, 200);
-        rm->sfx_announcer[iAnnouncementColor + 16].play();
+        if (iAnnouncementColor < 4)  // the announcer has voice clips for the first 4 team colours only
+            rm->sfx_announcer[iAnnouncementColor + 16].play();
     }
 
     return game_values.flags.teamdeadcounter == score_cnt - 1;
@@ -283,7 +284,7 @@ CPlayer * CGameMode::GetHighestScorePlayer(bool fGetHighest)
 {
     size_t i, j;
     short count = 1;
-    short tiedplayers[4];
+    short tiedplayers[MAX_PLAYERS];
     tiedplayers[0] = 0;
 
     //Find the first non-dead player and use them for the first player to compare to
@@ -313,7 +314,7 @@ CPlayer * CGameMode::GetHighestScorePlayer(bool fGetHighest)
 }
 
 //Returns number of players in list
-short CGameMode::GetScoreRankedPlayerList(CPlayer * outPlayers[4], bool fGetHighest)
+short CGameMode::GetScoreRankedPlayerList(CPlayer * outPlayers[MAX_PLAYERS], bool fGetHighest)
 {
     short iNumPlayersInList = 0;
 

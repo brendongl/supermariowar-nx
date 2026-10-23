@@ -37,7 +37,7 @@ OMO_RaceGoal::OMO_RaceGoal(gfxSprite* nspr, short id)
     objectType = object_race_goal;
     state = 1;
 
-    for (short k = 0; k < 4; k++)
+    for (short k = 0; k < MAX_PLAYERS; k++)
         tagged[k] = -1;
 
     angle = (float)(RANDOM_INT(1000) * 0.00628f);
@@ -82,8 +82,12 @@ void OMO_RaceGoal::draw()
         spr->draw(ix - collisionOffsetX, iy - collisionOffsetY, {drawframe, 0, iw, ih});
 
         for (short k = 0; k < score_cnt; k++) {
-            if (tagged[k] > -1)
-                rm->spr_bonus.draw(ix - collisionOffsetX + flagpositions[score_cnt - 2][k][0], iy - collisionOffsetY + flagpositions[score_cnt - 2][k][1], {0, tagged[k] * 16, 16, 16});
+            if (tagged[k] > -1) {
+                // The table covers 2-4 teams; more teams overlap their flags in two rows of four
+                const short fx = score_cnt <= 4 ? flagpositions[score_cnt - 2][k][0] : 10 + (k % 4) * 10;
+                const short fy = score_cnt <= 4 ? flagpositions[score_cnt - 2][k][1] : 20 + (k / 4) * 16;
+                rm->spr_bonus.draw(ix - collisionOffsetX + fx, iy - collisionOffsetY + fy, {0, tagged[k] * 16, 16, 16});
+            }
         }
     }
 

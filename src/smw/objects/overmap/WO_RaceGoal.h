@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GlobalConstants.h"
 #include "OverMapObject.h"
 
 class OMO_RaceGoal : public IO_OverMapObject {
@@ -16,7 +17,7 @@ public:
 
 private:
     const short goalID;
-    short tagged[4];
+    short tagged[MAX_PLAYERS];
     float angle;
     float anglechange;
     short anglechangetimer;

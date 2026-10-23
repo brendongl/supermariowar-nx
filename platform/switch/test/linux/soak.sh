@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Headless auto-test soak of the host build under AddressSanitizer + UBSan.
 #   platform/switch/test/linux/soak.sh [seconds] [output-dir]
+# Env: SMW_SIDE_PANELS=1 for the Switch layout, SMW_AUTOTEST_LINES for extra autotest options.
 # Exits non-zero if a sanitizer reported anything or no match finished.
 set -uo pipefail
 cd "$(dirname "$0")/../../../.."
@@ -8,7 +9,8 @@ SECS=${1:-600}
 OUT=$(realpath -m "${2:-build-linux-asan/soak}")
 IMAGE=smw-linux-test
 mkdir -p "$OUT/home/.local/share/supermariowar"
-echo fast > "$OUT/home/.local/share/supermariowar/autotest"
+# Extra autotest lines (e.g. SMW_AUTOTEST_LINES="players=8") go after "fast"
+printf 'fast\n%s\n' "${SMW_AUTOTEST_LINES:-}" > "$OUT/home/.local/share/supermariowar/autotest"
 
 docker image inspect $IMAGE >/dev/null 2>&1 || docker build -q -t $IMAGE platform/switch/test/linux >/dev/null
 run() { docker run --rm -u "$(id -u):$(id -g)" -e HOME=/tmp -v "$PWD":/src -w /src "$@"; }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GlobalConstants.h"
 #include "OverMapObject.h"
 
 class OMO_KingOfTheHillZone : public IO_OverMapObject {
@@ -14,8 +15,8 @@ public:
     short getColorID() const { return colorID; }
 
 private:
-    CPlayer* playersTouching[4];
-    short playersTouchingCount[4];
+    CPlayer* playersTouching[MAX_PLAYERS];
+    short playersTouchingCount[MAX_PLAYERS];
     short totalTouchingPlayers = 0;
 
     short iPlayerID = -1;
