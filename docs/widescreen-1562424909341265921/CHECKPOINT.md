@@ -284,3 +284,15 @@ authorized for this project test only; no blanket cafe fleet permission exists.
 - Remaining: identify the grey-box defect from user evidence; publish the branch and experimental GitHub pre-release; reply to GBAtemp with progress, screenshots, download and tester request; verify both public pages.
 - Files changed: README.md, ROADMAP.md, CHANGELOG, this checkpoint. Active helpers: none.
 - Next action: commit documentation, publish the `eight-players` branch and `v1.1.0-test1` pre-release, then post and verify the GBAtemp tester update. Treat the grey-box report as open until exact evidence identifies it.
+
+## Community preview published — 2026-10-24
+
+- Pushed branch `eight-players` through commit `e867ee8f` and published the public GitHub pre-release `v1.1.0-test1`: https://github.com/brendongl/supermariowar-nx/releases/tag/v1.1.0-test1
+- Verified the stable GitHub release remains `v1.0.0`; the tester build is explicitly marked as a pre-release.
+- Uploaded the tested ZIP, bare NRO and checksum file. GitHub reports the ZIP digest as `73c65ef25626ca008897164efb404cf4afaad77435d53d0f90619187d8b7edc8`; the bare NRO digest remains `e19c825310dbbd969e66c046444041a0010a4aeb918a15d705607b78058260cc`.
+- Published and visually verified GBAtemp reply #2 with the feature progress, hardware test checklist, pre-release link and two UI screenshots: https://gbatemp.net/threads/release-super-mario-war-nx-v1-0-0-native-switch-port-4-player-local-60-fps.685705/#post-10932377
+- Opened GitHub issue #1 to collect the exact stage name, screenshot/video, player count and collision behavior for the reported misplaced grey box: https://github.com/brendongl/supermariowar-nx/issues/1
+- Verified results: public download and forum post are live; forum renders the complete text and both attachments; GitHub assets and hashes match the locally validated package.
+- Remaining missing evidence: a physical eight-controller session and enough evidence to identify the grey-box stage. The grey-box report remains unconfirmed; no test currently fails for it.
+- Files changed: this checkpoint after documentation commit `e867ee8f`. `servers.toml` remains pre-existing, untracked and untouched. Active helpers, builds and console leases: none.
+- Next action: monitor tester replies and GitHub issue #1; reproduce and fix concrete reports, then rerun the relevant PC and Switch gates before promoting a stable release.
