@@ -1,4 +1,25 @@
 ------------------------------------------------------------------------------
+Super Mario War NX development build - not yet released
+------------------------------------------------------------------------------
+
+Switch port
+- Up to eight local human players and eight physical controller slots
+- New eight-card fighter select: L/R changes fighter, ZL/ZR changes colour
+- Curated 16-character roster; Dice Guy renamed Rollie and highlighted
+- Player 1 alone controls player setup, stage selection and Quick Start
+- Quick Start reveal waits for Player 1 to press A instead of auto-starting
+- 24 true 27x15 widescreen stages for matches with five to eight players
+- Native 16:9 welcome, player setup, fighter select, play choice and match setup
+- Clean return to HOME from the forwarder without relaunching or crashing
+
+Testing
+- 61/61 PC tests pass
+- Deterministic eight-human ASan/UBSan menu-to-match route passes
+- Eight-CPU ASan/UBSan wide-stage soak passes
+- Four-, five- and eight-player wide-map selection smoke-tested on Switch
+- Physical eight-controller testing is still requested before release
+
+------------------------------------------------------------------------------
 1.9.0 by neagix - WorkInProgress (not yet released)
 ------------------------------------------------------------------------------
 Source

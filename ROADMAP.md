@@ -22,10 +22,13 @@ A web build (the game already builds with Emscripten) where people play together
 
 ## Widescreen (16:9) stages
 
-Stages are 20x15 tiles (640x480). True 16:9 means 27x15 tiles. Stages wrap from one side to the other, so each one needs 7 new columns designed by hand, and its background redrawn wider. The plan is a separate widescreen stage pack, made with help from the community. Until then the Switch build fills the 16:9 screen with side panels.
+The development branch now has 24 playable 27x15 stages. They are offered only
+when 5–8 players are enabled; 2–4 players keep the complete original 20x15 map
+pool. More stages still need seven new columns of gameplay and a widened
+background. Community map and pixel-art contributions are welcome.
 
 ## Smaller items
 
 - A standalone NSP that launches on hardware. It currently crashes Atmosphère's `fatal` module, so the forwarder NSP is used instead.
-- Test with real controllers: 4 players, docking and undocking, and suspend and resume from HOME.
+- Complete the public eight-controller test pass, including mixed Joy-Cons and Pro Controllers.
 - Send the general bug fixes back to the [upstream project](https://github.com/mmatyas/supermariowar).

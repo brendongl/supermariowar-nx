@@ -272,3 +272,15 @@ authorized for this project test only; no blanket cafe fleet permission exists.
 - Remaining evidence: physical eight-controller pairing, per-player L/R and ZL/ZR fighter controls, P1-only menu enforcement, manual Quick-start A, and all eight players moving in-match. These are missing user hardware results, not failed tests.
 - Files changed: checkpoint only after commits `eb4f673c` and `7bbd262a`. Active helpers/builds: none.
 - Next action: receive Brendon's physical test result and immediately fix any observed defect before release.
+
+## Community preview preparation — 2026-10-24
+
+- User authorized ongoing GitHub progress updates, GBAtemp thread updates and public requests for hardware testers.
+- Verified the live GBAtemp release thread is `685705`; the logged-in Akumara firefox-web profile can read and reply. The thread currently has 176 views, 0 replies and 4 likes.
+- Fresh 8-second ASan/UBSan visual sweep loaded all 23 converted maps at 8 players: 23/23 passed, no sanitizer errors or overlap warnings. Evidence: `build-wide-soak.w7YIWQ`.
+- Reported defect: “grey box is off” lacks a stage name or screenshot. Toad log/screenshot retrieval was blocked because its live status was `horizon-noapi`; managed GETs returned empty replies. No console change was made. Local visual inspection makes Greden's grey-green platform the likely subject, but its artwork and top collision both align exactly with the original after the intended +96 px center shift, so this is not yet a confirmed diagnosis or failed test.
+- GitHub docs corrected locally: README now describes eight physical controller slots and the fixed exit; ROADMAP records the 24-stage development pack; CHANGELOG gains an unreleased NX development section.
+- Prepared and ZIP-tested `build-community-test.DBoiRd/SuperMarioWar-NX-v1.1.0-test1.zip` (48,505,861 bytes, SHA-256 `73c65ef25626ca008897164efb404cf4afaad77435d53d0f90619187d8b7edc8`). Embedded NRO remains `e19c825310dbbd969e66c046444041a0010a4aeb918a15d705607b78058260cc`. The package includes a focused eight-controller checklist and asks for the exact stage/screenshot if the grey-box issue appears.
+- Remaining: identify the grey-box defect from user evidence; publish the branch and experimental GitHub pre-release; reply to GBAtemp with progress, screenshots, download and tester request; verify both public pages.
+- Files changed: README.md, ROADMAP.md, CHANGELOG, this checkpoint. Active helpers: none.
+- Next action: commit documentation, publish the `eight-players` branch and `v1.1.0-test1` pre-release, then post and verify the GBAtemp tester update. Treat the grey-box report as open until exact evidence identifies it.

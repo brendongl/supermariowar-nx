@@ -17,14 +17,16 @@ This repository follows the upstream game. The Switch-specific code lives in `pl
 
 The `eight-players` branch includes 23 approved converted stages plus **0smw Wide**.
 With 2–4 enabled players, the stage picker and Quick Game use the original maps;
-with 5–8, they use only the 24 widescreen maps. Slots 5–8 are CPUs; controller input
-still supports four people. Tours, worlds and minigames remain limited to four
-players because their scripted maps have not been widened.
+with 5–8, they use only the 24 widescreen maps. All eight slots support physical
+controllers. Player 1 controls player setup, stage selection and Quick Start;
+each player chooses their own fighter with L/R, colour with ZL/ZR and confirms
+with A. Tours, worlds and minigames remain limited to four players because their
+scripted maps have not been widened.
 
 The maps and selection logic are shared with PC builds. This pack has passed PC
 sanitizer gameplay checks and a Toad hardware smoke test at 4, 5 and 8 players.
-Application exit still produces an error on both this preview and Toad’s original
-build; that issue remains unresolved. Authoring and validation details: [widescreen pack](tools/widescreen/README.md).
+The forwarder exit crash is fixed. A public eight-controller hardware test is the
+remaining gate before release. Authoring and validation details: [widescreen pack](tools/widescreen/README.md).
 
 ## Installing
 
@@ -53,7 +55,7 @@ Controls can be remapped per player in *Controls* on the main menu.
 
 ## Not included (yet)
 
-- Online multiplayer (netplay is compiled out; local 4-player works)
+- Online multiplayer (netplay is compiled out; local multiplayer only)
 - The level editor and world editor (keyboard-and-mouse tools)
 
 ## Building
