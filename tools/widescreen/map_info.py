@@ -24,8 +24,17 @@ def read(p):
         for x in range(w):
             c.append(r.i());wa.append(tuple(r.i() for _ in range(3)));s.append(list(r.take(6)))
         collision.append(c);warps.append(wa);spawn.append(s)
+    # Supplemental switch state, warp exits, then the six serialized spawn-area sets.
+    # Each spawn area stores tile-space left/top/width/height and its selection weight.
+    for _ in range(r.i()):r.take(3)
+    for _ in range(r.i()):r.take(40)
+    spawnareas=[]
+    for _ in range(6):
+        spawnareas.append([tuple(r.i() for _ in range(5)) for _ in range(r.i())])
     assert all(0<=c<=19 for row in collision for c in row)
-    return dict(width=w,version=ver,cells=cells,collision=collision,warps=warps,nospawn=spawn,tilesets=sets,background=bg,items=items,hazards=hazards)
+    return dict(width=w,version=ver,cells=cells,collision=collision,warps=warps,
+                nospawn=spawn,spawnareas=spawnareas,tilesets=sets,background=bg,
+                items=items,hazards=hazards)
 if __name__=='__main__':
     import sys
     m=read(sys.argv[1]);print(m['tilesets'],m['background'])

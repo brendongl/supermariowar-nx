@@ -366,3 +366,14 @@ authorized for this project test only; no blanket cafe fleet permission exists.
 - Files changed: `src/common/PlayerIdentity.h`, common/test CMake lists, `ModernMenu.cpp`, `SwitchPlatform.cpp`, `player.cpp`, and deterministic test hooks in `GSMenu.cpp`/`GSGameplay.cpp`.
 - Active helpers, background builds and console leases: none.
 - Next action: when the Switch toolchain is available, build a fresh NRO and verify the eight pairing colors plus one live 5–8-controller spawn session before updating the public pre-release.
+
+## Interactive spawn atlas — 2026-10-25
+
+- Built an interactive static page from the 24 shipped widescreen `.map` files. It shows each stage image, exact serialized spawn rectangles, the eight player colors, optional tile grid, search, large view and rerollable example eight-player openings using the game's 20-attempt / 96-pixel separation rule.
+- Data finding: every current widescreen map serializes identical allowed areas for region IDs 1–4. The runtime mapping remains P1/P5→1, P2/P6→2, P3/P7→3 and P4/P8→4, but today those region IDs do not produce different authored zones. The page states this explicitly.
+- Verified results: 24/24 maps parsed; 24/24 864×480 images loaded; four populated region sets per map; all current sets independently compared equal. Desktop and 400 px Playwright checks passed player selection, reroll, search, detail dialog, responsive width and browser-console checks. Existing independent 23-map conversion verification still passes 6,900 center cells and authored side objects.
+- Published owner-private Sites version 1 at `https://smw-spawn-atlas.dongletrk.chatgpt.site`; production reports deployment succeeded and generated a production screenshot. The anonymous canary and `webget` correctly reach the Sign in with ChatGPT gate (HTTP 401 before login), so anonymous content/asset probing is blocked by the deliberate owner-only access policy. This is missing unauthenticated evidence, not a failed page test.
+- Resolved tooling failures: local QA first hit an unrelated service already using port 8765; rerun on an unused port passed. The first Sites archive used unsupported static directory `.`; versioned source was corrected to `dist/`, pushed, saved and deployed successfully.
+- Files changed: `tools/widescreen/map_info.py`, `spawn_viewer.py`, `README.md`, approved `00.png`, and this checkpoint. Deployed source is also committed in the separate Sites repository at `/home/brendongl/projects/smw-spawn-atlas` commit `12b26edb40f74a278e533c4d08c1212035efff76`.
+- Active helpers, test processes and console leases: none.
+- Next action: Brendon reviews the atlas and decides whether regions 1–4 should be authored as genuinely different player zones before the next NRO build.

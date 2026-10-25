@@ -45,6 +45,20 @@ Regeneration is deterministic from the approved images and layout file; it does
 not call an image-generation API. The atlas is intentionally static except for
 objects explicitly promoted to engine blocks.
 
+## Spawn atlas
+
+`python3 tools/widescreen/spawn_viewer.py OUTPUT` builds the interactive static
+spawn review page from the 24 shipped wide maps. It reads the serialized spawn
+rectangles, copies the approved stage images and provides player-color filters,
+tile-grid overlays and repeatable example eight-player rolls. The example dots
+apply the game's 20-attempt / 96-pixel separation rule; they are possible rolls,
+not fixed spawn points.
+
+The current wide maps serialize identical allowed areas for region IDs 1–4.
+The runtime still maps P1/P5 to region 1, P2/P6 to 2, P3/P7 to 3 and P4/P8 to
+4, and the page makes that current data limitation explicit. The deployed
+owner-private page is https://smw-spawn-atlas.dongletrk.chatgpt.site.
+
 ## Verification
 
 `SMW_CHECK_MAP_POOLS=1` on the test binary checks every browser entry and 100
