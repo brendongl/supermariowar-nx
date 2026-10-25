@@ -75,6 +75,25 @@ void onFrame(uint64_t updateNs, uint64_t flipNs)
     }
 }
 
+bool showEightPlayerPairing()
+{
+    HidLaControllerSupportArg arg;
+    HidLaControllerSupportResultInfo result{};
+    hidLaCreateControllerSupportArg(&arg);
+    arg.hdr.player_count_min = 5;
+    arg.hdr.player_count_max = 8;
+    arg.hdr.enable_take_over_connection = 1;
+    arg.hdr.enable_left_justify = 1;
+    arg.hdr.enable_permit_joy_dual = 1;
+    arg.enable_explain_text = 1;
+    for (int player = 0; player < 8; ++player)
+        hidLaSetExplainText(&arg, "Super Mario War", static_cast<HidNpadIdType>(player));
+
+    const Result rc = hidLaShowControllerSupport(&result, &arg);
+    printf("[switch] eight-player pairing rc=0x%x players=%d\n", rc, result.player_count);
+    return R_SUCCEEDED(rc) && result.player_count >= 5;
+}
+
 void exit()
 {
     appletSetMediaPlaybackState(false);

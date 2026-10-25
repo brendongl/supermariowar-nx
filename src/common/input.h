@@ -81,6 +81,7 @@ struct COutputControl {
     CKeyState menu_skin_next{};
     CKeyState menu_color_prev{};
     CKeyState menu_color_next{};
+    CKeyState menu_player_mode{};
 
     void copyFrom(const COutputControl& other) {
         for (uint8_t k = 0; k < NUM_KEYS; k++) {
@@ -105,6 +106,7 @@ struct COutputControl {
 // while SDL3 events carry instance IDs. These translate between the two.
 int joystickIndexFromID(SDL_JoystickID id);
 SDL_Joystick* joystickFromIndex(int index);
+void refreshJoysticks();
 
 struct CInputPlayerControl {
 	short iDevice;

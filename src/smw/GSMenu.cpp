@@ -42,6 +42,9 @@
 #include "menu/PlayerControlsSelectMenu.h"
 #include "menu/PlayChoiceMenu.h"
 #include "menu/TeamSelectMenu.h"
+#ifdef __SWITCH__
+#include "platform/switch/SwitchPlatform.h"
+#endif
 #include "menu/TournamentScoreboardMenu.h"
 #include "menu/TourStopMenu.h"
 #include "menu/WorldMenu.h"
@@ -742,6 +745,22 @@ void MenuState::update()
             net_endSession();
 
             mCurrentMenu = mMainMenu.get();
+            mCurrentMenu->ResetMenu();
+        } else if (MENU_CODE_TOGGLE_EIGHT_PLAYER_MODE == code) {
+            if (game_values.localPlayerLimit == 8) {
+                game_values.localPlayerLimit = 4;
+                for (short player = 4; player < MAX_PLAYERS; ++player)
+                    game_values.playercontrol[player] = 0;
+            } else {
+                bool paired = true;
+#ifdef __SWITCH__
+                paired = switch_platform::showEightPlayerPairing();
+                refreshJoysticks();
+#endif
+                if (paired)
+                    game_values.localPlayerLimit = 8;
+            }
+            mCurrentMenu->ResetMenu();
         } else if (MENU_CODE_BACK_TO_MATCH_SELECTION_MENU == code) {
             const int players = std::count_if(std::begin(game_values.playercontrol), std::end(game_values.playercontrol), [](short p) { return p > 0; });
             mMatchSelectionMenu->SetWidePlayers(players > 4);
@@ -1492,7 +1511,8 @@ void MenuState::update()
     if (g_fAutoTest) {
         if (const char* dir = SDL_getenv("SMW_CAPTURE_DIR")) {
             static unsigned captured = 0;
-            const unsigned bit = mCurrentMenu == mMainMenu.get() ? 1
+            const unsigned bit = mCurrentMenu == mMainMenu.get()
+                    ? (game_values.localPlayerLimit == 4 ? 1 : 32)
                 : mCurrentMenu == mTeamSelectMenu.get() ? 2
                 : mCurrentMenu == mGameSettingsMenu.get() ? 4
                 : mCurrentMenu == mPlayChoiceMenu.get() ? 8
@@ -1989,55 +2009,62 @@ void MenuState::AutotestStep()
         };
         if (mCurrentMenu == mMainMenu.get()) {
             if (eightStage == 0) {
+                if (game_values.localPlayerLimit != 4)
+                    fail("player setup did not start in four-player mode");
+                keys.menu_player_mode.fPressed = true;
+                eightStage = 1;
+            } else if (eightStage == 1) {
+                if (game_values.localPlayerLimit != 8)
+                    fail("eight-player mode did not open");
                 for (short player = 0; player < MAX_PLAYERS; ++player)
                     game_values.playercontrol[player] = 1;
                 game_values.playerInput.outputControls[1].menu_select.fPressed = true;
-                eightStage = 1;
-            } else if (eightStage == 1) {
-                game_values.playerInput.outputControls[0].menu_select.fPressed = true;
                 eightStage = 2;
+            } else if (eightStage == 2) {
+                game_values.playerInput.outputControls[0].menu_select.fPressed = true;
+                eightStage = 3;
             } else {
                 fail("returned to main menu before starting the match");
             }
         } else if (mCurrentMenu == mTeamSelectMenu.get()) {
-            if (eightStage == 1)
+            if (eightStage == 2)
                 fail("player 2 controlled the player-1-only setup menu");
-            if (eightStage == 2) {
+            if (eightStage == 3) {
                 oldSkin = game_values.skinids[7];
                 oldColor = game_values.colorids[7];
                 game_values.playerInput.outputControls[7].menu_skin_next.fPressed = true;
                 game_values.playerInput.outputControls[7].menu_color_next.fPressed = true;
-                eightStage = 3;
-            } else if (eightStage == 3) {
+                eightStage = 4;
+            } else if (eightStage == 4) {
                 if (game_values.skinids[7] == oldSkin || game_values.colorids[7] == oldColor)
                     fail("player 8 shoulder fighter/color controls did not change");
                 for (short player = 0; player < MAX_PLAYERS; ++player)
                     game_values.playerInput.outputControls[player].menu_select.fPressed = true;
-                eightStage = 4;
-            } else if (eightStage == 4) {
-                game_values.playerInput.outputControls[0].menu_select.fPressed = true;
                 eightStage = 5;
+            } else if (eightStage == 5) {
+                game_values.playerInput.outputControls[0].menu_select.fPressed = true;
+                eightStage = 6;
             }
         } else if (mCurrentMenu == mPlayChoiceMenu.get()) {
-            if (eightStage == 5) {
+            if (eightStage == 6) {
                 game_values.playerInput.outputControls[1].menu_select.fPressed = true;
-                eightStage = 6;
-            } else if (eightStage == 6) {
-                game_values.playerInput.outputControls[0].menu_select.fPressed = true;
                 eightStage = 7;
+            } else if (eightStage == 7) {
+                game_values.playerInput.outputControls[0].menu_select.fPressed = true;
+                eightStage = 8;
             }
         } else if (mCurrentMenu == mQuickRevealMenu.get()) {
-            if (eightStage == 6)
+            if (eightStage == 7)
                 fail("player 2 controlled the player-1-only quick menu");
-            if (eightStage == 7 && ++revealWaits >= 12) {
+            if (eightStage == 8 && ++revealWaits >= 12) {
                 game_values.playerInput.outputControls[1].menu_select.fPressed = true;
-                eightStage = 8;
-            } else if (eightStage == 8) {
+                eightStage = 9;
+            } else if (eightStage == 9) {
                 printf("[eight-input] player-2 quick input ignored\n");
                 game_values.playerInput.outputControls[0].menu_select.fPressed = true;
-                eightStage = 9;
+                eightStage = 10;
             }
-        } else if (eightStage < 9) {
+        } else if (eightStage < 10) {
             fail("unexpected menu transition");
         }
         return;
@@ -2087,12 +2114,7 @@ void MenuState::AutotestStep()
         for (short iPlayer = 0; iPlayer < g_autotestPlayers; iPlayer++)
             game_values.playercontrol[iPlayer] = 2;
         game_values.playercontrol[0] = 1;
-        if (captureMenus)
-            keys.menu_select.fPressed = true;
-        else if (mCurrentMenu->currentFocus() == mMainMenu->quickGameButton())
-            keys.menu_select.fPressed = true;
-        else
-            keys.menu_right.fPressed = true;
+        keys.menu_select.fPressed = true;
     } else if (captureMenus && mCurrentMenu == mMatchSelectionMenu.get()) {
         keys.menu_select.fPressed = true;
     } else if (mCurrentMenu == mTeamSelectMenu.get()) {

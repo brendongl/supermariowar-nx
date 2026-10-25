@@ -258,6 +258,46 @@ authorized for this project test only; no blanket cafe fleet permission exists.
 - The managed API then returned empty replies. The NRO upload failed with `Broken pipe` after **0 bytes**, so the installed file was not changed or partially overwritten.
 - A broker refresh confirmed Toad changed from `horizon` to `offline`; a later fleet status check still showed it offline.
 - Missing evidence: final NRO installed/hash-verified and physical eight-controller behavior. No new game test failed because the candidate never reached the console.
+
+## Four/eight-player pairing flow implementation gate — 2026-10-25
+
+- The normal local flow now starts in four-player mode. Player 1 can press `+`
+  or `-` on Player Setup to request eight-player mode; the Switch build invokes
+  the native controller-support applet for 5–8 controllers before exposing all
+  eight roster slots. Pressing `+` or `-` again returns to four-player mode and
+  clears slots 5–8.
+- Player Setup is a dedicated P1-only roster screen. Four-player mode uses four
+  large cards; eight-player mode uses eight compact cards. The fighter screen
+  adapts from one centered row for up to four active players to a centered 4x2
+  grid for five through eight, and its status now reads `N PLAYERS / N READY`.
+- Verified: fresh normal and ASan/UBSan PC builds completed, all 61 CTest tests
+  passed, and the deterministic visible flow passed under the sanitizers from
+  default four-player setup through the
+  eight-player roster, eight independently controlled fighter cards, P1-only
+  Play Choice and Quick Reveal, and an eight-player wide-stage match. Player 2
+  was rejected on protected screens and Player 8 changed fighter and colour.
+  The bounded sanitizer run ended by timeout during healthy gameplay after
+  `[eight-input] complete`, with no ASan/UBSan or failure marker. Evidence:
+  ignored build artifacts `build-ui-demo/eight-input-{normal,asan}.log`.
+- One initial dynamic run lacked the widescreen data overlay and correctly
+  stopped with `No maps available for this player count`. This was a failed
+  test-data setup, not a game failure. A fresh data bundle with the overlay
+  passed. The bounded final run ended by the test timeout during healthy
+  gameplay after logging `[eight-input] complete`; it had no failure marker.
+- Files changed: `README.md`, `GameValues`, input handling, `MenuCode`, `GSMenu`,
+  `MainMenu`, `MI_PlayerSelect`, `MI_TeamSelect`, and Switch platform pairing
+  integration. `servers.toml` remains pre-existing, untracked and untouched.
+- Missing evidence, not failures: compiling the current code as an NRO (the
+  `/opt/devkitpro` mount is currently unavailable), seeing the native pairing
+  applet on hardware, and validating eight physical controllers.
+- Active helpers: none. Active test processes and console leases: none.
+- The requested 19.3-second demonstration video was rendered from the verified
+  captures, checked at every segment, and saved as the ignored artifact
+  `build-ui-demo/eight-player-flow-demo.mp4` (671,435 bytes, SHA-256
+  `d84a3eb4a9707c0f163e4c811e7dc750f792b2c12804a80df68025762423c45c`).
+- Next action: commit and push the branch, deliver the video, and book the
+  requested King of the Hill visual-proposal reminder. King of the Hill remains
+  unchanged.
 - Files changed: checkpoint only after commit `eb4f673c` (`Add eight-controller player flow`).
 - Active helpers/builds: none.
 - Next action: when Toad's managed connection returns, acquire a new Toad lease and resume at upload; do not rebuild or repeat completed PC gates.

@@ -176,6 +176,7 @@ public:
     bool		autokill;
 
     AppState appstate = AppState::Splash;
+    short localPlayerLimit = 4;
 
     GameplayFlags flags;
     CGameMode   *gamemode;

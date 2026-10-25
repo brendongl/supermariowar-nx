@@ -161,6 +161,7 @@ void CGameValues::init()
     sound       = true;
     music       = true;
     appstate     = AppState::Splash;
+    localPlayerLimit = 4;
 #ifdef _DEBUG
     fullscreen      = false;
 #else

@@ -18,10 +18,13 @@ This repository follows the upstream game. The Switch-specific code lives in `pl
 The `eight-players` branch includes 23 approved converted stages plus **0smw Wide**.
 With 2–4 enabled players, the stage picker and Quick Game use the original maps;
 with 5–8, they use only the 24 widescreen maps. All eight slots support physical
-controllers. Player 1 controls player setup, stage selection and Quick Start;
-each player chooses their own fighter with L/R, colour with ZL/ZR and confirms
-with A. Tours, worlds and minigames remain limited to four players because their
-scripted maps have not been widened.
+controllers. The game starts with four roster slots. On Player Setup, player 1
+presses `+` or `−` to open the Switch controller-pairing screen for 5–8 players;
+after pairing, the roster expands to eight slots. Pressing either button again
+returns to four-player mode. Player 1 controls player setup, stage selection and
+Quick Start; each player chooses their own fighter with L/R, colour with ZL/ZR
+and confirms with A. Tours, worlds and minigames remain limited to four players
+because their scripted maps have not been widened.
 
 The maps and selection logic are shared with PC builds. This pack has passed PC
 sanitizer gameplay checks and a Toad hardware smoke test at 4, 5 and 8 players.
@@ -39,7 +42,9 @@ A standalone NSP (`platform/switch/nsp/build-nsp.sh`) also builds, but it curren
 
 ## Controls
 
-Each controller slot is one player: the first controller (or the console in handheld mode) is player 1, and so on. Connect and order controllers from the HOME menu's *Controllers* screen.
+Each controller slot is one player: the first controller (or the console in
+handheld mode) is player 1, and so on. The game opens with four-player setup;
+press `+` or `−` there to pair and order 5–8 controllers.
 
 | Action | Pro Controller / Joy-Con pair | Single sideways Joy-Con |
 |---|---|---|
@@ -50,6 +55,7 @@ Each controller slot is one player: the first controller (or the console in hand
 | Pause | + | Stick click |
 | Exit match | − | + or − |
 | Menu select / back | A / B | A / B positions |
+| Toggle 4/8 players and pair | + or − | + or − |
 
 Controls can be remapped per player in *Controls* on the main menu.
 

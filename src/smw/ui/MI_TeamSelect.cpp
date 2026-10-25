@@ -125,29 +125,32 @@ void MI_TeamSelect::Draw()
             if (fReady[p]) ++ready;
         }
     }
-    const std::string status = std::to_string(joined) + " / 8 JOINED    "
-        + std::to_string(ready) + " / " + std::to_string(joined) + " READY";
+    const std::string status = std::to_string(joined) + (joined == 1 ? " PLAYER    " : " PLAYERS    ")
+        + std::to_string(ready) + " READY";
     rm->menu_font_small.drawRightJustified(App::screenWidth - 22, 17, status);
 
+    std::vector<short> activePlayers;
+    for (short player = 0; player < game_values.localPlayerLimit; ++player) {
+        if (game_values.playercontrol[player] > 0)
+            activePlayers.push_back(player);
+    }
     constexpr int cardW = 200, cardH = 190, gapX = 8, gapY = 8;
-    constexpr int x0 = 16, y0 = 50;
-    for (short player = 0; player < MAX_PLAYERS; ++player) {
-        const int x = x0 + (player % 4) * (cardW + gapX);
-        const int y = y0 + (player / 4) * (cardH + gapY);
-        const bool active = game_values.playercontrol[player] > 0;
+    const int rows = activePlayers.size() > 4 ? 2 : 1;
+    for (size_t slot = 0; slot < activePlayers.size(); ++slot) {
+        const short player = activePlayers[slot];
+        const int row = rows == 1 ? 0 : static_cast<int>(slot / 4);
+        const int countInRow = rows == 1 ? static_cast<int>(activePlayers.size())
+            : std::min(4, static_cast<int>(activePlayers.size()) - row * 4);
+        const int col = rows == 1 ? static_cast<int>(slot) : static_cast<int>(slot % 4);
+        const int rowWidth = countInRow * cardW + (countInRow - 1) * gapX;
+        const int x = (App::screenWidth - rowWidth) / 2 + col * (cardW + gapX);
+        const int y = rows == 1 ? 142 : 50 + row * (cardH + gapY);
         const short team = std::max<short>(0, GetTeam(player));
         Uint8 r, g, b;
         ModernMenu::teamColor(team, r, g, b);
-        ModernMenu::panel(x, y, cardW, cardH, active ? 18 : 14, active ? 24 : 18, active ? 52 : 38);
+        ModernMenu::panel(x, y, cardW, cardH, 18, 24, 52);
 
         const std::string number = "P" + std::to_string(player + 1);
-        if (!active) {
-            rm->menu_font_small.draw(x + 12, y + 12, number);
-            rm->menu_font_large.drawCentered(x + cardW / 2, y + 68, "?");
-            rm->menu_font_small.drawCentered(x + cardW / 2, y + 122, "SET ON PLAYER SETUP");
-            continue;
-        }
-
         ModernMenu::strip(x + 5, y + 5, cardW - 10, 22, r, g, b);
         rm->spr_menu_boxed_numbers.draw(x + 9, y + 8,
             {player * 16, std::min<short>(game_values.colorids[player], 7) * 16, 16, 16});

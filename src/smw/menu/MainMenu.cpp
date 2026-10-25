@@ -1,91 +1,16 @@
 #include "MainMenu.h"
 
 #include "ResourceManager.h"
-#include "ui/MI_Button.h"
-#include "ui/MI_Image.h"
 #include "ui/MI_PlayerSelect.h"
 
 extern CResourceManager* rm;
-
 
 UI_MainMenu::UI_MainMenu()
     : UI_Menu()
 {
     SetPlayerOneOnly();
-    miSMWTitle = new MI_Image(&rm->menu_smw, 432 - ((short)rm->menu_smw.getWidth() >> 1), 18, 0, 0, 372, 140, 1, 1, 0);
-    miSMWVersion = new MI_Image(&rm->menu_version, 852 - rm->menu_version.getWidth(), 10,
-        0, 0, rm->menu_version.getWidth(), rm->menu_version.getHeight(), 1, 1, 0);
-    // miSMWVersionText = new MI_Text("Beta 2", 630, 45, 0, 2, 2);
-
-    miMainStartButton = new MI_Button(&rm->spr_selectfield, 180, 296, "START", 330);
-    miMainStartButton->SetCode(MENU_CODE_TO_MATCH_SELECTION_MENU);
-
-    miQuickGameButton = new MI_Button(&rm->spr_selectfield, 520, 296, "QUICK", 164);
-    miQuickGameButton->SetCode(MENU_CODE_QUICK_GAME_START);
-
-    miPlayerSelect = new MI_PlayerSelect(&rm->menu_player_select, 20, 174, "Players", 824, 0);
-
-// disable Multiplayer button for web builds
-#if defined(NETWORK_DISABLED) && !defined(__EMSCRIPTEN__)
-    miMultiplayerButton = nullptr;
-    miOptionsButton = new MI_Button(&rm->spr_selectfield, 120, 322, "Options", 200);
-    miControlsButton = new MI_Button(&rm->spr_selectfield, 320, 322, "Controls", 200);
-#elif defined(__EMSCRIPTEN__)
-    miMultiplayerButton = new MI_Button(&rm->spr_selectfield, 120, 322, "Multiplayer - Under Construction", 400);
-    miOptionsButton = new MI_Button(&rm->spr_selectfield, 120, 362, "Options", 400);
-    miControlsButton = new MI_Button(&rm->spr_selectfield, 120, 402, "Controls", 400);
-#else
-    miMultiplayerButton = new MI_Button(&rm->spr_selectfield, 232, 340, "Multiplayer", 400);
-    miMultiplayerButton->SetCode(MENU_CODE_TO_NET_SERVERS_MENU);
-
-    miOptionsButton = new MI_Button(&rm->spr_selectfield, 232, 380, "Options", 200);
-    miControlsButton = new MI_Button(&rm->spr_selectfield, 432, 380, "Controls", 200);
-#endif
-    miOptionsButton->SetCode(MENU_CODE_TO_OPTIONS_MENU);
-    miControlsButton->SetCode(MENU_CODE_TO_CONTROLS_MENU);
-
-#ifdef __EMSCRIPTEN__
-    miExitButton = NULL;
-#else
-    miExitButton = new MI_Button(&rm->spr_selectfield, 232, miMultiplayerButton ? 420 : 380, "Exit", 400);
-    miExitButton->SetCode(MENU_CODE_EXIT_APPLICATION);
-#endif
-
-#if defined(NETWORK_DISABLED) && !defined(__EMSCRIPTEN__)
-    AddControl(miMainStartButton, miExitButton, miPlayerSelect, NULL, miQuickGameButton);
-    AddControl(miQuickGameButton, miExitButton, miPlayerSelect, miMainStartButton, NULL);
-    AddControl(miPlayerSelect, miMainStartButton, miOptionsButton, NULL, NULL);
-    AddControl(miOptionsButton, miPlayerSelect, miExitButton, miControlsButton, miControlsButton);
-    AddControl(miControlsButton, miPlayerSelect, miExitButton, miOptionsButton, miOptionsButton);
-    AddControl(miExitButton, miOptionsButton, miMainStartButton, NULL, NULL);
-#elif !defined(__EMSCRIPTEN__)
-    AddControl(miMainStartButton, miExitButton, miPlayerSelect, NULL, miQuickGameButton);
-    AddControl(miQuickGameButton, miExitButton, miPlayerSelect, miMainStartButton, NULL);
-    AddControl(miPlayerSelect, miMainStartButton, miMultiplayerButton, NULL, NULL);
-    AddControl(miMultiplayerButton, miPlayerSelect, miOptionsButton, NULL, NULL);
-    AddControl(miOptionsButton, miMultiplayerButton, miExitButton, miControlsButton, miControlsButton);
-    AddControl(miControlsButton, miMultiplayerButton, miExitButton, miOptionsButton, miOptionsButton);
-    AddControl(miExitButton, miOptionsButton, miMainStartButton, NULL, NULL);
-#else
-    AddControl(miMainStartButton, miControlsButton, miPlayerSelect, NULL, miQuickGameButton);
-    AddControl(miQuickGameButton, miControlsButton, miPlayerSelect, miMainStartButton, NULL);
-    AddNonControl(miMultiplayerButton);
-    AddControl(miPlayerSelect, miMainStartButton, miOptionsButton, NULL, NULL);
-    AddControl(miOptionsButton, miPlayerSelect, miControlsButton, NULL, NULL);
-    AddControl(miControlsButton, miOptionsButton, miMainStartButton, NULL, NULL);
-#endif
-
-    setInitialFocus(miMainStartButton);
-#ifndef __EMSCRIPTEN__
-    SetCancelCode(MENU_CODE_EXIT_APPLICATION);
-#endif
-
-    AddNonControl(miSMWTitle);
-    AddNonControl(miSMWVersion);
-    // AddNonControl(miSMWVersionText);
-};
-
-UI_Control* UI_MainMenu::quickGameButton() const
-{
-    return miQuickGameButton;
+    miPlayerSelect = new MI_PlayerSelect(&rm->menu_player_select, 20, 74, "Players", 824, 0);
+    miPlayerSelect->SetAutoModify(true);
+    AddControl(miPlayerSelect, nullptr, nullptr, nullptr, nullptr);
+    setInitialFocus(miPlayerSelect);
 }

@@ -7,6 +7,20 @@ extern CGameValues game_values;
 extern SDL_Joystick** joysticks;
 extern int joystickcount;
 
+void refreshJoysticks()
+{
+    for (int i = 0; i < joystickcount; ++i) {
+        if (joysticks[i]) SDL_CloseJoystick(joysticks[i]);
+    }
+    delete[] joysticks;
+
+    SDL_JoystickID* ids = SDL_GetJoysticks(&joystickcount);
+    joysticks = new SDL_Joystick*[joystickcount];
+    for (int i = 0; i < joystickcount; ++i)
+        joysticks[i] = SDL_OpenJoystick(ids[i]);
+    SDL_free(ids);
+}
+
 int joystickIndexFromID(SDL_JoystickID id)
 {
     for (int i = 0; i < joystickcount; i++) {
@@ -92,6 +106,7 @@ void CPlayerInput::ClearPressedKeys(short iGameState)
         outputControl->menu_skin_next.fPressed = false;
         outputControl->menu_color_prev.fPressed = false;
         outputControl->menu_color_next.fPressed = false;
+        outputControl->menu_player_mode.fPressed = false;
     }
 
     iPressedKey = 0;
@@ -125,6 +140,7 @@ void CPlayerInput::ResetKeys()
 		outputControls[iPlayer].menu_skin_next = {};
 		outputControls[iPlayer].menu_color_prev = {};
 		outputControls[iPlayer].menu_color_next = {};
+		outputControls[iPlayer].menu_player_mode = {};
 	}
 
 	iPressedKey = 0;
@@ -162,6 +178,13 @@ void CPlayerInput::Update(SDL_Event event, short iGameState)
 
         if (iDeviceID == DEVICE_KEYBOARD) {
             if (SDL_EVENT_KEY_DOWN == event.type) {
+                if (iGameState == 1 && iPlayer <= 0 &&
+                        (event.key.key == SDLK_PLUS || event.key.key == SDLK_EQUALS || event.key.key == SDLK_MINUS)) {
+                    if (!outputControl->menu_player_mode.fDown)
+                        outputControl->menu_player_mode.fPressed = true;
+                    outputControl->menu_player_mode.fDown = true;
+                    continue;
+                }
                 for (int iKey = 0; iKey < NUM_KEYS && !fFound; iKey++) {
                     if (inputControl->keys[iKey] == event.key.key) {
 						fFound = true;
@@ -179,6 +202,11 @@ void CPlayerInput::Update(SDL_Event event, short iGameState)
 
 				iPressedKey = event.key.key;
             } else if (SDL_EVENT_KEY_UP == event.type) {
+                if (iGameState == 1 && iPlayer <= 0 &&
+                        (event.key.key == SDLK_PLUS || event.key.key == SDLK_EQUALS || event.key.key == SDLK_MINUS)) {
+                    outputControl->menu_player_mode.fDown = false;
+                    continue;
+                }
                 for (int iKey = 0; iKey < NUM_KEYS && !fFound; iKey++) {
                     if (inputControl->keys[iKey] == event.key.key) {
 						fFound = true;
@@ -288,6 +316,13 @@ void CPlayerInput::Update(SDL_Event event, short iGameState)
 					continue;
 
 #ifdef __SWITCH__
+                if (iGameState == 1 && iPlayer == 0 &&
+                        (event.jbutton.button == 10 || event.jbutton.button == 11)) {
+                    if (!outputControl->menu_player_mode.fDown)
+                        outputControl->menu_player_mode.fPressed = true;
+                    outputControl->menu_player_mode.fDown = true;
+                    continue;
+                }
                 if (iGameState == 1 && event.jbutton.button >= 6 && event.jbutton.button <= 9) {
                     CKeyState* shoulder = event.jbutton.button == 6 ? &outputControl->menu_skin_prev
                         : event.jbutton.button == 7 ? &outputControl->menu_skin_next
@@ -318,6 +353,11 @@ void CPlayerInput::Update(SDL_Event event, short iGameState)
 					continue;
 
 #ifdef __SWITCH__
+                if (iGameState == 1 && iPlayer == 0 &&
+                        (event.jbutton.button == 10 || event.jbutton.button == 11)) {
+                    outputControl->menu_player_mode.fDown = false;
+                    continue;
+                }
                 if (iGameState == 1 && event.jbutton.button >= 6 && event.jbutton.button <= 9) {
                     CKeyState* shoulder = event.jbutton.button == 6 ? &outputControl->menu_skin_prev
                         : event.jbutton.button == 7 ? &outputControl->menu_skin_next
