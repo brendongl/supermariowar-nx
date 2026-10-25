@@ -1,5 +1,6 @@
 #include "SwitchPlatform.h"
 
+#include "PlayerIdentity.h"
 #include "path.h"
 
 #include <switch.h>
@@ -85,9 +86,16 @@ bool showEightPlayerPairing()
     arg.hdr.enable_take_over_connection = 1;
     arg.hdr.enable_left_justify = 1;
     arg.hdr.enable_permit_joy_dual = 1;
+    arg.hdr.enable_identification_color = 1;
     arg.enable_explain_text = 1;
-    for (int player = 0; player < 8; ++player)
-        hidLaSetExplainText(&arg, "Super Mario War", static_cast<HidNpadIdType>(player));
+    for (int player = 0; player < 8; ++player) {
+        const PlayerIdentityColor color = kPlayerIdentityColors[player];
+        arg.identification_color[player].r = color.r;
+        arg.identification_color[player].g = color.g;
+        arg.identification_color[player].b = color.b;
+        arg.identification_color[player].a = 255;
+        hidLaSetExplainText(&arg, kPlayerIdentityLabels[player], static_cast<HidNpadIdType>(player));
+    }
 
     const Result rc = hidLaShowControllerSupport(&result, &arg);
     printf("[switch] eight-player pairing rc=0x%x players=%d\n", rc, result.player_count);

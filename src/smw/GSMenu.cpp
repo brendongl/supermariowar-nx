@@ -2038,6 +2038,11 @@ void MenuState::AutotestStep()
             } else if (eightStage == 4) {
                 if (game_values.skinids[7] == oldSkin || game_values.colorids[7] == oldColor)
                     fail("player 8 shoulder fighter/color controls did not change");
+                // The input test proves the shoulder controls changed both values, then
+                // restores P8 so subsequent gameplay tests exercise the default identity map.
+                game_values.skinids[7] = oldSkin;
+                game_values.colorids[7] = oldColor;
+                rm->LoadMenuSkin(7, oldSkin, oldColor, false);
                 for (short player = 0; player < MAX_PLAYERS; ++player)
                     game_values.playerInput.outputControls[player].menu_select.fPressed = true;
                 eightStage = 5;

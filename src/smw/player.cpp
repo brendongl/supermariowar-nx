@@ -9,6 +9,7 @@
 #include "net.h"
 #include "ObjectContainer.h"
 #include "objectgame.h"
+#include "PlayerIdentity.h"
 #include "RandomNumberGenerator.h"
 #include "ResourceManager.h"
 #include "gamemodes/Chicken.h"
@@ -1790,10 +1791,9 @@ bool CPlayer::FindSpawnPoint()
     //}
     //else
     //{
-    // Maps have team spawn areas for the first 4 teams only (types 1-4); others spawn anywhere.
-    // With up to 8 players, try a few spots and keep the first one well away from everyone
-    // else (or the furthest one found), so players don't appear on top of each other.
-    const short spawnType = teamID < 4 ? teamID + 1 : 0;
+    // Maps have four team-spawn regions. Teams 5-8 share regions with teams 1-4;
+    // the multi-attempt distance check below keeps paired players apart.
+    const short spawnType = playerSpawnRegion(teamID);
     constexpr int kMinSpawnDistance = 96;
     constexpr int kSpawnAttempts = 20;
     bool fRet = false;
@@ -1821,6 +1821,12 @@ bool CPlayer::FindSpawnPoint()
     }
     ix = bestX;
     iy = bestY;
+#if defined(SMW_AUTOTEST)
+    extern bool g_fAutoTest;
+    if (g_fAutoTest && SDL_getenv("SMW_SPAWN_MAP_TEST"))
+        printf("[spawn-map] player=%d color=%d team=%d region=%d x=%d y=%d\n",
+            globalID + 1, colorID, teamID + 1, spawnType, ix, iy);
+#endif
     //}
 
     fx = (float)ix;

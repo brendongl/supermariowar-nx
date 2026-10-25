@@ -53,6 +53,7 @@ add_library(CommonFiles STATIC
     ObjectBase.h
     path.cpp
     path.h
+    PlayerIdentity.h
     RandomNumberGenerator.cpp
     RandomNumberGenerator.h
     ResourceManager.cpp

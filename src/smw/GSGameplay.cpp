@@ -326,8 +326,26 @@ void GameplayState::createPlayers()
         game_values.bulletbillspawntimer[iPlayer] = 0;
     }
 #if defined(SMW_AUTOTEST)
-    if (g_fAutoTest)
+    if (g_fAutoTest) {
         printf("[match] arena-width=%d players=%zu teams=%d\n", MAPWIDTH, players.size(), score_cnt);
+        if (SDL_getenv("SMW_SPAWN_MAP_TEST")) {
+            if (players.size() != MAX_PLAYERS) {
+                fprintf(stderr, "[spawn-map-test][failure] expected 8 players, got %zu\n", players.size());
+                std::exit(2);
+            }
+            for (short slot = 0; slot < MAX_PLAYERS; ++slot) {
+                const CPlayer* player = GetPlayerFromGlobalID(slot);
+                if (!player || player->teamID != slot || player->colorID != slot) {
+                    fprintf(stderr,
+                        "[spawn-map-test][failure] P%d identity mismatch: team=%d color=%d\n",
+                        slot + 1, player ? player->teamID + 1 : 0, player ? player->colorID : -1);
+                    std::exit(2);
+                }
+            }
+            printf("[spawn-map-test] complete\n");
+            std::exit(0);
+        }
+    }
 #endif
 }
 

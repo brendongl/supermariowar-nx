@@ -3,6 +3,7 @@ add_executable(smw-tests
 	common/test_FileIO.cpp
 	common/test_GameModeSettingsSerialization.cpp
 	common/test_GameValuesToml.cpp
+	common/test_PlayerIdentity.cpp
 	common/test_version.cpp
 	common/test_tokenize.cpp
 	common/math/test_vec2.cpp

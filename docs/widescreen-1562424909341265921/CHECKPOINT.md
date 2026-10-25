@@ -355,3 +355,14 @@ authorized for this project test only; no blanket cafe fleet permission exists.
 - Bowser cleanup verified: original NRO `0ba1dc0015a155612ff96fc32d3db88e6d3fda0100d407939c4af3fdec761bf6`, options `f7f894c0af425483c52d8a4ccead33decec08bb05acad8dec51e12f2fe82adc8`, and controls `d5abbaa51fed52c039812bb8cb24e1ca2f7b4406788639975c28bb8598a5800a` restored exactly; `autotest` absent; virtual pad detached; HOME idle.
 - Files changed: this checkpoint only; `servers.toml` remains pre-existing, untracked and untouched. Active helpers, builds and console leases: none.
 - Next action: after Brendon chooses the UI direction, implement the adaptive fighter layout first, then simplify roster setup, then constrain Quick Start KOTH zones; rerun 2/5/8-player visual captures, sanitizer navigation and Bowser hardware smoke before the next pre-release.
+
+## Eight-player identity and spawn mapping — 2026-10-25
+
+- Added one shared identity table for the roster, fighter cards and native Switch controller-pairing applet: P1 red, P2 green, P3 yellow, P4 blue, P5 purple, P6 orange, P7 cyan and P8 pink.
+- Existing maps expose four compatible team-spawn regions, so eight teams map as `1,2,3,4,1,2,3,4`. The existing 20-attempt/furthest-point chooser still separates the two players sharing each region.
+- Verified results: fresh Release build passed; 63/63 CTest cases and 220/220 assertions passed. A deterministic eight-player runtime checked all eight default team/color identities and the exact region sequence before exiting successfully. A separate ASan/UBSan build and runtime repeated that check with no sanitizer finding.
+- Failed tests: none. Earlier runtime timeouts came from an incorrectly placed autotest marker; one later shell wrapper returned status 1 after the game itself exited 0 because its reporting pipeline found no failure text. Direct log validation passed. These were harness issues, not game failures.
+- Missing evidence: the current machine has no usable `/opt/devkitpro` Switch compiler, so the native pairing-applet code has not been compiled into a fresh NRO or seen on Switch hardware in this gate. The libnx field names were checked against its source earlier. Physical eight-controller validation remains pending.
+- Files changed: `src/common/PlayerIdentity.h`, common/test CMake lists, `ModernMenu.cpp`, `SwitchPlatform.cpp`, `player.cpp`, and deterministic test hooks in `GSMenu.cpp`/`GSGameplay.cpp`.
+- Active helpers, background builds and console leases: none.
+- Next action: when the Switch toolchain is available, build a fresh NRO and verify the eight pairing colors plus one live 5–8-controller spawn session before updating the public pre-release.

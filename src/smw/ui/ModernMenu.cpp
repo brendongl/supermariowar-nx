@@ -1,6 +1,7 @@
 #include "ModernMenu.h"
 
 #include "Game.h"
+#include "PlayerIdentity.h"
 #include "ResourceManager.h"
 
 #include <algorithm>
@@ -83,12 +84,11 @@ void footer(const char* hints, const char* action)
 
 void teamColor(short team, Uint8& r, Uint8& g, Uint8& b)
 {
-    constexpr Uint8 colors[8][3] = {
-        {208, 32, 48}, {112, 184, 24}, {240, 184, 16}, {48, 128, 208},
-        {128, 56, 208}, {232, 104, 16}, {16, 168, 184}, {232, 80, 152},
-    };
     team = std::clamp<short>(team, 0, 7);
-    r = colors[team][0]; g = colors[team][1]; b = colors[team][2];
+    const PlayerIdentityColor identity = kPlayerIdentityColors[team];
+    r = identity.r;
+    g = identity.g;
+    b = identity.b;
 }
 
 } // namespace ModernMenu
