@@ -410,3 +410,25 @@ authorized for this project test only; no blanket cafe fleet permission exists.
 - Missing evidence, not a failure: this exact NRO has not run on Switch hardware
   and physical eight-controller behavior remains unverified. No console was
   touched in this gate.
+
+## Fox hardware spawn sweep — 2026-10-25 (in progress)
+
+- Lease `712153fd-73ee-4308-aa44-cc216c28673b`; exact candidate NRO SHA-256 `2ea291f4510bd09d9bc6e0b338e69f9120ba51932fd1951bc2f0a8c430c77bee` uploaded and verified on-console.
+- Backed up Fox's original NRO (`5fdd5150e14b15d6c903fe0359190ccef820f00f1c3dfd4aff95698f9e3a6cc6`) plus its pre-existing empty autotest marker, options, controls and two logs before changing anything.
+- Verified 12/24 wide maps so far: each launched an actual 27-tile, 8-player/8-team match, produced a hardware screenshot, had no map-open or autotest warning, and closed cleanly.
+- Failed game tests: none. A first nine-second harness attempt closed two maps before the match-start log and was discarded; rerunning with 14 seconds passed them.
+- Blocked/missing evidence: before map 13, the managed launcher timed out without a launch event and Fox's sys-autopilot began resetting/ignoring API requests. The event collector records clean exits through map 12 and no launch for map 13, so this is currently a console-control interruption, not evidence of a game crash. Fox cannot yet be restored while its API is unavailable.
+- Files changed: this checkpoint only. Active helpers: none. Active console: Fox lease above; evidence under `build-fox-spawn-test.LqTQ4I`.
+- Next action: continue the remaining 12 maps on Bowser under a separate authorized lease while leaving Fox untouched; restore both consoles exactly when their control APIs are available.
+
+## Combined Fox/Bowser hardware spawn sweep — 2026-10-25
+
+- Verified all 24 widescreen maps on real Switch hardware with the exact candidate NRO SHA-256 `2ea291f4510bd09d9bc6e0b338e69f9120ba51932fd1951bc2f0a8c430c77bee`.
+- Fox passed maps 1–12; Bowser passed maps 13–24. Every map reached its intended 27-tile stage with 8 CPU players and 8 teams, produced a screenshot, logged no map-open or autotest warning, and closed cleanly through qlhook. A manually reviewed 24-image contact sheet shows all intended stages rendered with eight HUD slots.
+- Bowser produced no new Atmosphere crash, fatal or ERPT report. Bowser was restored byte-for-byte to its original NRO (`0ba1dc0015a155612ff96fc32d3db88e6d3fda0100d407939c4af3fdec761bf6`), options, controls and logs; the test-created autotest marker was deleted, the virtual pad detached, HOME left idle and lease `99698a6e-34b3-4c7a-ada9-cbc97fb5c8ef` released.
+- Failed game tests: none. The two short-timer results were discarded and passed on the corrected rerun. Map 13 passed on Bowser after Fox failed to start it.
+- Missing evidence: these runs used eight CPU players, so eight physical controllers and native pairing colors remain unverified. Switch logs prove the map and 8-player/8-team runtime, but do not print each spawn coordinate; the exact per-region coordinates remain covered by the 24/24 PC runtime gate.
+- Cleanup blocked on Fox: after map 12's recorded clean exit, its API changed to connection-reset / `horizon-noapi`, consistent with sleep or the API closing. No map-13 launch event exists. Fox's pre-test backup is safe, but the candidate NRO and test files cannot be restored until the console is physically woken. Lease `712153fd-73ee-4308-aa44-cc216c28673b` remains active. This is a cleanup block, not a game failure.
+- Added Ultimate SysModule todo #15 to keep unattended qlhook-only test sweeps awake; qlhook launches do not refresh the console's input-idle clock and this lease had `keepAwake:false`.
+- Evidence: Fox `build-fox-spawn-test.LqTQ4I`, Bowser `build-bowser-spawn-test.jVmfhk`. Active helpers: none.
+- Next action: physically wake Fox once, restore its original NRO/settings/logs by saved hashes, delete the test marker, detach the virtual pad and release the lease. After that, the only product evidence still missing is a real 5–8 physical-controller session.
