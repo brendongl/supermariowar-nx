@@ -377,3 +377,36 @@ authorized for this project test only; no blanket cafe fleet permission exists.
 - Files changed: `tools/widescreen/map_info.py`, `spawn_viewer.py`, `README.md`, approved `00.png`, and this checkpoint. Deployed source is also committed in the separate Sites repository at `/home/brendongl/projects/smw-spawn-atlas` commit `12b26edb40f74a278e533c4d08c1212035efff76`.
 - Active helpers, test processes and console leases: none.
 - Next action: Brendon reviews the atlas and decides whether regions 1–4 should be authored as genuinely different player zones before the next NRO build.
+
+## Distinct spawn zones — 2026-10-25
+
+- Authored four distinct left-to-right spawn zones in all 24 widescreen maps.
+  Each map chooses its three boundaries from its own legal spawn cells so the
+  four zones have similar safe-space counts. The regions are disjoint and their
+  union exactly equals the previous legal player-spawn area; normal region 0 and
+  item spawning are unchanged.
+- Player pairing remains P1/P5→1, P2/P6→2, P3/P7→3 and P4/P8→4. The map no-spawn
+  grid and serialized runtime rectangles are both updated, so later editor saves
+  preserve the authored regions.
+- Verified results: all 24 binaries parse and reload; the four regions differ on
+  every map; all 24 runtime launches placed eight players inside the expected
+  regions; every same-region pair was at least 96 px apart. The independent map
+  verifier still passes 23 maps and 6,900 preserved center cells. Fresh Release
+  build passes 63/63 CTests. Fresh Switch NRO builds successfully, contains the
+  exact bytes of all 24 maps once, and has SHA-256
+  `2ea291f4510bd09d9bc6e0b338e69f9120ba51932fd1951bc2f0a8c430c77bee`.
+- Atlas version 2 is live at `https://smw-spawn-atlas.dongletrk.chatgpt.site`.
+  Desktop and 400 px Playwright checks pass all 24 maps, region selection,
+  reroll, search, large view, responsive width and console checks. Sites reports
+  deployment succeeded; anonymous access reaches the intended ChatGPT sign-in
+  gate, so authenticated production content remains missing canary evidence.
+- Harness failures: one 24-map batch used a non-autotest PC build, so every run
+  waited at Welcome and timed out without loading a map. A proof run then used a
+  stale autotest binary which lacked the new spawn logging hook. Both were test
+  setup failures; the fresh current autotest build passed 24/24 runtime maps.
+- Files changed: all 24 wide `.map` files; `author_spawn_regions.py`,
+  `map_info.py`, `spawn_viewer.py`, this README and checkpoint. Separate Sites
+  source commit: `063b867`. No helpers, build jobs or console leases remain.
+- Missing evidence, not a failure: this exact NRO has not run on Switch hardware
+  and physical eight-controller behavior remains unverified. No console was
+  touched in this gate.

@@ -9,8 +9,8 @@ was dropped. `stages.json` records the source names and approved review revision
 - 2–4 enabled players: 290 original maps, 20 by 15 tiles.
 - 5–8 enabled players: 24 converted maps, 27 by 15 tiles (864 by 480).
 - Both manual selection/random and Quick Game obey the same width restriction.
-- Slots 5–8 are CPU-only, with random characters and separate teams. Up to four
-  humans remain supported. Scripted tours/worlds/minigames require <=4 players.
+- All eight slots support human controllers or CPU players, with separate teams.
+  Scripted tours/worlds/minigames require <=4 players.
 - `platform/widescreen/data` is installed on desktop and merged into Switch RomFS.
   The upstream `data` submodule is unchanged.
 
@@ -39,13 +39,20 @@ copied from actual source tiles. Moving-platform maps were excluded.
    blocks, shifted items and hazard counts.
 5. Copy only the 23 generated `* Wide.map` files named in `stages.json` from
    `build-wide-author/data/maps/` to `platform/widescreen/data/maps/`.
-6. Rebuild desktop and Switch binaries; the maps are now packaged with both.
+6. Run `python3 tools/widescreen/author_spawn_regions.py` after copying the maps.
+   This reapplies the four balanced team regions to regenerated map binaries.
+7. Rebuild desktop and Switch binaries; the maps are now packaged with both.
 
 Regeneration is deterministic from the approved images and layout file; it does
 not call an image-generation API. The atlas is intentionally static except for
 objects explicitly promoted to engine blocks.
 
 ## Spawn atlas
+
+`python3 tools/widescreen/author_spawn_regions.py` partitions each wide map's
+legal player-spawn cells into four distinct, map-balanced horizontal zones.
+The tool updates both the no-spawn grid and the serialized runtime rectangles,
+so the zones survive later editor saves. Region 0 and item spawning are unchanged.
 
 `python3 tools/widescreen/spawn_viewer.py OUTPUT` builds the interactive static
 spawn review page from the 24 shipped wide maps. It reads the serialized spawn
@@ -54,9 +61,7 @@ tile-grid overlays and repeatable example eight-player rolls. The example dots
 apply the game's 20-attempt / 96-pixel separation rule; they are possible rolls,
 not fixed spawn points.
 
-The current wide maps serialize identical allowed areas for region IDs 1–4.
-The runtime still maps P1/P5 to region 1, P2/P6 to 2, P3/P7 to 3 and P4/P8 to
-4, and the page makes that current data limitation explicit. The deployed
+The runtime maps P1/P5 to region 1, P2/P6 to 2, P3/P7 to 3 and P4/P8 to 4. The deployed
 owner-private page is https://smw-spawn-atlas.dongletrk.chatgpt.site.
 
 ## Verification

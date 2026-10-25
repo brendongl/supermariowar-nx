@@ -18,23 +18,26 @@ def read(p):
     items=[tuple(r.i() for _ in range(3)) for _ in range(r.i())]
     hazards=[r.take(52) for _ in range(r.i())]
     eye=[r.i() for _ in range(3 if ver[2]>=1 or ver[3]>=2 else 1)];music=r.i()
-    collision=[];warps=[];spawn=[]
+    collision=[];warps=[];spawn=[];spawn_offsets=[]
     for y in range(15):
-        c=[];wa=[];s=[]
+        c=[];wa=[];s=[];so=[]
         for x in range(w):
-            c.append(r.i());wa.append(tuple(r.i() for _ in range(3)));s.append(list(r.take(6)))
-        collision.append(c);warps.append(wa);spawn.append(s)
+            c.append(r.i());wa.append(tuple(r.i() for _ in range(3)))
+            so.append(r.pos);s.append(list(r.take(6)))
+        collision.append(c);warps.append(wa);spawn.append(s);spawn_offsets.append(so)
     # Supplemental switch state, warp exits, then the six serialized spawn-area sets.
     # Each spawn area stores tile-space left/top/width/height and its selection weight.
     for _ in range(r.i()):r.take(3)
     for _ in range(r.i()):r.take(40)
-    spawnareas=[]
+    spawnareas_start=r.pos;spawnareas=[]
     for _ in range(6):
         spawnareas.append([tuple(r.i() for _ in range(5)) for _ in range(r.i())])
     assert all(0<=c<=19 for row in collision for c in row)
     return dict(width=w,version=ver,cells=cells,collision=collision,warps=warps,
                 nospawn=spawn,spawnareas=spawnareas,tilesets=sets,background=bg,
-                items=items,hazards=hazards)
+                items=items,hazards=hazards,_data=r.data,
+                _spawn_offsets=spawn_offsets,_spawnareas_start=spawnareas_start,
+                _spawnareas_end=r.pos)
 if __name__=='__main__':
     import sys
     m=read(sys.argv[1]);print(m['tilesets'],m['background'])
