@@ -295,9 +295,15 @@ authorized for this project test only; no blanket cafe fleet permission exists.
   captures, checked at every segment, and saved as the ignored artifact
   `build-ui-demo/eight-player-flow-demo.mp4` (671,435 bytes, SHA-256
   `d84a3eb4a9707c0f163e4c811e7dc750f792b2c12804a80df68025762423c45c`).
-- Next action: commit and push the branch, deliver the video, and book the
-  requested King of the Hill visual-proposal reminder. King of the Hill remains
-  unchanged.
+- GitHub gate: implementation and README were committed as `90bf3e99` (`Add
+  native four-to-eight player setup flow`) and pushed to `origin/eight-players`.
+  The public `v1.1.0-test1` pre-release was deliberately left unchanged because
+  this revision has no current NRO/native-applet hardware evidence.
+- Active helpers, builds, tests and console leases: none. Next action when the
+  Switch toolchain is available is a fresh Release NRO build followed by a
+  leased hardware check of pairing cancellation, 5–8 returned controllers and
+  the exact 4→8→4 flow. King of the Hill remains unchanged; deliver the video
+  now and book the requested visual-proposal reminder.
 - Files changed: checkpoint only after commit `eb4f673c` (`Add eight-controller player flow`).
 - Active helpers/builds: none.
 - Next action: when Toad's managed connection returns, acquire a new Toad lease and resume at upload; do not rebuild or repeat completed PC gates.
