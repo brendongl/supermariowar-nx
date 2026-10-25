@@ -432,3 +432,11 @@ authorized for this project test only; no blanket cafe fleet permission exists.
 - Added Ultimate SysModule todo #15 to keep unattended qlhook-only test sweeps awake; qlhook launches do not refresh the console's input-idle clock and this lease had `keepAwake:false`.
 - Evidence: Fox `build-fox-spawn-test.LqTQ4I`, Bowser `build-bowser-spawn-test.jVmfhk`. Active helpers: none.
 - Next action: physically wake Fox once, restore its original NRO/settings/logs by saved hashes, delete the test marker, detach the virtual pad and release the lease. After that, the only product evidence still missing is a real 5–8 physical-controller session.
+
+## Test stop — 2026-10-25
+
+- Brendon asked to stop tests and follow-ups. Cancelled all three pending follow-ups for this thread; no further automatic checks are booked.
+- Closed Fox lease `712153fd-73ee-4308-aa44-cc216c28673b` with a device note recording the deferred cleanup. No console action was attempted while Fox remained `horizon-noapi`.
+- Verified results remain unchanged: all 24 hardware map loads passed; Bowser is restored. Failed game tests: none.
+- Deferred cleanup, not a test failure: Fox still has candidate NRO/test files because it was asleep/API-closed. Its exact original NRO/settings/log backups remain in `build-fox-spawn-test.LqTQ4I` for a later explicitly requested restoration.
+- Files changed: this checkpoint only. Active helpers, console leases and scheduled follow-ups: none. Next action: none until Brendon asks to resume.
