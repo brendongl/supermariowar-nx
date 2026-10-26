@@ -476,3 +476,23 @@ authorized for this project test only; no blanket cafe fleet permission exists.
 - Added four-controller HDLS support to sys-autopilot in local commit `960dd49`; full host suite and Switch build pass, and all four controller indices were hardware-verified. Ultimate SysModule todo #12 now records that eight requires a non-HDLS method.
 - Files changed: sys-autopilot input/status API, README and stubs in commit `960dd49`; this checkpoint. Active helpers, console leases and background processes: none.
 - Remaining evidence: a real 6-8 physical-controller session and the exact build/config that showed the cafe two-controller problem. Next action: test the candidate with 6-8 physical controllers or distribute it as a tester pre-release before cafe deployment.
+
+
+## Bowser post-test crash diagnosis — 2026-10-26 (gate 1)
+
+- Corrected the prior conclusion: Bowser did create two new ERPT system reports after cleanup, at 06:42:04 and 06:49:30 UTC. Both are error 2162-0004 (`ForcedShutdownDetected`), proving two hard power-offs after the console became unresponsive. Atmosphere crash/fatal folders remained unchanged; the old crash API omitted ERPT, which is why the first check missed this evidence.
+- The previous boot log shows the initiating failure immediately after keep-awake was disabled: repeated Awake → sleep → intermediate wake cycles, followed each time by mDNS/socket errors. Bowser's installed sys-autopilot is commit `8cddd5e`; it predates commit `e0c0397`, which keeps filesystem/network IPC suspended through intermediate PSC wake states until the console reaches full Awake. This exact race matches the observed log.
+- Implemented ERPT discovery and MessagePack `ErrorCode` parsing in sys-autopilot's crash-report API so forced shutdowns can no longer be silently omitted. Full host suite passes after adding an ERPT regression fixture.
+- Failed tests: the first two host-suite runs caught incomplete ERPT test integration (missing `utime.h`, then a truncated UUID path); both code/test defects were fixed. The complete suite now passes.
+- Missing evidence: the current sys-autopilot build has not yet been compiled/deployed on Bowser and its sleep/wake fix has not been hardware-verified there.
+- Files changed: sys-autopilot crash model/parser/HTTP/MCP/tool description and MCP test; this checkpoint. Active helpers: none. Active Bowser lease: `a9b7bc46-b54b-4cfd-8575-67af2fb03afb`; timed keep-awake is on during debugging.
+- Next action: build the current sysmodule, back up Bowser again, install it, confirm ERPT reports appear through the API, then perform one controlled sleep/wake test with physical recovery available.
+
+### Gate 2 — corrected sysmodule installed
+
+- Committed ERPT reporting as sys-autopilot `cf23fab` (`Include forced shutdowns in crash reports`). The installed build also contains prior fixes `3599c54` (release backlight sessions) and `e0c0397` (wait for full PSC Awake before resuming IPC), plus four-controller support `960dd49`.
+- Built a clean versioned Switch sysmodule and installed it on Bowser. On-console SHA-256 matches `59a70addee8b9eb317df6d16d14f76b7134b65d367480583efb3f0446abaee10`; `/status` reports `2.1.0-24-gcf23fab`. The exact pre-fix original remains backed up at SHA-256 `c575054e920d683cb95f5d7f0310e2b53493f07da6a694cf6d72102029f614da`.
+- Hardware verification passed for boot, status, hash and ERPT parsing: Bowser now reports both new 2162-0004 forced shutdowns through `/crash-reports`. No new report was created by three controlled reboots.
+- Failed tests: none in this gate. Missing evidence: one real sleep and physical wake cycle is still required to exercise the fixed PSC transition path.
+- Files changed: sys-autopilot commit `cf23fab`; this checkpoint. Active helpers: none. Bowser lease remains active and timed keep-awake remains on until the controlled test begins.
+- Next action: disable keep-awake, command one sleep, have Brendon press Bowser's power button once, then inspect status/logs/ERPT and either keep the fix or restore the exact backup.
