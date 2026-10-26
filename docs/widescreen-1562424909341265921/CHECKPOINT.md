@@ -440,3 +440,39 @@ authorized for this project test only; no blanket cafe fleet permission exists.
 - Verified results remain unchanged: all 24 hardware map loads passed; Bowser is restored. Failed game tests: none.
 - Deferred cleanup, not a test failure: Fox still has candidate NRO/test files because it was asleep/API-closed. Its exact original NRO/settings/log backups remain in `build-fox-spawn-test.LqTQ4I` for a later explicitly requested restoration.
 - Files changed: this checkpoint only. Active helpers, console leases and scheduled follow-ups: none. Next action: none until Brendon asks to resume.
+
+
+## Eight virtual-controller test — 2026-10-26 (gate 1)
+
+- Bowser lease `459e324b-1fe1-440d-80ba-539a7ddd174f` is active and exclusive. Baseline has one physical rail controller plus one pre-existing HDLS virtual controller, reproducing the two-controller ceiling at the controller-service layer.
+- Extended the local sys-autopilot source to keep up to eight independent HDLS controller handles/states, accept `controller: 1..8` on input endpoints, attach a requested controller count, detach all controllers, and report the virtual-controller count. Legacy single-controller calls remain compatible.
+- Verified results: the full sys-autopilot host suite passes. Failed tests: none. Missing evidence: the Switch build, deployment, eight-pad enumeration and SMW UI flow have not yet been run.
+- Files changed in `/home/brendongl/projects/sys-autopilot`: input implementation/header/HTTP routes, status HTTP/MCP, README and host stubs. `.claude/` was pre-existing and untouched. Active helpers: none.
+- Next action: compile the sysmodule for Switch, back up Bowser's current sysmodule and game state, then deploy and validate controller enumeration.
+
+### Gate 2 — Switch build and Bowser backup
+
+- Switch build passed in the pinned devkitPro image. Candidate sysmodule SHA-256: `6bb8f887bfb7dafa530e9de0ede0f0956f8b8400b944e75ceb00c854cc35f485`.
+- Backed up Bowser before deployment: sysmodule `c575054e920d683cb95f5d7f0310e2b53493f07da6a694cf6d72102029f614da`, SMW NRO `0ba1dc0015a155612ff96fc32d3db88e6d3fda0100d407939c4af3fdec761bf6`, options and controls at their previously recorded hashes. Captured baseline status, input topology and crash-report list.
+- Failed tests: none. Missing evidence: candidate has not yet booted or enumerated multiple pads. Active lease remains Bowser; no helpers.
+- Next action: deploy the candidate sysmodule, reboot, verify health, then attach seven virtual pads.
+
+### Gate 3 — partial Bowser enumeration; hardware blocked
+
+- Candidate sysmodule was hash-verified on Bowser and booted normally on FW 23.0.1. It reported seven HDLS virtual handles attached. At HOME, Horizon exposed four virtual npads plus the one physical rail controller (five visible npads); the remaining assignment behavior still needs testing while SMW requests eight slots.
+- Before the current SMW NRO upload started, Bowser went offline about one minute after reboot. Its pre-test status had `keepAwake:false` and no post-boot physical input; this timing is consistent with its short idle sleep, but a crash report cannot be ruled out until the console is physically woken. The upload transferred zero bytes, so Bowser's original SMW NRO was not changed.
+- Failed operations: the game upload and following hash/launch commands failed with connection refused because the console was already offline. This is not a game test failure; the game never launched.
+- Missing evidence: post-wake crash-report comparison, eight-slot assignment inside SMW, independent input from players 1–8, and cleanup restoration. Active helpers: none. Bowser lease remains active.
+- Next action: after one physical wake, enable timed keep-awake first, inspect crash reports, continue the controller/game test, then restore the exact original sysmodule and SMW files.
+
+## Bowser virtual-controller validation — 2026-10-26
+
+- Bowser lease `459e324b-1fe1-440d-80ba-539a7ddd174f` completed. The current SMW candidate NRO `2ea291f4510bd09d9bc6e0b338e69f9120ba51932fd1951bc2f0a8c430c77bee` booted and ran a real eight-participant Jungle Bridge Wide match with four independent virtual human controllers plus four CPUs.
+- Verified UI behavior: controller 2 could not change the Player-1-only roster; L/R changed only that controller's fighter; ZL/ZR changed only that controller's color; each human had to ready; controller 2 could not start the Quick Start reveal; controller 1 could. The native pairing applet showed P1-P4 with the intended colors/labels and P5-P8 empty.
+- The game reached 8-player mode because the four HDLS pads plus Bowser's physical rail controller met the five-controller minimum. The current build therefore did not reproduce the cafe report that only two controllers could connect. The exact cafe build remains unknown, so that report is missing build evidence rather than disproven.
+- Hardware/tool limit: current Nintendo HDLS accepts four independently controllable virtual devices. Handles 5-7 could be created, but subsequent state updates failed with HID result `0x1c24ca` (module 18, description 202). Eight all-virtual controllers cannot be validated by this HDLS method; a different Bluetooth/HID injection route or physical controllers is required.
+- Failed operation: the first upload attempt met Bowser's one-minute idle sleep and transferred zero bytes. After physical wake, no new crash/fatal report existed. Keep-awake was enabled and the rerun passed. This was a test-harness setup error, not a game crash.
+- New crash/fatal reports during the full test: none. Bowser was restored and hash-verified to original sysmodule `c575054e920d683cb95f5d7f0310e2b53493f07da6a694cf6d72102029f614da`, game NRO `0ba1dc0015a155612ff96fc32d3db88e6d3fda0100d407939c4af3fdec761bf6`, options and controls; virtual pads cleared; keep-awake off; HOME idle; lease released.
+- Added four-controller HDLS support to sys-autopilot in local commit `960dd49`; full host suite and Switch build pass, and all four controller indices were hardware-verified. Ultimate SysModule todo #12 now records that eight requires a non-HDLS method.
+- Files changed: sys-autopilot input/status API, README and stubs in commit `960dd49`; this checkpoint. Active helpers, console leases and background processes: none.
+- Remaining evidence: a real 6-8 physical-controller session and the exact build/config that showed the cafe two-controller problem. Next action: test the candidate with 6-8 physical controllers or distribute it as a tester pre-release before cafe deployment.
