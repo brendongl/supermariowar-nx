@@ -506,3 +506,11 @@ authorized for this project test only; no blanket cafe fleet permission exists.
 - Missing evidence: Bowser is currently offline awaiting the instructed 12-second power-button recovery, so `dfef370` has not been installed or hardware-tested. The earlier `cf23fab` remains installed.
 - Files changed: sys-autopilot commit `dfef370`; this checkpoint. Active helpers: none. Bowser lease `a9b7bc46-b54b-4cfd-8575-67af2fb03afb` remains active.
 - Next action: once Bowser is online, upload/hash-verify `dfef370`, reboot, repeat attach-four → detach-all → verify release log → sleep → physical wake, then inspect ERPT and either accept or continue debugging.
+
+### Gate 3 correction and final candidate — 2026-10-26
+
+- Correction to the preceding gate: the exact four-controller cleanup cycle did **not** crash. Bowser woke at 14:05:10, restored listening/API, briefly cycled once, and then auto-slept normally at 14:05:30 because keep-awake was off. It woke again at 14:11:54. No new ERPT/crash/fatal report exists. The earlier offline observation was missing evidence, not a failed test.
+- Installed version `2.1.0-25-gdfef370`, on-console SHA-256 `23d023bd331cff662aff3e15a937e04bae27d2bef45a283c8c9d3f579661993c`. Attached four HDLS pads, verified four, detached all, verified zero, and verified the new `HDLS work buffer released after last detach` log before sleep.
+- Bowser is now in the final controlled sleep with timed keep-awake persisted for ten minutes, which will prevent the quick post-wake re-sleep that confused the previous check.
+- Failed tests: none after correcting the classification. Missing evidence: one normal physical wake and the post-wake status/log/report check for `dfef370`. Active helper: none; Bowser lease remains active.
+- Next action: Brendon presses power once; verify API, full Awake state, exact hash, zero virtual pads and no new reports, disable keep-awake, then release the lease.
