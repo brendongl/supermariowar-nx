@@ -496,3 +496,13 @@ authorized for this project test only; no blanket cafe fleet permission exists.
 - Failed tests: none in this gate. Missing evidence: one real sleep and physical wake cycle is still required to exercise the fixed PSC transition path.
 - Files changed: sys-autopilot commit `cf23fab`; this checkpoint. Active helpers: none. Bowser lease remains active and timed keep-awake remains on until the controlled test begins.
 - Next action: disable keep-awake, command one sleep, have Brendon press Bowser's power button once, then inspect status/logs/ERPT and either keep the fix or restore the exact backup.
+
+### Gate 3 — exact cleanup reproduction failed; second fix ready
+
+- The first controlled sleep/wake with no HDLS use passed: Bowser returned fully Awake, API healthy, and no new ERPT/crash/fatal report appeared.
+- The exact cleanup reproduction then attached four virtual controllers, verified four npads, detached all, verified zero, and slept. Bowser froze/offlined again on physical wake. This is a failed hardware test and proves commit `e0c0397` alone does not fix the post-controller-test crash.
+- Root cause narrowed further: `input_detach_all()` detached the virtual devices but left hid's HDLS transfer-memory work buffer mapped. Ordinary sleep passed because that buffer had never been opened. Releasing it only from the subsequent PSC sleep callback is too late on Bowser/FW 23.0.1.
+- Implemented and committed sys-autopilot `dfef370` (`Release HDLS work buffer after controller detach`): the last successful detach now immediately releases the HDLS work buffer; attach failures clean it up too. Full host suite and Switch build pass. Candidate version `2.1.0-25-gdfef370`, SHA-256 `23d023bd331cff662aff3e15a937e04bae27d2bef45a283c8c9d3f579661993c`.
+- Missing evidence: Bowser is currently offline awaiting the instructed 12-second power-button recovery, so `dfef370` has not been installed or hardware-tested. The earlier `cf23fab` remains installed.
+- Files changed: sys-autopilot commit `dfef370`; this checkpoint. Active helpers: none. Bowser lease `a9b7bc46-b54b-4cfd-8575-67af2fb03afb` remains active.
+- Next action: once Bowser is online, upload/hash-verify `dfef370`, reboot, repeat attach-four → detach-all → verify release log → sleep → physical wake, then inspect ERPT and either accept or continue debugging.
