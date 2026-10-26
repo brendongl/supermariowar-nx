@@ -87,7 +87,9 @@ extern void SetGameModeSettingsFromMenu();
 // Short name of the map the current match runs on, for logs
 std::string g_matchMapName;
 std::string g_autotestMap;
+std::string g_autotestMode;
 short g_autotestPlayers = 4;  // "players=N" in the autotest file, up to MAX_PLAYERS
+short g_autotestHumans = 0;   // "humans=N" keeps the first N slots player-controlled
 extern void LoadMapObjects(bool fPreview);
 extern void UpdateScoreBoard();
 extern short LookupTeamID(short id);
@@ -289,7 +291,8 @@ bool MenuState::init()
         // "fast" in the file lifts the frame limiter, for host-side soaks
         if (FILE* fp = fopen((GetHomeDirectory() + "autotest").c_str(), "r")) {
             // Optional lines: "fast" lifts the frame limiter; "map=<file name without
-            // .map>" plays only that map, for repeatable performance comparisons
+            // .map>" and "mode=<display name>" make launches repeatable; "humans=N"
+            // leaves the first N slots player-controlled for injected-controller tests.
             char line[256] {};
             while (fgets(line, sizeof(line), fp)) {
                 line[strcspn(line, "\r\n")] = 0;
@@ -299,12 +302,17 @@ bool MenuState::init()
                 } else if (strncmp(line, "map=", 4) == 0) {
                     g_autotestMap = line + 4;
                     printf("[autotest] only map %s\n", g_autotestMap.c_str());
+                } else if (strncmp(line, "mode=", 5) == 0) {
+                    g_autotestMode = line + 5;
+                    printf("[autotest] only mode %s\n", g_autotestMode.c_str());
                 } else if (strncmp(line, "players=", 8) == 0) {
                     // Extra CPU slots use the same team organization as normal play.
                     g_autotestPlayers = std::clamp<short>(static_cast<short>(atoi(line + 8)), 2, MAX_PLAYERS);
                     for (short iPlayer = 4; iPlayer < g_autotestPlayers; iPlayer++)
                         game_values.randomskin[iPlayer] = true;
                     printf("[autotest] %d players\n", g_autotestPlayers);
+                } else if (strncmp(line, "humans=", 7) == 0) {
+                    g_autotestHumans = std::clamp<short>(static_cast<short>(atoi(line + 7)), 0, MAX_PLAYERS);
                 } else if (strncmp(line, "skin=", 5) == 0) {
                     // Every player uses this skin (name as shown in the menus)
                     for (size_t i = 0; i < skinlist->count(); i++) {
@@ -320,8 +328,12 @@ bool MenuState::init()
             }
             fclose(fp);
         }
-        for (short iPlayer = 0; iPlayer < g_autotestPlayers; iPlayer++)
-            game_values.playercontrol[iPlayer] = 2;
+        g_autotestHumans = std::min(g_autotestHumans, g_autotestPlayers);
+        for (short iPlayer = 0; iPlayer < MAX_PLAYERS; iPlayer++)
+            game_values.playercontrol[iPlayer] = iPlayer < g_autotestPlayers
+                ? (iPlayer < g_autotestHumans ? 1 : 2)
+                : 0;
+        printf("[autotest] %d human players\n", g_autotestHumans);
         LoadScript("scripts/StartMenuAutomation.txt");
     }
 #endif
@@ -852,6 +864,22 @@ void MenuState::update()
             };
             game_values.matchtype = MatchType::QuickGame;
             game_values.gamemode = gamemodes[quickModes[RANDOM_INT(8)]];
+#if defined(SMW_AUTOTEST)
+            if (g_fAutoTest && !g_autotestMode.empty()) {
+                bool found = false;
+                for (short i = 0; i < GAMEMODE_LAST; ++i) {
+                    if (gamemodes[i]->GetModeName() == g_autotestMode) {
+                        game_values.gamemode = gamemodes[i];
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    fprintf(stderr, "[autotest][failure] unknown mode %s\n", g_autotestMode.c_str());
+                    exit(2);
+                }
+            }
+#endif
             SModeOption* options = game_values.gamemode->GetOptions();
             game_values.gamemode->goal = options[RANDOM_INT(6) + 1].iValue;
             game_values.tournamentwinner = -1;
@@ -917,9 +945,21 @@ void MenuState::update()
                 short iRandomMode = RANDOM_INT( GAMEMODE_LAST);
 #if defined(SMW_AUTOTEST)
                 if (g_fAutoTest) {
-                    if (const char* mode = SDL_getenv("SMW_TEST_MODE"))
+                    const char* mode = g_autotestMode.empty() ? SDL_getenv("SMW_TEST_MODE")
+                                                              : g_autotestMode.c_str();
+                    if (mode) {
+                        bool found = false;
                         for (short i = 0; i < GAMEMODE_LAST; ++i)
-                            if (gamemodes[i]->GetModeName() == mode) iRandomMode = i;
+                            if (gamemodes[i]->GetModeName() == mode) {
+                                iRandomMode = i;
+                                found = true;
+                                break;
+                            }
+                        if (!found) {
+                            fprintf(stderr, "[autotest][failure] unknown mode %s\n", mode);
+                            exit(2);
+                        }
+                    }
                 }
 #endif
                 game_values.gamemode = gamemodes[iRandomMode];
@@ -2116,9 +2156,10 @@ void MenuState::AutotestStep()
         return;
     }
     if (mCurrentMenu == mMainMenu.get()) {
-        for (short iPlayer = 0; iPlayer < g_autotestPlayers; iPlayer++)
-            game_values.playercontrol[iPlayer] = 2;
-        game_values.playercontrol[0] = 1;
+        for (short iPlayer = 0; iPlayer < MAX_PLAYERS; iPlayer++)
+            game_values.playercontrol[iPlayer] = iPlayer < g_autotestPlayers
+                ? (iPlayer < g_autotestHumans ? 1 : 2)
+                : 0;
         keys.menu_select.fPressed = true;
     } else if (captureMenus && mCurrentMenu == mMatchSelectionMenu.get()) {
         keys.menu_select.fPressed = true;

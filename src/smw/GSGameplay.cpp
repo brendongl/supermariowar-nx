@@ -1239,7 +1239,9 @@ void GameplayState::drawPlayerSwap()
 
 void GameplayState::drawBackLayer()
 {
-    rm->spr_backmap[g_iCurrentDrawIndex].draw(0, 0);
+    // The layer surface is sized for the widest arena; draw only the current arena's
+    // width so the unused right part doesn't wrap onto the left of a 20-tile map.
+    rm->spr_backmap[g_iCurrentDrawIndex].draw(0, 0, {0, 0, App::screenWidth, App::screenHeight});
 
     //draw back eyecandy behind players
     g_map->drawPlatforms(0);

@@ -523,3 +523,19 @@ authorized for this project test only; no blanket cafe fleet permission exists.
 - Verified results: full host suite passed; Switch build passed; three reboots passed; plain sleep/wake passed; two attach-four/detach-all sleep/wake cycles passed; exact hash/version and zero virtual pads confirmed. Failed final tests: none. Missing evidence: none for this reported crash path.
 - Bowser was left at HOME with no running app, zero virtual controllers and keep-awake off. Lease `a9b7bc46-b54b-4cfd-8575-67af2fb03afb` was released. Active helpers/background tasks: none.
 - Files changed: sys-autopilot commits `cf23fab` and `dfef370`; SMW checkpoint commits through this entry. Next action: continue the separate eight-physical-controller validation when controllers are available.
+
+### All 22 game modes on Bowser with four virtual controllers — 2026-10-26
+
+- Lease `750f6db5-a5b2-4f94-a62d-bba8ee3bca80`. Autotest gained `mode=<display name>` (forces the Quick Start mode) and `humans=N` (first N slots player-controlled). Each mode ran on 0smw with `players=4 humans=4`; all four virtual pads moved and pressed A, and a screenshot plus log were captured. Results: `all-modes-bowser-results.tsv`.
+- **All 22 modes PASS**, with the correct mode, map and player count and no failure markers.
+  - The first sweep stalled at Yoshi's Eggs because of a transient API/launch drop; there was no crash report. The rerun passed.
+  - Star needed a 25 s settle instead of 12 s: it was still on fighter select at the 12 s screenshot.
+  - No new ERPT/crash reports; the newest is still the 06:49:30 UTC forced shutdown from before the test.
+- **Bug found from the screenshots, and fixed:** on 20-tile maps the left ~224 px of the background and tile layer was black. `spr_backmap` is now sized for 864 px; drawing it whole at x=0 with a 640 wrap blitted its blank right part onto the left. `drawBackLayer` now draws only `{0,0,App::screenWidth,App::screenHeight}`. Verified in Eden for 0smw (20 wide) and 0smw Wide (27 wide). ASan soaks: 11 + 11 matches with 0 errors and 0 stuck warnings.
+- Autotest default changed to `humans=0`, so plain soaks stay all-CPU. Codex's draft defaulted to 1 human.
+- Bowser was restored afterwards:
+  - Original smw.nro, options.toml, controls.sdl2.bin, smw.log and smw.prev.log re-uploaded and verified by SHA-256.
+  - Autotest marker removed.
+  - Virtual controllers and keep-awake off; HOME idle.
+  - Lease released.
+- Missing evidence: the backmap fix has not run on hardware yet; Bowser still has the original NRO. Testing with 5–8 physical controllers is still outstanding.
