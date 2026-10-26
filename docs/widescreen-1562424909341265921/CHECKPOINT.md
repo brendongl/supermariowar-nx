@@ -514,3 +514,12 @@ authorized for this project test only; no blanket cafe fleet permission exists.
 - Bowser is now in the final controlled sleep with timed keep-awake persisted for ten minutes, which will prevent the quick post-wake re-sleep that confused the previous check.
 - Failed tests: none after correcting the classification. Missing evidence: one normal physical wake and the post-wake status/log/report check for `dfef370`. Active helper: none; Bowser lease remains active.
 - Next action: Brendon presses power once; verify API, full Awake state, exact hash, zero virtual pads and no new reports, disable keep-awake, then release the lease.
+
+### Bowser post-test crash — complete
+
+- Final exact-path hardware test passed on sys-autopilot `2.1.0-25-gdfef370`: attached four virtual controllers, verified four; detached all, verified zero; logged immediate HDLS work-buffer release; entered sleep; physically woke; returned PSC Awake/API healthy.
+- No new ERPT, crash or fatal report was created. Newest ERPT remains the second original forced shutdown at 06:49:30 UTC. Installed sysmodule hash is `23d023bd331cff662aff3e15a937e04bae27d2bef45a283c8c9d3f579661993c`.
+- Root cause: Bowser's restored old sys-autopilot `8cddd5e` treated intermediate PSC wake states as fully awake and resumed SD/network IPC too early. Commit `e0c0397` fixes that. `dfef370` additionally releases HDLS work memory immediately after the final controller detach. `cf23fab` makes ERPT forced shutdowns visible through the crash API so future checks cannot miss them.
+- Verified results: full host suite passed; Switch build passed; three reboots passed; plain sleep/wake passed; two attach-four/detach-all sleep/wake cycles passed; exact hash/version and zero virtual pads confirmed. Failed final tests: none. Missing evidence: none for this reported crash path.
+- Bowser was left at HOME with no running app, zero virtual controllers and keep-awake off. Lease `a9b7bc46-b54b-4cfd-8575-67af2fb03afb` was released. Active helpers/background tasks: none.
+- Files changed: sys-autopilot commits `cf23fab` and `dfef370`; SMW checkpoint commits through this entry. Next action: continue the separate eight-physical-controller validation when controllers are available.
